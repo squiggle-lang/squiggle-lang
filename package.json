@@ -1,0 +1,20 @@
+{
+  "name": "expr-lang",
+  "version": "0.0.0",
+  "description": "An experimental programming language",
+  "main": "main.js",
+  "scripts": {
+    "build-jison": "jison parser.jison",
+    "build-pegjs": "pegjs parser.pegjs",
+    "build-parser": "npm run build-jison",
+    "all": "npm run build-parser && node main",
+    "test": "echo 'Error: no test specified' && exit 1"
+  },
+  "author": "Brian Mock <brian@mockbrian.com>",
+  "license": "MIT",
+  "dependencies": {
+    "jison": "^0.4.15",
+    "js-beautify": "^1.5.6",
+    "pegjs": "^0.8.0"
+  }
+}
