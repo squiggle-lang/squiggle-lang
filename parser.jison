@@ -68,8 +68,7 @@ Expr2
     ;
 
 Expr3
-    : Expr3 "." Identifier
-    { $$ = yy.GetProperty($1, $3); }
+    : Expr3 "." Identifier -> yy.GetProperty($1, $3)
     | Expr4;
 
 Expr4
