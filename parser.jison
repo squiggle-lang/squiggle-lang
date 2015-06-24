@@ -47,7 +47,7 @@ Expr
     ;
 
 Bindings
-    : Identifier "=" Expr              -> [[$1, $3]]
+    :              Identifier "=" Expr -> [[$1, $3]]
     | Bindings "," Identifier "=" Expr -> $$.concat([[$3, $5]])
     ;
 
@@ -63,7 +63,7 @@ Expr1
 
 Expr2
     : "~" "(" Parameters ")" Expr -> yy.Function($3, $5)
-    | "~" "(" ")" Expr            -> yy.Function([], $4)
+    | "~" "("            ")" Expr -> yy.Function([], $4)
     | Expr3
     ;
 
@@ -73,7 +73,7 @@ Expr3
 
 Expr4
     : Expr4 "(" Items ")" -> yy.Call($1, $3)
-    | Expr4 "(" ")"       -> yy.Call($1, [])
+    | Expr4 "("       ")" -> yy.Call($1, [])
     | Expr5
     ;
 
@@ -88,27 +88,26 @@ Expr5
 
 Parameters
     : Parameters "," Identifier -> $$.concat([$3])
-    | Identifier                -> [$1]
+    |                Identifier -> [$1]
     ;
 
 List
     : "[" Items "]" -> yy.List($2)
-    | "[" "]"       -> yy.List([])
+    | "["       "]" -> yy.List([])
     ;
 
 Items
-    : Expr           -> [$1]
+    :           Expr -> [$1]
     | Items "," Expr -> $$.concat([$3])
     ;
 
 Map
     : "{" Pairs "}" -> yy.Map($2)
-    | "{" "}"       -> yy.Map([])
+    | "{"       "}" -> yy.Map([])
     ;
 
-
 Pairs
-    : Expr ":" Expr           -> [[$1, $3]]
+    :           Expr ":" Expr -> [[$1, $3]]
     | Pairs "," Expr ":" Expr -> $$.concat([[$3, $5]])
     ;
 
