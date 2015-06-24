@@ -5,6 +5,7 @@ FILES += parser.pegjs
 FILES += predef.js
 FILES += main.js
 FILES += compile.js
+FILES += ast.js
 FILES += input.txt
 FILES += Makefile
 
