@@ -27,8 +27,10 @@ var ast = {
     String:      ["data"],
 };
 
-Object.keys(ast).forEach(function(k) {
-    ast[k] = nm(k, ast[k]);
-})
+Object
+    .keys(ast)
+    .forEach(function(k) {
+        ast[k] = nm(k, ast[k]);
+    });
 
 module.exports = ast;
