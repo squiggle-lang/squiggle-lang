@@ -118,7 +118,7 @@ Identifier
     ;
 
 Number
-    : NUMBER -> yy.Number($1)
+    : NUMBER -> yy.Number(+$1)
     ;
 
 String
