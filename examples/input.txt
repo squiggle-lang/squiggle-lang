@@ -1,23 +1,23 @@
 let (
-    Node = ~(x, l, r) {
-        "type": "Node",
+    node = ~(x, l, r) {
+        "type": "node",
         "data": x,
         "left": l,
         "right": r
     },
-    Leaf = ~(x) Node(x, Tip, Tip),
-    Tip = {"type": "Tip"},
+    leaf = ~(x) node(x, tip, tip),
+    tip = {"type": "tip"},
     in_order = ~(node)
-        if is(node, Tip)
+        if is(node, tip)
         then []
         else let (
             ls = in_order(node.left),
             rs = in_order(node.right),
             ds = [node.data]
         ) in ++(ls, ++(ds, rs)),
-    root = Node(4,
-        Node(2, Leaf(1), Leaf(3)),
-        Node(6, Leaf(5), Leaf(7))
+    root = node(4,
+        node(2, leaf(1), leaf(3)),
+        node(6, leaf(5), leaf(7))
     ),
     main = ~() in_order(root)
 ) in {

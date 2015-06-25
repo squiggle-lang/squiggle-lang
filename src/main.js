@@ -18,12 +18,17 @@ console.log(json);
 console.log("=== CODE ===");
 console.log(code);
 
-var module = eval(code);
+function unsafeEval(code) {
+    /*jshint evil:true*/
+    return eval(code);
+}
+
+var theModule = unsafeEval(code);
 
 console.log("=== MODULE ===");
-console.log(module);
+console.log(theModule);
 
-if (typeof module.main === 'function') {
+if (typeof theModule.main === 'function') {
     console.log("=== MAIN ===");
-    console.log(module.main());
+    console.log(theModule.main());
 }

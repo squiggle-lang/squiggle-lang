@@ -17,7 +17,7 @@ function compile(node) {
 }
 
 function jsonify(x) {
-    return JSON.stringify(x)
+    return JSON.stringify(x);
 }
 
 var simple = _.flow(_.property("data"), jsonify);
@@ -115,6 +115,6 @@ var handlers = {
     },
     Number: simple,
     String: simple,
-}
+};
 
 module.exports = compile;
