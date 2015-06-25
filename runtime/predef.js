@@ -86,6 +86,11 @@ var LANG$$object = function(data) {
     var j = 1;
     var n = data.length;
     while (j < n) {
+        if (typeof data[i] !== "string") {
+            throw new LANG$$js_Error(
+                "object keys must be strings: " + data[i]
+            );
+        }
         obj[data[i]] = data[j];
         i += 2;
         j += 2;
