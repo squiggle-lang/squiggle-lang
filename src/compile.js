@@ -1,5 +1,6 @@
 var _ = require("lodash");
 var fs = require("fs");
+var path = require("path");
 var jsbeautify = require("js-beautify");
 
 // TODO: Statically analyze use of undeclared variables.
@@ -21,7 +22,8 @@ function jsonify(x) {
 
 var simple = _.flow(_.property("data"), jsonify);
 
-var PREDEF = fs.readFileSync('predef.js');
+var f = path.join(__dirname, '../runtime/predef.js');
+var PREDEF = fs.readFileSync(f);
 
 var postProcessSource = jsbeautify;
 // var postProcessSource = _.identity;

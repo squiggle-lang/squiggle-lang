@@ -3,7 +3,9 @@
 var fs = require("fs");
 var parse = require("./parse");
 var compile = require("./compile");
-var txt = fs.readFileSync("input.txt", "utf-8");
+var path = require("path");
+var f = path.join(__dirname, "../examples/input.txt");
+var txt = fs.readFileSync(f, "utf-8");
 
 var ast = parse(txt);
 

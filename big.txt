@@ -1,8 +1,0 @@
-let (
-    f = ~1,
-    main = ~2,
-    p = let (g = f) in f ()
-) in {
-    "f": f,
-    "main": main
-}
