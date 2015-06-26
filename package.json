@@ -16,10 +16,14 @@
   "author": "Brian Mock <brian@mockbrian.com>",
   "license": "MIT",
   "dependencies": {
+    "escodegen": "^1.6.1",
+    "esmangle": "^1.0.1",
+    "esprima": "^2.3.0",
     "jison": "^0.4.15",
     "js-beautify": "^1.5.6",
     "jscs": "^1.13.1",
     "jshint": "^2.8.0",
+    "lodash": "^3.9.3",
     "pegjs": "^0.8.0"
   }
 }

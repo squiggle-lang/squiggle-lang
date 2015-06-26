@@ -2,14 +2,15 @@
 
 var fs = require("fs");
 var parse = require("./parse");
+var transformAst = require("./transform-ast");
 var compile = require("./compile");
 var path = require("path");
 var f = path.join(__dirname, "../examples/input.txt");
 var txt = fs.readFileSync(f, "utf-8");
 
 var ast = parse(txt);
-
-var code = compile(ast);
+var es = transformAst(ast);
+var code = compile(es);
 var json = JSON.stringify(ast, null, 2);
 
 console.log("=== AST ===");
