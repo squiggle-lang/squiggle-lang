@@ -95,7 +95,7 @@ var LANG$$object = function(data) {
         i += 2;
         j += 2;
     }
-    return obj;
+    return LANG$$freeze(obj);
 };
 var LANG$$freeze = Object.freeze;
 var LANG$$create = Object.create;
