@@ -145,17 +145,10 @@ var handlers = {
     },
     Map: function(node) {
         var pairs = _.flatten(node.data).map(transformAst);
-        return {
-            type: 'CallExpression',
-            callee: {
-                type: 'Identifier',
-                name: 'LANG$$object'
-            },
-            arguments: [{
-                type: 'ArrayExpression',
-                elements: pairs
-            }]
-        };
+        return es.CallExpression(
+            es.Identifier('LANG$$object'),
+            [es.ArrayExpression(pairs)]
+        );
     },
     Number: literal,
     String: literal,
