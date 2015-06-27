@@ -1,4 +1,5 @@
 let (
+    fs = require("fs"),
     node = ~(x, l, r) {
         "type": "node",
         "data": x,
@@ -19,7 +20,9 @@ let (
         node(2, leaf(1), leaf(3)),
         node(6, leaf(5), leaf(7))
     ),
-    main = ~() in_order(root)
+    # main = ~() in_order(root)
+    utf8 = "utf8",
+    main = ~() fs.readFileSync("/Users/brian/world", utf8)
 ) in {
     "main": main
 }

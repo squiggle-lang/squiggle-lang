@@ -13,8 +13,8 @@ var es = transformAst(ast);
 var code = compile(es);
 var json = JSON.stringify(ast, null, 2);
 
-console.log("=== AST ===");
-console.log(json);
+// console.log("=== AST ===");
+// console.log(json);
 
 console.log("=== CODE ===");
 console.log(code);

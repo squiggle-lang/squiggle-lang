@@ -3,6 +3,8 @@ var nm = require('./node-maker');
 var ast = nm({
     Root:        ["expr"],
     GetProperty: ["obj", "prop"],
+    GetMethod:   ["obj", "prop"],
+    CallMethod:  ["obj", "prop", "args"],
     Identifier:  ["data"],
     Call:        ["f", "args"],
     Function:    ["parameters", "body"],

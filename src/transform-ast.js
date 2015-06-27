@@ -4,6 +4,7 @@ var path = require("path");
 var jsbeautify = require("js-beautify");
 var esprima = require("esprima");
 var es = require("./es");
+var ast = require("./ast");
 
 // TODO: Statically analyze use of undeclared variables.
 // TODO: Switch to generating an AST and using escodegen to generate JS.
@@ -61,29 +62,44 @@ function cleanIdentifier(s) {
 
 var handlers = {
     Root: function(node) {
-        console.log('ROOT====', node.expr);
         var value = transformAst(node.expr);
         var expr = moduleExportsEq(value);
         var body = PREDEF.body.concat([expr]);
         return es.Program(body);
     },
+    GetMethod: function(node) {
+        var obj = node.obj;
+        var prop = ast.String(node.prop.data);
+        return transformAst(
+            ast.Call(
+                ast.Identifier('LANG$$js_method_get'),
+                [prop, obj]
+            )
+        );
+    },
+    CallMethod: function(node) {
+        var obj = node.obj;
+        var prop = ast.String(node.prop.data);
+        var args = ast.List(node.args);
+        return transformAst(
+            ast.Call(
+                ast.Identifier('LANG$$js_method_call'),
+                [prop, obj, args]
+            )
+        );
+    },
     GetProperty: function(node) {
         var obj = node.obj;
-        var prop = {type: "String", data: node.prop.data};
-        return transformAst({
-            type: 'Call',
-            f: {
-                type: 'Identifier',
-                data: 'LANG$$js_get'
-            },
-            args: [prop, obj]
-        });
+        var prop = ast.String(node.prop.data);
+        return transformAst(
+            ast.Call(
+                ast.Identifier('LANG$$js_get'),
+                [prop, obj]
+            )
+        );
     },
     Identifier: function(node) {
-        return {
-            type: 'Identifier',
-            name: cleanIdentifier(node.data)
-        };
+        return es.Identifier(cleanIdentifier(node.data));
     },
     Call: function(node) {
         var f = transformAst(node.f);

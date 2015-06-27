@@ -5,6 +5,8 @@
 
 [0-9]+ return "NUMBER";
 
+"::" return "::";
+
 ")" return ")";
 "(" return "(";
 "{" return "{";
@@ -68,8 +70,12 @@ Expr2
     ;
 
 Expr3
-    : Expr3 "." Identifier -> yy.GetProperty($1, $3)
-    | Expr4;
+    : Expr3 "."  Identifier              -> yy.GetProperty($1, $3)
+    | Expr3 "::" Identifier              -> yy.GetMethod($1, $3)
+    | Expr3 "." Identifier "(" Items ")" -> yy.CallMethod($1, $3, $5)
+    | Expr3 "." Identifier "("       ")" -> yy.CallMethod($1, $3, [])
+    | Expr4
+    ;
 
 Expr4
     : Expr4 "(" Items ")" -> yy.Call($1, $3)

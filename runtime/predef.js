@@ -64,7 +64,7 @@ var js_set = function(k, v, obj) {
     obj[k] = v;
     return obj;
 };
-var js_method = function(method, obj) {
+var js_method_get = function(method, obj) {
     return obj[method].bind(obj);
 };
 var js_method_call = function(method, obj, args) {
@@ -102,6 +102,8 @@ var LANG$$create = Object.create;
 var LANG$$is_array = Array.isArray;
 var LANG$$keys = Object.keys;
 var LANG$$js_get = js_get;
+var LANG$$js_method_get = js_method_get;
+var LANG$$js_method_call = js_method_call;
 var LANG$$js_Error = Error;
 var LANG$$custom_logger = null;
 var LANG$$global = (1, eval)("this");
