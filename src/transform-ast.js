@@ -7,7 +7,6 @@ var es = require("./es");
 var ast = require("./ast");
 
 // TODO: Statically analyze use of undeclared variables.
-// TODO: Switch to generating an AST and using escodegen to generate JS.
 
 function transformAst(node) {
     if (!_.isObject(node)) {
