@@ -14,6 +14,8 @@ var ast = nm({
     Map:         ["data"],
     Number:      ["data"],
     String:      ["data"],
+    Binding:     ["identifier", "value"],
+    Pair:        ["key", "value"],
 });
 
 module.exports = ast;

@@ -49,8 +49,8 @@ Expr
     ;
 
 Bindings
-    :              Identifier "=" Expr -> [[$1, $3]]
-    | Bindings "," Identifier "=" Expr -> $$.concat([[$3, $5]])
+    :              Identifier "=" Expr -> [yy.Binding($1, $3)]
+    | Bindings "," Identifier "=" Expr -> $$.concat([yy.Binding($3, $5)])
     ;
 
 Expr0
@@ -113,8 +113,8 @@ Map
     ;
 
 Pairs
-    :           Expr ":" Expr -> [[$1, $3]]
-    | Pairs "," Expr ":" Expr -> $$.concat([[$3, $5]])
+    :           Expr ":" Expr -> [yy.Pair($1, $3)]
+    | Pairs "," Expr ":" Expr -> $$.concat([yy.Pair($3, $5)])
     ;
 
 Identifier
