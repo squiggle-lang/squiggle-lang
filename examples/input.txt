@@ -11,7 +11,7 @@ let (
         if is(node, tip)
         then []
         else let (
-            # _ = console,
+            # _ = jQuery,
             ls = in_order(node.left),
             rs = in_order(node.right),
             ds = [node.data]

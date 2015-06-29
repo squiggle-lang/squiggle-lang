@@ -41,6 +41,15 @@ function OverlayMap(parent) {
         }
         throw new Error('no such key ' + k + ' in OverlayMap');
     };
+    api.hasKey = function(k) {
+        if (api.hasOwnKey(k)) {
+            return true;
+        }
+        if (parent) {
+            return parent.hasKey(k);
+        }
+        return false;
+    };
     api.hasOwnKey = function(k) {
         return {}.hasOwnProperty.call(map, k);
     };
