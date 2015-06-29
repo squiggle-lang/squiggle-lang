@@ -1,1 +1,8 @@
-console.log("hi")
+let (
+    add = ~(x, y) +(x, y),
+    inc = ~(x) add(x, 1),
+    numbers = [inc(3), inc(4)],
+    main = ~() print(numbers)
+) in {
+    "main": main
+}

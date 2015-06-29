@@ -51,6 +51,10 @@ function _walk(parents, obj, ast) {
         Parameter: function(node) {
             recur(node.identifier);
         },
+        Pair: function(node) {
+            recur(node.key);
+            recur(node.value);
+        },
         IdentifierExpression: function(node) {
             recur(node.data);
         },
