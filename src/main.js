@@ -10,7 +10,10 @@ var f = path.join(__dirname, "../examples/input.txt");
 var txt = fs.readFileSync(f, "utf-8");
 
 var ast = parse(txt);
-lint(ast);
+var warnings = lint(ast);
+warnings.forEach(function(m) {
+    console.error('lint: ' + m);
+});
 var es = transformAst(ast);
 var code = compile(es);
 var json = JSON.stringify(ast, null, 2);
