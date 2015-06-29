@@ -67,7 +67,6 @@ function findUnusedOrUndeclaredBindings(ast) {
         }
     }
     function exit(node, parent) {
-
         if (isNewScope(node, parent)) {
             // Pop the scope stack and investigate for unused variables.
             scopes.ownKeys().forEach(function(k) {
