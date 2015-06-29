@@ -1,8 +1,26 @@
 let (
-    add = ~(x, y) +(x, y),
-    inc = ~(x) add(x, 1),
-    numbers = [inc(3), inc(4)],
-    main = ~() print(numbers)
+    node = ~(x, l, r) {
+        "type": "node",
+        "data": x,
+        "left": l,
+        "right": r
+    },
+    tip = {"type": "tip"},
+    leaf = ~(x) node(x, tip, tip),
+    in_order = ~(node)
+        if is(node, tip)
+        then []
+        else let (
+            # _ = console,
+            ls = in_order(node.left),
+            rs = in_order(node.right),
+            ds = [node.data]
+        ) in ++(ls, ++(ds, rs)),
+    root = node(4,
+        node(2, leaf(1), leaf(3)),
+        node(6, leaf(5), leaf(7))
+    ),
+    main = ~() in_order(root)
 ) in {
     "main": main
 }

@@ -1,12 +1,36 @@
+var findLast = require('lodash/collection/findLast');
+
+// TODO: Make some of these methods pseudo-private with underscores or something
+// to keep the intended outside API clear.
+
+// OverlayMap is essentially a class for managing variable scopes. It allows
+// nesting. Nested OverlayMaps are used to track nested scopes. The method
+// setBest is used to set the value for the method setBest sets the key for the
+// lowest scope which contains the key already, falling back to the current
+// scope if the key is not found. This allows me to keep track of when variables
+// are being used.
 function OverlayMap(parent) {
     var map = Object.create(null);
     var api = {};
-    api.set = function(k, v) {
+    api.setHere = function(k, v) {
         if (typeof k !== 'string') {
             throw new Error('OverlayMap keys must be strings: ' + k);
         }
         map[k] = v;
         return api;
+    };
+    api.setBest = function(k, v) {
+        return api.bestAncestorFor(k).setHere(k, v);
+    };
+    api.ancestors = function() {
+        if (parent) {
+            return parent.ancestors().concat([parent]);
+        }
+        return [];
+    };
+    api.bestAncestorFor = function(k) {
+        var has = function(m) { return m.hasOwnKey(k); };
+        return findLast(api.ancestors(), has) || api;
     };
     api.get = function(k) {
         if (k in map) {
@@ -16,6 +40,9 @@ function OverlayMap(parent) {
             return parent.get(k);
         }
         throw new Error('no such key ' + k + ' in OverlayMap');
+    };
+    api.hasOwnKey = function(k) {
+        return {}.hasOwnProperty.call(map, k);
     };
     api.ownKeys = function() {
         return Object.keys(map);

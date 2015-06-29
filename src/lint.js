@@ -38,7 +38,7 @@ function findUnusedBindings(ast) {
             var identifiers = node.bindings || node.parameters;
             scopes = OverlayMap(scopes);
             identifiers.forEach(function(b) {
-                scopes.set(b.identifier.data, false);
+                scopes.setBest(b.identifier.data, false);
             });
         } else if (isIdentifierUsage(node, parent)) {
             // Only look at identifiers that are being used for their
@@ -49,11 +49,11 @@ function findUnusedBindings(ast) {
             //
             // `x` and `z` are being used for their names, and `y` is being
             // used for its value.
-            scopes.set(node.data, true);
+            scopes.setBest(node.data, true);
         }
-
     }
     function exit(node, parent) {
+
         if (isNewScope(node, parent)) {
             // Pop the scope stack and investigate for unused variables.
             scopes.ownKeys().forEach(function(k) {
