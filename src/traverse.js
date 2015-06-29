@@ -1,21 +1,9 @@
-// Root:        ["expr"],
-// GetProperty: ["obj", "prop"],
-// GetMethod:   ["obj", "prop"],
-// CallMethod:  ["obj", "prop", "args"],
-// Identifier:  ["data"],
-// Call:        ["f", "args"],
-// Function:    ["parameters", "body"],
-// If:          ["p", "t", "f"],
-// Let:         ["bindings", "expr"],
-// List:        ["data"],
-// Map:         ["data"],
-// Number:      ["data"],
-// String:      ["data"],
+var last = require('lodash/array/last');
 
-function walk(obj, ast) {
+function _walk(parents, obj, ast) {
     var enter = obj.enter || function() {};
     var exit = obj.exit || function() {};
-    var recur = walk.bind(null, obj);
+    var recur = _walk.bind(null, parents, obj);
     var handlers = {
         Root: function(node) {
             recur(node.expr);
@@ -64,14 +52,20 @@ function walk(obj, ast) {
         Number: function(node) {},
         String: function(node) {},
     };
-    var shouldSkip = enter(ast) === SKIP;
+    var shouldSkip = enter(ast, last(parents)) === SKIP;
     if (!(ast.type in handlers)) {
         throw new Error('unknown AST node type ' + ast.type);
     }
     if (!shouldSkip) {
+        parents.push(ast);
         handlers[ast.type](ast);
+        parents.pop();
     }
-    exit(ast);
+    exit(ast, last(parents));
+}
+
+function walk(obj, ast) {
+    return _walk([], obj, ast);
 }
 
 var SKIP = "SKIP";
