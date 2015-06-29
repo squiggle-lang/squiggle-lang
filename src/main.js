@@ -34,7 +34,7 @@ var theModule = unsafeEval(code);
 console.log("=== MODULE ===");
 console.log(theModule);
 
-if (typeof theModule.main === 'function') {
+if (theModule && typeof theModule.main === 'function') {
     console.log("=== MAIN ===");
     console.log(theModule.main());
 }
