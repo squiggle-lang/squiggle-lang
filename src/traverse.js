@@ -48,6 +48,12 @@ function _walk(parents, obj, ast) {
         Map: function(node) {
             node.data.forEach(recur);
         },
+        Parameter: function(node) {
+            recur(node.identifier);
+        },
+        IdentifierExpression: function(node) {
+            recur(node.data);
+        },
         Identifier: function(node) {},
         Number: function(node) {},
         String: function(node) {},

@@ -100,10 +100,16 @@ var handlers = {
     Identifier: function(node) {
         return es.Identifier(cleanIdentifier(node.data));
     },
+    IdentifierExpression: function(node) {
+        return transformAst(node.data);
+    },
     Call: function(node) {
         var f = transformAst(node.f);
         var args = node.args.map(transformAst);
         return es.CallExpression(f, args);
+    },
+    Parameter: function(node) {
+        return transformAst(node.identifier);
     },
     Function: function(node) {
         var params = node
