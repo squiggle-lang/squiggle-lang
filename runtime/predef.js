@@ -76,24 +76,17 @@ var LANG$$object = function(data) {
             'objects can only be constructed from an array'
         );
     }
-    if (data.length % 2 !== 0) {
-        throw new LANG$$js_Error(
-            'unbalanced key-value pairs for object'
-        );
-    }
     var obj = {};
     var i = 0;
-    var j = 1;
     var n = data.length;
-    while (j < n) {
-        if (typeof data[i] !== "string") {
+    while (i < n) {
+        if (typeof data[i][0] !== "string") {
             throw new LANG$$js_Error(
                 "object keys must be strings: " + data[i]
             );
         }
-        obj[data[i]] = data[j];
-        i += 2;
-        j += 2;
+        obj[data[i][0]] = data[i][1];
+        i++;
     }
     return LANG$$freeze(obj);
 };

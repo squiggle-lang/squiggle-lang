@@ -3,6 +3,8 @@
 %x identifier
 %%
 
+// TODO: Use @$ to get first_line and first_column numbers into the AST.
+
 [0-9]+ return "NUMBER";
 
 "::" return "::";
@@ -49,8 +51,8 @@ Expr
     ;
 
 Bindings
-    :              Identifier "=" Expr -> [[$1, $3]]
-    | Bindings "," Identifier "=" Expr -> $$.concat([[$3, $5]])
+    :              Identifier "=" Expr -> [yy.Binding($1, $3)]
+    | Bindings "," Identifier "=" Expr -> $$.concat([yy.Binding($3, $5)])
     ;
 
 Expr0
@@ -88,13 +90,13 @@ Expr5
     | String
     | List
     | Map
-    | Identifier
+    | Identifier   -> yy.IdentifierExpression($1)
     | "(" Expr ")" -> $2
     ;
 
 Parameters
-    : Parameters "," Identifier -> $$.concat([$3])
-    |                Identifier -> [$1]
+    : Parameters "," Identifier -> $$.concat([yy.Parameter($3)])
+    |                Identifier -> [yy.Parameter($1)]
     ;
 
 List
@@ -113,8 +115,8 @@ Map
     ;
 
 Pairs
-    :           Expr ":" Expr -> [[$1, $3]]
-    | Pairs "," Expr ":" Expr -> $$.concat([[$3, $5]])
+    :           Expr ":" Expr -> [yy.Pair($1, $3)]
+    | Pairs "," Expr ":" Expr -> $$.concat([yy.Pair($3, $5)])
     ;
 
 Identifier

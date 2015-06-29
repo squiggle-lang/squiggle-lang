@@ -100,10 +100,16 @@ var handlers = {
     Identifier: function(node) {
         return es.Identifier(cleanIdentifier(node.data));
     },
+    IdentifierExpression: function(node) {
+        return transformAst(node.data);
+    },
     Call: function(node) {
         var f = transformAst(node.f);
         var args = node.args.map(transformAst);
         return es.CallExpression(f, args);
+    },
+    Parameter: function(node) {
+        return transformAst(node.identifier);
     },
     Function: function(node) {
         var params = node
@@ -132,14 +138,15 @@ var handlers = {
         var f = transformAst(node.f);
         return es.ConditionalExpression(p, t, f);
     },
+    Binding: function(node) {
+        var identifier = transformAst(node.identifier);
+        var value = transformAst(node.value);
+        return es.VariableDeclaration('var', [
+            es.VariableDeclarator(identifier, value)
+        ]);
+    },
     Let: function(node) {
-        var declarations = node.bindings.map(function(b) {
-            var i = transformAst(b[0]);
-            var e = transformAst(b[1]);
-            return es.VariableDeclaration('var', [
-                es.VariableDeclarator(i, e)
-            ]);
-        });
+        var declarations = node.bindings.map(transformAst);
         var e = transformAst(node.expr);
         var returnExpr = es.ReturnStatement(e);
         var body = declarations.concat([returnExpr]);
@@ -158,8 +165,14 @@ var handlers = {
         var callee = es.Identifier('LANG$$freeze');
         return es.CallExpression(callee, [array]);
     },
+    Pair: function(node) {
+        return es.ArrayExpression([
+            transformAst(node.key),
+            transformAst(node.value)
+        ]);
+    },
     Map: function(node) {
-        var pairs = _.flatten(node.data).map(transformAst);
+        var pairs = node.data.map(transformAst);
         return es.CallExpression(
             es.Identifier('LANG$$object'),
             [es.ArrayExpression(pairs)]
