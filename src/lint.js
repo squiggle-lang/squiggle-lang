@@ -8,6 +8,10 @@ function lint(ast) {
     ]);
 }
 
+function isIdentifierOkayToNotUse(id) {
+    return id.charAt(0) !== '_';
+}
+
 function findUnusedBindings(ast) {
     var messages = [];
     var scopes = OverlayMap(null);
@@ -27,7 +31,7 @@ function findUnusedBindings(ast) {
         exit: function(node, parent) {
             if (node.type === 'Let') {
                 scopes.ownKeys().forEach(function(k) {
-                    if (k.charAt(0) !== '_' && !scopes.get(k)) {
+                    if (isIdentifierOkayToNotUse(k) && !scopes.get(k)) {
                         messages.push("unused variable " + k);
                     }
                 });
