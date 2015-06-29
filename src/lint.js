@@ -5,7 +5,7 @@ var OverlayMap = require("./overlay-map");
 
 function lint(ast) {
     return flatten([
-        findUnusedBindings(ast)
+        findUnusedOrUndeclaredBindings(ast)
     ]);
 }
 
@@ -27,7 +27,17 @@ function isIdentifierUsage(node, parent) {
     );
 }
 
-function findUnusedBindings(ast) {
+// TODO: Add standard library for Squiggle and Node and browsers.
+function implicitlyDeclared(k) {
+    return (
+        k === 'require' ||
+        k === 'is' ||
+        k === '++' ||
+        k === 'console'
+    );
+}
+
+function findUnusedOrUndeclaredBindings(ast) {
     var messages = [];
     var scopes = OverlayMap(null);
     function enter(node, parent) {
@@ -49,7 +59,11 @@ function findUnusedBindings(ast) {
             //
             // `x` and `z` are being used for their names, and `y` is being
             // used for its value.
-            scopes.setBest(node.data, true);
+            var k = node.data;
+            if (!implicitlyDeclared(k) && !scopes.hasKey(k)) {
+                messages.push("undeclared variable " + k);
+            }
+            scopes.setBest(k, true);
         }
     }
     function exit(node, parent) {
