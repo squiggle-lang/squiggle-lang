@@ -1,6 +1,6 @@
 %lex
+%x multi_string
 %x string
-%x identifier
 %%
 
 // TODO: Use @$ to get first_line and first_column numbers into the AST.
@@ -27,9 +27,14 @@
 "then"  return "THEN";
 "else"  return "ELSE";
 
+["]["]["]                 this.begin("multi_string");
+<multi_string>["]["]["]   this.popState();
+<multi_string>[^"]*       return "MULTI_STRING";
+// Fix broken Sublime syntax highlighting with this quote: "
+
 ["]             this.begin("string");
 <string>["]     this.popState();
-<string>[^"]*   return "STRING";
+<string>[^"\n]* return "STRING";
 // Fix broken Sublime syntax highlighting with this quote: "
 
 [_a-zA-Z\*\+\-\/\<\>\?][_a-zA-Z\*\+\-\/\<\>\?0-9]* return "IDENTIFIER";
@@ -128,5 +133,6 @@ Number
     ;
 
 String
-    : STRING -> yy.String($1)
+    : STRING       -> yy.String($1)
+    | MULTI_STRING -> yy.String($1)
     ;

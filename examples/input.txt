@@ -5,6 +5,10 @@ let (
         "left": l,
         "right": r
     },
+    x = """
+        multi-line
+        string
+    """,
     tip = {"type": "tip"},
     leaf = ~(x) node(x, tip, tip),
     in_order = ~(node)
