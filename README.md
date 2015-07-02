@@ -1,4 +1,4 @@
-# expr-lang
+# squiggle
 
 The title is not final. If you have a good idea, let me know.
 
