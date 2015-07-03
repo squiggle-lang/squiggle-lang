@@ -9,6 +9,7 @@
 
 "::" return "::";
 "++" return "++";
+"|>" return "|>";
 
 ")" return ")";
 "(" return "(";
@@ -56,6 +57,7 @@
 
 /lex
 
+%left "|>"
 %left "&" "|"
 %left "<" ">" "="
 %left "++"
@@ -121,6 +123,7 @@ BinOp
     | "="  -> yy.Operator("=")
     | "&"  -> yy.Operator("&")
     | "|"  -> yy.Operator("|")
+    | "|>" -> yy.Operator("|>")
     | "++" -> yy.Operator("++")
     ;
 

@@ -22,6 +22,12 @@ var $gt = function(a, b) {
     }
     throw new LANG$$js_Error('incorrect argument types for >')
 };
+var $pipe$gt = function(x, f) {
+    if (typeof f !== 'function') {
+        throw new LANG$$js_Error('right-side not a function in |>');
+    }
+    return f(x);
+};
 var is = function recur(a, b) {
     if (typeof a !== typeof b) {
         return false;
