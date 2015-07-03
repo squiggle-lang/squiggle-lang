@@ -4,6 +4,7 @@ var es = nm({
     Program: ['body'],
     Literal: ['value'],
     Identifier: ['name'],
+    LogicalExpression: ['operator', 'left', 'right'],
     ExpressionStatement: ['expression'],
     AssignmentExpression: ['operator', 'left', 'right'],
     MemberExpression: ['computed', 'object', 'property'],

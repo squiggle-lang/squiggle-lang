@@ -11,19 +11,22 @@ let (
     """,
     tip = {"type": "tip"},
     leaf = ~(x) node(x, tip, tip),
-    in_order = ~(node)
-        if is(node, tip)
+    bst_add = ~(data, n)
+        if n = tip
+        then leaf(data)
+        else if data < n.data
+        then node(n.data, bst_add(data, n.left), n.right)
+        else node(n.data, n.left, bst_add(data, n.right)),
+    in_order = ~(n)
+        if n = tip
         then []
         else let (
-            # _ = jQuery,
-            ls = in_order(node.left),
-            rs = in_order(node.right),
-            ds = [node.data]
-        ) in ++(ls, ++(ds, rs)),
-    root = node(4,
-        node(2, leaf(1), leaf(3)),
-        node(6, leaf(5), leaf(7))
-    ),
+            ls = in_order(n.left),
+            rs = in_order(n.right),
+            ds = [n.data]
+        ) in ls ++ ds ++ rs,
+    bst_add2 = flip(bst_add),
+    root = fold_left(bst_add2, tip, [4, 2, 1, 3, 6, 5, 7]),
     main = ~() in_order(root)
 ) in {
     "main": main
