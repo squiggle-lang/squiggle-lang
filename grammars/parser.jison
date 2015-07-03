@@ -31,6 +31,7 @@
 "/" return "/";
 "&" return "&";
 "|" return "|";
+"@" return "@";
 
 "let"   return "LET";
 "in"    return "IN";
@@ -122,6 +123,7 @@ BinOp
     | ">"  -> yy.Operator(">")
     | "="  -> yy.Operator("=")
     | "&"  -> yy.Operator("&")
+    | "@"  -> yy.Operator("@")
     | "|"  -> yy.Operator("|")
     | "|>" -> yy.Operator("|>")
     | "++" -> yy.Operator("++")

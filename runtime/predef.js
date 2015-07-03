@@ -28,6 +28,12 @@ var $pipe$gt = function(x, f) {
     }
     return f(x);
 };
+var $at = function(f, x) {
+    if (typeof f !== 'function') {
+        throw new LANG$$js_Error('left-side not a function in @');
+    }
+    return f.bind(null, x);
+};
 var is = function recur(a, b) {
     if (typeof a !== typeof b) {
         return false;

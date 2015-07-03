@@ -52,6 +52,7 @@ function cleanIdentifier(s) {
         .replace(/\*/g, '$star')
         .replace(/\//g, '$slash')
         .replace(/!/g, '$bang')
+        .replace(/@/g, '$at')
         .replace(/\?/g, '$question')
         .replace(/\~/g, '$tilde')
         .replace(/\&/g, '$ampersand')
