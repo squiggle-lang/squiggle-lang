@@ -10,6 +10,9 @@
 "::" return "::";
 "++" return "++";
 "|>" return "|>";
+"<=" return "<=";
+">=" return ">=";
+"!=" return "!=";
 
 ")" return ")";
 "(" return "(";
@@ -17,7 +20,9 @@
 "}" return "}";
 "[" return "[";
 "]" return "]";
+"|" return "|";
 ":" return ":";
+";" return ";";
 "=" return "=";
 "~" return "~";
 "," return ",";
@@ -29,8 +34,6 @@
 "-" return "-";
 "*" return "*";
 "/" return "/";
-"&" return "&";
-"|" return "|";
 "@" return "@";
 
 "let"   return "LET";
@@ -38,6 +41,8 @@
 "if"    return "IF";
 "then"  return "THEN";
 "else"  return "ELSE";
+"and"   return "AND";
+"or"    return "OR";
 
 ["]["]["]                 this.begin("multi_string");
 <multi_string>["]["]["]   this.popState();
@@ -59,7 +64,7 @@
 /lex
 
 %left "|>"
-%left "&" "|"
+%left "and" "or"
 %left "<" ">" "="
 %left "++"
 %left "*" "/"
@@ -90,13 +95,7 @@ Expr1
     ;
 
 Expr2
-    : "~" "(" Parameters ")" Expr -> yy.Function($3, $5)
-    | "~" "("            ")" Expr -> yy.Function([], $4)
-    | Expr3a
-    ;
-
-Expr3a
-    : Expr3a BinOp Expr3 -> yy.BinOp($2, $1, $3)
+    : Expr2 BinOp Expr3 -> yy.BinOp($2, $1, $3)
     | Expr3
     ;
 
@@ -122,9 +121,12 @@ BinOp
     | "<"  -> yy.Operator("<")
     | ">"  -> yy.Operator(">")
     | "="  -> yy.Operator("=")
-    | "&"  -> yy.Operator("&")
-    | "@"  -> yy.Operator("@")
-    | "|"  -> yy.Operator("|")
+    | AND  -> yy.Operator("and")
+    | OR   -> yy.Operator("or")
+    | ";"  -> yy.Operator(";")
+    | "!=" -> yy.Operator("!=")
+    | "<=" -> yy.Operator("<=")
+    | ">=" -> yy.Operator(">=")
     | "|>" -> yy.Operator("|>")
     | "++" -> yy.Operator("++")
     ;
@@ -134,8 +136,14 @@ Expr5
     | String
     | List
     | Map
+    | Function
     | Identifier   -> yy.IdentifierExpression($1)
     | "(" Expr ")" -> $2
+    ;
+
+Function
+    : "~" "(" Parameters "|" Expr ")" -> yy.Function($3, $5)
+    | "~" "("            "|" Expr ")" -> yy.Function([], $4)
     ;
 
 Parameters

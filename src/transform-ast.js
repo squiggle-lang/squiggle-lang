@@ -52,6 +52,7 @@ function cleanIdentifier(s) {
         .replace(/\*/g, '$star')
         .replace(/\//g, '$slash')
         .replace(/!/g, '$bang')
+        .replace(/;/g, '$semicolon')
         .replace(/@/g, '$at')
         .replace(/\?/g, '$question')
         .replace(/\~/g, '$tilde')
@@ -110,8 +111,8 @@ var handlers = {
             );
         };
         var d = node.operator.data;
-        if (d === '&' || d === '|') {
-            var op = d + d;
+        if (d === 'and' || d === 'or') {
+            var op = {and: '&&', or: '||'}[d];
             var a = assertBoolean(node.left);
             var b = assertBoolean(node.right);
             return es.LogicalExpression(op, a, b);

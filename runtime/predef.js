@@ -22,6 +22,18 @@ var $gt = function(a, b) {
     }
     throw new LANG$$js_Error('incorrect argument types for >')
 };
+var $lt$eq = function(a, b) {
+    return $lt(a, b) || a === b;
+};
+var $gt$eq = function(a, b) {
+    return $gt(a, b) || a === b;
+};
+var $bang$eq = function(a, b) {
+    return not($eq(a, b));
+};
+var not = function(x) {
+    return !LANG$$assert_boolean(x);
+};
 var $pipe$gt = function(x, f) {
     if (typeof f !== 'function') {
         throw new LANG$$js_Error('right-side not a function in |>');
@@ -33,6 +45,27 @@ var $at = function(f, x) {
         throw new LANG$$js_Error('left-side not a function in @');
     }
     return f.bind(null, x);
+};
+var $ampersand = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new LANG$$js_Error('wrong number of arguments for &');
+    }
+    return (
+        LANG$$assert_boolean(a) &&
+        LANG$$assert_boolean(b)
+    );
+};
+var $semicolon = function(a, b) {
+    return b;
+};
+var $pipe = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new LANG$$js_Error('wrong number of arguments for |');
+    }
+    return (
+        LANG$$assert_boolean(a) ||
+        LANG$$assert_boolean(b)
+    );
 };
 var is = function recur(a, b) {
     if (typeof a !== typeof b) {
@@ -103,6 +136,15 @@ var tail = function(xs) {
 };
 var reduce = function(f, xs) {
     return fold_left(f, head(xs), tail(xs));
+};
+var fold_right = function(f, z, xs) {
+    return fold_left(flip(f), z, reverse(xs));
+};
+var reverse = function(xs) {
+    return to_array(xs).reverse();
+};
+var to_array = function(xs) {
+    return [].slice.call(xs);
 };
 var flip = function(f) {
     return function(x, y) {
