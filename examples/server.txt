@@ -1,0 +1,18 @@
+let (
+    http = require("http"),
+    port = 1337,
+    host = "127.0.0.1",
+    handler = ~( req, res |
+        res.writeHead(200, {"Content-Type": "text/plain"});
+        res.end("Hello, world!")
+    )
+) in
+http.createServer(handler).listen(port, host);
+print("Server started at http://127.0.0.1:1337/")
+
+# var http = require('http');
+# http.createServer(function (req, res) {
+#   res.writeHead(200, {'Content-Type': 'text/plain'});
+#   res.end('Hello World\n');
+# }).listen(1337, '127.0.0.1');
+# console.log('Server running at http://127.0.0.1:1337/');

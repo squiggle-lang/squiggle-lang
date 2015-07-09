@@ -8,6 +8,11 @@
 [0-9]+ return "NUMBER";
 
 "::" return "::";
+"++" return "++";
+"|>" return "|>";
+"<=" return "<=";
+">=" return ">=";
+"!=" return "!=";
 
 ")" return ")";
 "(" return "(";
@@ -15,17 +20,29 @@
 "}" return "}";
 "[" return "[";
 "]" return "]";
+"|" return "|";
 ":" return ":";
+";" return ";";
 "=" return "=";
 "~" return "~";
 "," return ",";
 "." return ".";
+"<" return "<";
+">" return ">";
+"=" return "=";
+"+" return "+";
+"-" return "-";
+"*" return "*";
+"/" return "/";
+"@" return "@";
 
 "let"   return "LET";
 "in"    return "IN";
 "if"    return "IF";
 "then"  return "THEN";
 "else"  return "ELSE";
+"and"   return "AND";
+"or"    return "OR";
 
 ["]["]["]                 this.begin("multi_string");
 <multi_string>["]["]["]   this.popState();
@@ -37,7 +54,7 @@
 <string>[^"\n]* return "STRING";
 // Fix broken Sublime syntax highlighting with this quote: "
 
-[_a-zA-Z\*\+\-\/\<\>\?][_a-zA-Z\*\+\-\/\<\>\?0-9]* return "IDENTIFIER";
+[_a-zA-Z][_a-zA-Z0-9]* return "IDENTIFIER";
 
 [#][^\n]*\n // comment
 [\n ]+      // whitespace
@@ -45,6 +62,13 @@
 <<EOF>> return "EOF";
 
 /lex
+
+%left "|>"
+%left "and" "or"
+%left "<" ">" "="
+%left "++"
+%left "*" "/"
+%left "+" "-"
 
 %%
 Program
@@ -61,7 +85,7 @@ Bindings
     ;
 
 Expr0
-    : IF Expr1 THEN Expr1 ELSE Expr1 -> yy.If($2, $4, $6)
+    : IF Expr1 THEN Expr0 ELSE Expr0 -> yy.If($2, $4, $6)
     | Expr1
     ;
 
@@ -71,8 +95,7 @@ Expr1
     ;
 
 Expr2
-    : "~" "(" Parameters ")" Expr -> yy.Function($3, $5)
-    | "~" "("            ")" Expr -> yy.Function([], $4)
+    : Expr2 BinOp Expr3 -> yy.BinOp($2, $1, $3)
     | Expr3
     ;
 
@@ -90,13 +113,37 @@ Expr4
     | Expr5
     ;
 
+BinOp
+    : "+"  -> yy.Operator("+")
+    | "-"  -> yy.Operator("-")
+    | "*"  -> yy.Operator("*")
+    | "/"  -> yy.Operator("/")
+    | "<"  -> yy.Operator("<")
+    | ">"  -> yy.Operator(">")
+    | "="  -> yy.Operator("=")
+    | AND  -> yy.Operator("and")
+    | OR   -> yy.Operator("or")
+    | ";"  -> yy.Operator(";")
+    | "!=" -> yy.Operator("!=")
+    | "<=" -> yy.Operator("<=")
+    | ">=" -> yy.Operator(">=")
+    | "|>" -> yy.Operator("|>")
+    | "++" -> yy.Operator("++")
+    ;
+
 Expr5
     : Number
     | String
     | List
     | Map
+    | Function
     | Identifier   -> yy.IdentifierExpression($1)
     | "(" Expr ")" -> $2
+    ;
+
+Function
+    : "~" "(" Parameters "|" Expr ")" -> yy.Function($3, $5)
+    | "~" "("            "|" Expr ")" -> yy.Function([], $4)
     ;
 
 Parameters

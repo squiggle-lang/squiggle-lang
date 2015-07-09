@@ -7,6 +7,7 @@ var es = require("./es");
 var ast = require("./ast");
 
 // TODO: Statically analyze use of undeclared variables.
+// TODO: Freeze functions also.
 
 function transformAst(node) {
     if (!_.isObject(node)) {
@@ -51,9 +52,12 @@ function cleanIdentifier(s) {
         .replace(/\*/g, '$star')
         .replace(/\//g, '$slash')
         .replace(/!/g, '$bang')
+        .replace(/;/g, '$semicolon')
+        .replace(/@/g, '$at')
         .replace(/\?/g, '$question')
         .replace(/\~/g, '$tilde')
-        .replace(/\&/g, '$and')
+        .replace(/\&/g, '$ampersand')
+        .replace(/\|/g, '$pipe')
         .replace(/</g, '$lt')
         .replace(/>/g, '$gt')
         .replace(/=/g, '$eq');
@@ -96,6 +100,26 @@ var handlers = {
                 [prop, obj]
             )
         );
+    },
+    BinOp: function(node) {
+        var assertBoolean = function(x) {
+            return transformAst(
+                ast.Call(
+                    ast.Identifier('LANG$$assert_boolean'),
+                    [x]
+                )
+            );
+        };
+        var d = node.operator.data;
+        if (d === 'and' || d === 'or') {
+            var op = {and: '&&', or: '||'}[d];
+            var a = assertBoolean(node.left);
+            var b = assertBoolean(node.right);
+            return es.LogicalExpression(op, a, b);
+        }
+        var f = ast.Identifier(node.operator.data);
+        var args = [node.left, node.right];
+        return transformAst(ast.Call(f, args));
     },
     Identifier: function(node) {
         return es.Identifier(cleanIdentifier(node.data));

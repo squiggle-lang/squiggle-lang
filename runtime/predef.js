@@ -6,8 +6,67 @@
 
 var print = function(x) { return LANG$$log(x); };
 var not = function(x) { return !!x; };
-var $lt = function(a, b) { return a < b; };
-var $gt = function(a, b) { return a > b; };
+var $lt = function(a, b) {
+    var ta = typeof a;
+    var tb = typeof b;
+    if (ta === tb && (ta === 'string' || ta === 'number')) {
+        return a < b;
+    }
+    throw new LANG$$js_Error('incorrect argument types for <')
+};
+var $gt = function(a, b) {
+    var ta = typeof a;
+    var tb = typeof b;
+    if (ta === tb && (ta === 'string' || ta === 'number')) {
+        return a > b;
+    }
+    throw new LANG$$js_Error('incorrect argument types for >')
+};
+var $lt$eq = function(a, b) {
+    return $lt(a, b) || a === b;
+};
+var $gt$eq = function(a, b) {
+    return $gt(a, b) || a === b;
+};
+var $bang$eq = function(a, b) {
+    return not($eq(a, b));
+};
+var not = function(x) {
+    return !LANG$$assert_boolean(x);
+};
+var $pipe$gt = function(x, f) {
+    if (typeof f !== 'function') {
+        throw new LANG$$js_Error('right-side not a function in |>');
+    }
+    return f(x);
+};
+var $at = function(f, x) {
+    if (typeof f !== 'function') {
+        throw new LANG$$js_Error('left-side not a function in @');
+    }
+    return f.bind(null, x);
+};
+var $ampersand = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new LANG$$js_Error('wrong number of arguments for &');
+    }
+    return (
+        LANG$$assert_boolean(a) &&
+        LANG$$assert_boolean(b)
+    );
+};
+var $semicolon = function(a, b) {
+    return b;
+};
+var $pipe = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new LANG$$js_Error('wrong number of arguments for |');
+    }
+    return (
+        LANG$$assert_boolean(a) ||
+        LANG$$assert_boolean(b)
+    );
+};
 var is = function recur(a, b) {
     if (typeof a !== typeof b) {
         return false;
@@ -19,7 +78,7 @@ var is = function recur(a, b) {
     if (a !== a && b !== b) {
         return true;
     }
-    if (typeof a === 'object' && typeof b === 'object') {
+    if (LANG$$is_object(a) && LANG$$is_object(b)) {
         // TODO: Remove duplicates.
         var ks = LANG$$keys(a).concat(LANG$$keys(b)).sort();
         return ks.every(function(k) {
@@ -32,7 +91,13 @@ var is = function recur(a, b) {
     }
     return false;
 };
-var $plus = function(a, b) { return a + b; };
+var $eq = is;
+var $plus = function(a, b) {
+    if (typeof a === 'number' && typeof b === 'number') {
+        return a + b;
+    }
+    throw new LANG$$js_Error('incorrect argument types for +');
+};
 var $plus$plus = function(a, b) {
     var A = Array.isArray;
     var S = function(x) { return typeof x === 'string'; };
@@ -50,6 +115,41 @@ var map = function(f, xs) {
     return xs.map(function(x) {
         return f(x);
     });
+};
+var fold_left = function(f, z, xs) {
+    xs.forEach(function(x) {
+        z = f(z, x);
+    });
+    return z;
+};
+var is_empty = function(xs) {
+    return xs.length === 0;
+};
+var head = function(xs) {
+    if (!is_empty(xs)) {
+        return xs[0];
+    }
+    throw new LANG$$js_Error('cannot get head of empty list');
+};
+var tail = function(xs) {
+    return [].slice.call(xs, 1);
+};
+var reduce = function(f, xs) {
+    return fold_left(f, head(xs), tail(xs));
+};
+var fold_right = function(f, z, xs) {
+    return fold_left(flip(f), z, reverse(xs));
+};
+var reverse = function(xs) {
+    return to_array(xs).reverse();
+};
+var to_array = function(xs) {
+    return [].slice.call(xs);
+};
+var flip = function(f) {
+    return function(x, y) {
+        return f(y, x);
+    };
 };
 var js_get = function(k, obj) {
     if (k in obj) {
@@ -89,6 +189,20 @@ var LANG$$object = function(data) {
         i++;
     }
     return LANG$$freeze(obj);
+};
+var LANG$$is_object = function(x) {
+    if (arguments.length !== 1) {
+        throw new LANG$$js_Error(
+            'wrong number of arguments to LANG$$is_object'
+        );
+    }
+    return x !== null && typeof x === 'object';
+};
+var LANG$$assert_boolean = function(x) {
+    if (typeof x !== 'boolean') {
+        throw new LANG$$js_Error('not a boolean: ' + x);
+    }
+    return x;
 };
 var LANG$$freeze = Object.freeze;
 var LANG$$create = Object.create;

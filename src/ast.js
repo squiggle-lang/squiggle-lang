@@ -12,6 +12,8 @@ var ast = nm({
     Parameter:   ["identifier"],
     If:          ["p", "t", "f"],
     Let:         ["bindings", "expr"],
+    BinOp:       ["operator", "left", "right"],
+    Operator:    ["data"],
     List:        ["data"],
     Map:         ["data"],
     Number:      ["data"],
