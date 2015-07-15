@@ -6,7 +6,7 @@ var fs = require("fs");
 var path = require("path");
 var argv = require("yargs")
     .demand(1)
-    .usage("Usage: squiggle [options] [file]")
+    .usage("Usage: squiggle [options] [file] --output [file]")
     .option("output", {
         alias: "o",
         describe: "Write JavaScript to this file",
@@ -18,17 +18,16 @@ var argv = require("yargs")
         alias: "h",
         describe: "Print this message"
     })
-    .option("main", {
-        alias: "m",
-        describe: "Compile as main file without module.exports",
-    })
+    // .option("main", {
+    //     alias: "m",
+    //     describe: "Compile as main file without module.exports",
+    // })
     .version(pkg.version)
     .alias("version", "v")
+    .epilogue("Version " + pkg.version)
     .showHelpOnFail(true)
     .strict()
     .argv;
-
-console.log(argv);
 
 var parse = require("./parse");
 var transformAst = require("./transform-ast");

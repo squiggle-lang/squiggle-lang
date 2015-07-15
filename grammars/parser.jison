@@ -90,7 +90,7 @@ Expr0
     ;
 
 Expr1
-    : LET "(" Bindings ")" IN Expr2 -> yy.Let($3, $6)
+    : LET "(" Bindings ")" IN Expr -> yy.Let($3, $6)
     | Expr2
     ;
 

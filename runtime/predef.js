@@ -4,6 +4,7 @@
 // TODO: Add fold.
 // TODO: Add join.
 
+var global = (1, eval)("this");
 var print = function(x) { return LANG$$log(x); };
 var not = function(x) { return !!x; };
 var $lt = function(a, b) {
@@ -213,7 +214,7 @@ var LANG$$js_method_get = js_method_get;
 var LANG$$js_method_call = js_method_call;
 var LANG$$js_Error = Error;
 var LANG$$custom_logger = null;
-var LANG$$global = (1, eval)("this");
+var LANG$$global = global;
 var LANG$$log = function(x) {
     if (LANG$$custom_logger) {
         LANG$$custom_logger(x);
