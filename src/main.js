@@ -18,10 +18,6 @@ var argv = require("yargs")
         alias: "h",
         describe: "Print this message"
     })
-    // .option("main", {
-    //     alias: "m",
-    //     describe: "Compile as main file without module.exports",
-    // })
     .version(pkg.version)
     .alias("version", "v")
     .epilogue("Version " + pkg.version)

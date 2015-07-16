@@ -64,10 +64,15 @@ function cleanIdentifier(s) {
 }
 
 var handlers = {
-    Root: function(node) {
+    Module: function(node) {
         var value = transformAst(node.expr);
         var expr = moduleExportsEq(value);
         var body = PREDEF.body.concat([expr]);
+        return es.Program(body);
+    },
+    Script: function(node) {
+        var value = transformAst(node.expr);
+        var body = PREDEF.body.concat([value]);
         return es.Program(body);
     },
     GetMethod: function(node) {

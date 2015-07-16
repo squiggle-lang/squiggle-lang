@@ -1,16 +1,13 @@
-all: build run
+all: build
 
-FILES = grammars/* examples/* src/* runtime/* Makefile
+FILES = grammars/* src/* runtime/* Makefile
 
 watch:
-	ls $(FILES) | entr -rc make run
+	ls $(FILES) | entr -rc make build
 
 build:
 	npm run travis
 	[ -d build ] || mkdir build
 	npm run jison -- grammars/parser.jison -o build/parser.js
 
-run: build
-	node src/main.js examples/input.txt
-
-.PHONY: watch build run all
+.PHONY: watch build all

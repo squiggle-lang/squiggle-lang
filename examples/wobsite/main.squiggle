@@ -24,10 +24,8 @@ let (
     updateHandler = ~( _ | update() ),
     showSum = ~( a, b |
         js_set("textContent", a + b, elements.c)
-    ),
-    main = ~(|
-        listen(elements.a, "input", updateHandler);
-        listen(elements.b, "input", updateHandler);
-        update()
     )
-) in {"main": main}
+) in
+listen(elements.a, "input", updateHandler);
+listen(elements.b, "input", updateHandler);
+update()

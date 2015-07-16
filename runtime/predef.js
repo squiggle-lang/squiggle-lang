@@ -68,7 +68,7 @@ var $pipe = function(a, b) {
         LANG$$assert_boolean(b)
     );
 };
-var is = function recur(a, b) {
+var $eq = function recur(a, b) {
     if (typeof a !== typeof b) {
         return false;
     }
@@ -92,7 +92,9 @@ var is = function recur(a, b) {
     }
     return false;
 };
-var $eq = is;
+var isNan = function(x) {
+    return x !== x;
+};
 var $plus = function(a, b) {
     if (typeof a === 'number' && typeof b === 'number') {
         return a + b;
