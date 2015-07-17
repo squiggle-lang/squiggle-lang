@@ -13,6 +13,7 @@
   "author": "Brian Mock <brian@mockbrian.com>",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^1.1.0",
     "escodegen": "^1.6.1",
     "esmangle": "^1.0.1",
     "esprima": "^2.3.0",

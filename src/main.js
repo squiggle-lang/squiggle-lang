@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-var usage = [
+var UTF8 = "utf-8";
+var USAGE = [
     "Usage: squiggle [file] -o [file]",
     "",
     "Examples: squiggle main.squiggle -o main.js"
@@ -10,9 +11,10 @@ var usage = [
 var pkg = require("../package.json");
 var fs = require("fs");
 var path = require("path");
+var chalk = require("chalk");
 var argv = require("yargs")
     .demand(1)
-    .usage(usage)
+    .usage(USAGE)
     .option("o", {
         alias: "output",
         describe: "Write JavaScript to this file or directory",
@@ -36,10 +38,12 @@ var transformAst = require("./transform-ast");
 var compile = require("./compile");
 var lint = require("./lint");
 
-var UTF8 = "utf-8";
+function error(message) {
+    console.error(chalk.bold.red(message));
+}
 
 function die(message) {
-    console.error("squiggle: error: " + message);
+    error("squiggle: error: " + message);
     process.exit(1);
 }
 
@@ -48,7 +52,7 @@ function compileTo(src, dest) {
     var ast = parse(txt);
     var warnings = lint(ast);
     warnings.forEach(function(m) {
-        console.error('squiggle: lint: ' + m);
+        error('squiggle: lint: ' + m);
     });
     var es = transformAst(ast);
     var code = compile(es);
