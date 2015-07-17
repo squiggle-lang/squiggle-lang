@@ -1,8 +1,5 @@
 // TODO: Add arity checking.
 // TODO: Add type checking.
-// TODO: Add reduce.
-// TODO: Add fold.
-// TODO: Add join.
 
 var global = (1, eval)("this");
 var print = function(x) { return LANG$$log(x); };
@@ -118,6 +115,9 @@ var map = function(f, xs) {
     return xs.map(function(x) {
         return f(x);
     });
+};
+var join = function(separator, items) {
+    return [].join.call(items, separator);
 };
 var fold_left = function(f, z, xs) {
     xs.forEach(function(x) {
