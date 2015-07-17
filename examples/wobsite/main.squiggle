@@ -1,0 +1,31 @@
+let (
+    byId = global.document::getElementById,
+    toNumber = ~( x |
+        let (y = global.Number(x))
+        in if isNan(y)
+        then 0
+        else y
+    ),
+    listen = ~( element, name, func |
+        element.addEventListener(name, func, false);
+        undefined
+    ),
+    elements = {
+        "a": byId("number-1"),
+        "b": byId("number-2"),
+        "c": byId("sum")
+    },
+    update = ~(|
+        let (
+            a = toNumber(elements.a.value),
+            b = toNumber(elements.b.value)
+        ) in showSum(a, b)
+    ),
+    updateHandler = ~( _ | update() ),
+    showSum = ~( a, b |
+        js_set("textContent", a + b, elements.c)
+    )
+) in
+listen(elements.a, "input", updateHandler);
+listen(elements.b, "input", updateHandler);
+update()

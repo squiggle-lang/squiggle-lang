@@ -1,14 +1,11 @@
 {
-  "name": "expr-lang",
+  "name": "squiggle",
   "version": "0.0.0",
   "description": "An experimental programming language",
-  "main": "main.js",
+  "bin": "src/main.js",
   "scripts": {
-    "build-jison": "jison parser.jison",
-    "build-pegjs": "pegjs parser.pegjs",
-    "build-parser": "npm run build-jison",
-    "all": "npm run build-parser && node main",
     "travis": "jscs src/*.js && jshint src/*.js",
+    "jison": "jison",
     "jshint": "jshint",
     "jscs": "jscs",
     "test": "echo 'Error: no test specified' && exit 1"
@@ -16,6 +13,7 @@
   "author": "Brian Mock <brian@mockbrian.com>",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^1.1.0",
     "escodegen": "^1.6.1",
     "esmangle": "^1.0.1",
     "esprima": "^2.3.0",
@@ -24,6 +22,7 @@
     "jscs": "^1.13.1",
     "jshint": "^2.8.0",
     "lodash": "^3.9.3",
-    "pegjs": "^0.8.0"
+    "pegjs": "^0.8.0",
+    "yargs": "^3.15.0"
   }
 }

@@ -36,13 +36,14 @@
 "/" return "/";
 "@" return "@";
 
-"let"   return "LET";
-"in"    return "IN";
-"if"    return "IF";
-"then"  return "THEN";
-"else"  return "ELSE";
-"and"   return "AND";
-"or"    return "OR";
+"let"    return "LET";
+"in"     return "IN";
+"if"     return "IF";
+"then"   return "THEN";
+"else"   return "ELSE";
+"and"    return "AND";
+"or"     return "OR";
+"export" return "EXPORT";
 
 ["]["]["]                 this.begin("multi_string");
 <multi_string>["]["]["]   this.popState();
@@ -72,7 +73,8 @@
 
 %%
 Program
-    : Expr EOF { return yy.Root($1); }
+    : Expr EOF        { return yy.Script($1); }
+    | EXPORT Expr EOF { return yy.Module($2); }
     ;
 
 Expr
@@ -90,7 +92,7 @@ Expr0
     ;
 
 Expr1
-    : LET "(" Bindings ")" IN Expr2 -> yy.Let($3, $6)
+    : LET "(" Bindings ")" IN Expr -> yy.Let($3, $6)
     | Expr2
     ;
 

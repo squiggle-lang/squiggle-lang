@@ -1,40 +1,62 @@
+#!/usr/bin/env node
 "use strict";
 
+var UTF8 = "utf-8";
+var USAGE = [
+    "Usage: squiggle [file] -o [file]",
+    "",
+    "Examples: squiggle main.squiggle -o main.js"
+].join("\n");
+
+var pkg = require("../package.json");
 var fs = require("fs");
+var path = require("path");
+var chalk = require("chalk");
+var argv = require("yargs")
+    .demand(1)
+    .usage(USAGE)
+    .option("o", {
+        alias: "output",
+        describe: "Write JavaScript to this file or directory",
+        nargs: 1,
+        string: true,
+        demand: true
+    })
+    .option("h", {
+        alias: "help",
+        describe: "Print this message"
+    })
+    .alias("v", "version")
+    .version(pkg.version)
+    .epilogue("Version " + pkg.version)
+    .showHelpOnFail(true)
+    .strict()
+    .argv;
+
 var parse = require("./parse");
 var transformAst = require("./transform-ast");
 var compile = require("./compile");
 var lint = require("./lint");
-var path = require("path");
-var f = path.join(__dirname, "../examples/input.txt");
-var txt = fs.readFileSync(f, "utf-8");
 
-var ast = parse(txt);
-var warnings = lint(ast);
-warnings.forEach(function(m) {
-    console.error('lint: ' + m);
-});
-var es = transformAst(ast);
-var code = compile(es);
-var json = JSON.stringify(ast, null, 2);
-
-// console.log("=== AST ===");
-// console.log(json);
-
-// console.log("=== CODE ===");
-// console.log(code);
-
-function unsafeEval(code) {
-    /*jshint evil:true*/
-    return eval(code);
+function error(message) {
+    console.error(chalk.bold.red(message));
 }
 
-var theModule = unsafeEval(code);
-
-console.log("=== MODULE ===");
-console.log(theModule);
-
-if (theModule && typeof theModule.main === 'function') {
-    console.log("=== MAIN ===");
-    console.log(theModule.main());
+function die(message) {
+    error("squiggle: error: " + message);
+    process.exit(1);
 }
+
+function compileTo(src, dest) {
+    var txt = fs.readFileSync(src, "utf-8");
+    var ast = parse(txt);
+    var warnings = lint(ast);
+    warnings.forEach(function(m) {
+        error('squiggle: lint: ' + m);
+    });
+    var es = transformAst(ast);
+    var code = compile(es);
+    fs.writeFileSync(dest, code, UTF8);
+}
+
+compileTo(argv._[0], argv.output);

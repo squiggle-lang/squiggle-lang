@@ -5,7 +5,10 @@ function _walk(parents, obj, ast) {
     var exit = obj.exit || function() {};
     var recur = _walk.bind(null, parents, obj);
     var handlers = {
-        Root: function(node) {
+        Module: function(node) {
+            recur(node.expr);
+        },
+        Script: function(node) {
             recur(node.expr);
         },
         GetProperty: function(node) {
