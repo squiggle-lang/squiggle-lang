@@ -5,14 +5,8 @@ var pkg = require("../package.json");
 var fs = require("fs");
 var path = require("path");
 var argv = require("yargs")
-    .usage("Usage: squiggle --input [file] --output [file]")
-    .option("input", {
-        alias: "i",
-        describe: "Read Squiggle from this file",
-        nargs: 1,
-        string: true,
-        demand: true
-    })
+    .demand(1)
+    .usage("Usage: squiggle [options] [file] --output [file]")
     .option("output", {
         alias: "o",
         describe: "Write JavaScript to this file",
@@ -43,7 +37,7 @@ function die(message) {
     process.exit(1);
 }
 
-var txt = fs.readFileSync(argv.input, "utf-8");
+var txt = fs.readFileSync(argv._[0], "utf-8");
 var ast = parse(txt);
 var warnings = lint(ast);
 
