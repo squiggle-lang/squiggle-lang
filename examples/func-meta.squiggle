@@ -1,0 +1,4 @@
+let (
+    _foo = ~{}( x | print(x) ),
+    log = global.console::log
+) in log("hey")

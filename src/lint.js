@@ -1,5 +1,6 @@
 var flatten = require("lodash/array/flatten");
 var includes = require("lodash/collection/includes");
+var predefAst = require("./predef-ast")
 var traverse = require("./traverse");
 var OverlayMap = require("./overlay-map");
 
@@ -27,14 +28,48 @@ function isIdentifierUsage(node, parent) {
     );
 }
 
+function isIdentifierDeclaration(node) {
+    return node.type === 'VariableDeclaration';
+}
+
+function getDeclarationName(node) {
+    return node.declarations[0].id.name;
+}
+
+function isValidIdentifier(id) {
+    return (
+        id.indexOf('$') !== 0 &&
+        id.indexOf('LANG$$') !== 0
+    );
+}
+
+var predefIdentifiers = predefAst
+    .body
+    .filter(isIdentifierDeclaration)
+    .map(getDeclarationName)
+    .filter(isValidIdentifier);
+
+var nodeIdentifiers = [
+    'require'
+];
+
+var browserIdentifiers = [
+    'console'
+];
+
+var browserifyIdentifiers = flatten([
+    nodeIdentifiers,
+    browserIdentifiers,
+]);
+
+var implicitlyDeclaredIdentifiers = flatten([
+    browserifyIdentifiers,
+    predefIdentifiers,
+]);
+
 // TODO: Add standard library for Squiggle and Node and browsers.
 function implicitlyDeclared(k) {
-    return (
-        k === 'require' ||
-        k === 'is' ||
-        k === '++' ||
-        k === 'console'
-    );
+    return implicitlyDeclaredIdentifiers.indexOf(k) >= 0;
 }
 
 function findUnusedOrUndeclaredBindings(ast) {

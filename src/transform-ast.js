@@ -27,8 +27,7 @@ function literal(node) {
     return es.Literal(node.data);
 }
 
-var f = path.join(__dirname, '../runtime/predef.js');
-var PREDEF = esprima.parse(fs.readFileSync(f));
+var PREDEF = require("./predef-ast");
 
 function moduleExportsEq(x) {
     return es.ExpressionStatement(
@@ -63,17 +62,24 @@ function cleanIdentifier(s) {
         .replace(/=/g, '$eq');
 }
 
+function fileWrapper(body) {
+    var useStrict = es.ExpressionStatement(es.Literal('use strict'))
+    var newBody = [useStrict].concat(body);
+    var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
+    return es.Program([es.CallExpression(fn, [])]);
+}
+
 var handlers = {
     Module: function(node) {
         var value = transformAst(node.expr);
         var expr = moduleExportsEq(value);
         var body = PREDEF.body.concat([expr]);
-        return es.Program(body);
+        return fileWrapper(body);
     },
     Script: function(node) {
         var value = transformAst(node.expr);
         var body = PREDEF.body.concat([value]);
-        return es.Program(body);
+        return fileWrapper(body);
     },
     GetMethod: function(node) {
         var obj = node.obj;
@@ -154,12 +160,27 @@ var handlers = {
                 "); " +
             "}"
         ).body;
+        var metadata = es.VariableDeclaration('var', [
+            es.VariableDeclarator(
+                es.Identifier('metadata'),
+                transformAst(node.metadata)
+            )
+        ]);
         var body = arityCheck.concat([returnExpr]);
-        return es.FunctionExpression(
+        var innerFn = es.FunctionExpression(
             null,
             params,
             es.BlockStatement(body)
         );
+        var outerFn = es.FunctionExpression(
+            null,
+            [],
+            es.BlockStatement([
+                metadata,
+                es.ReturnStatement(innerFn)
+            ])
+        );
+        return es.CallExpression(outerFn, []);
     },
     If: function(node) {
         var p = transformAst(node.p);
