@@ -1,4 +1,5 @@
-var _ = require("lodash");
+var isObject = require("lodash/lang/isObject");
+var flatten = require("lodash/array/flatten");
 var fs = require("fs");
 var path = require("path");
 var jsbeautify = require("js-beautify");
@@ -10,7 +11,7 @@ var ast = require("./ast");
 // TODO: Freeze functions also.
 
 function transformAst(node) {
-    if (!_.isObject(node)) {
+    if (!isObject(node)) {
         throw new Error("Not a node: " + jsonify(node));
     }
     if (handlers.hasOwnProperty(node.type)) {
@@ -63,7 +64,7 @@ function cleanIdentifier(s) {
 }
 
 function fileWrapper(body) {
-    var useStrict = es.ExpressionStatement(es.Literal('use strict'))
+    var useStrict = es.ExpressionStatement(es.Literal('use strict'));
     var newBody = [useStrict].concat(body);
     var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
     return es.Program([es.CallExpression(fn, [])]);
@@ -160,13 +161,24 @@ var handlers = {
                 "); " +
             "}"
         ).body;
+        var preCheck = esprima.parse(
+            "if (metadata.pre && !metadata.pre.apply(null, arguments)) {" +
+                "throw new LANG$$js_Error(" +
+                    "'Failed precondition'" +
+                ");" +
+            "}"
+        ).body;
         var metadata = es.VariableDeclaration('var', [
             es.VariableDeclarator(
                 es.Identifier('metadata'),
                 transformAst(node.metadata)
             )
         ]);
-        var body = arityCheck.concat([returnExpr]);
+        var body = flatten([
+            arityCheck,
+            preCheck,
+            [returnExpr]
+        ]);
         var innerFn = es.FunctionExpression(
             null,
             params,

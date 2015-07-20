@@ -1,4 +1,9 @@
 let (
-    _foo = ~{}( x | print(x) ),
-    log = global.console::log
-) in log("hey")
+    printP = ~{
+        "pre": ~( x | x > 0 )
+    }( x |
+        print(x)
+    ),
+    _foo = ~( x | print(x) ),
+    _log = global.console::log
+) in printP(0)

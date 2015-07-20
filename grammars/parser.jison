@@ -145,7 +145,9 @@ Expr5
 
 Function
     : "~" Map "(" Parameters "|" Expr ")" -> yy.Function($2, $4, $6)
-    | "~"     "("            "|" Expr ")" -> yy.Function(null, [], $4)
+    | "~" Map "("            "|" Expr ")" -> yy.Function($2, [], $5)
+    | "~"     "(" Parameters "|" Expr ")" -> yy.Function(yy.Map([]), $3, $5)
+    | "~"     "("            "|" Expr ")" -> yy.Function(yy.Map([]), [], $4)
     ;
 
 Parameters
