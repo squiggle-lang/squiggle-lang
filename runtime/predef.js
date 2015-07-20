@@ -1,6 +1,7 @@
 // TODO: Add arity checking.
 // TODO: Add type checking.
 
+var undefined = void 0;
 var global = (1, eval)("this");
 var print = function(x) { return LANG$$log(x); };
 var not = function(x) { return !!x; };

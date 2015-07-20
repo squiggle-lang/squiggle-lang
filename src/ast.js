@@ -19,6 +19,10 @@ var ast = nm({
     Map:         ["data"],
     Number:      ["data"],
     String:      ["data"],
+    True:        [],
+    False:       [],
+    Null:        [],
+    Undefined:   [],
     Binding:     ["identifier", "value"],
     Pair:        ["key", "value"],
 });

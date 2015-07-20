@@ -66,6 +66,10 @@ function _walk(parents, obj, ast) {
         IdentifierExpression: function(node) {
             recur(node.data);
         },
+        True: function(node) {},
+        False: function(node) {},
+        Null: function(node) {},
+        Undefined: function(node) {},
         Operator: function(node) {},
         Identifier: function(node) {},
         Number: function(node) {},

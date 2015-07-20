@@ -36,14 +36,18 @@
 "/" return "/";
 "@" return "@";
 
-"let"    return "LET";
-"in"     return "IN";
-"if"     return "IF";
-"then"   return "THEN";
-"else"   return "ELSE";
-"and"    return "AND";
-"or"     return "OR";
-"export" return "EXPORT";
+"let"       return "LET";
+"in"        return "IN";
+"if"        return "IF";
+"then"      return "THEN";
+"else"      return "ELSE";
+"and"       return "AND";
+"or"        return "OR";
+"export"    return "EXPORT";
+"true"      return "TRUE";
+"false"     return "FALSE";
+"null"      return "NULL";
+"undefined" return "UNDEFINED";
 
 ["]["]["]                 this.begin("multi_string");
 <multi_string>["]["]["]   this.popState();
@@ -136,6 +140,7 @@ BinOp
 Expr5
     : Number
     | String
+    | Literal
     | List
     | Map
     | Function
@@ -177,6 +182,13 @@ Pairs
 
 Identifier
     : IDENTIFIER -> yy.Identifier($1)
+    ;
+
+Literal
+    : TRUE      -> yy.True()
+    | FALSE     -> yy.False()
+    | NULL      -> yy.Null()
+    | UNDEFINED -> yy.Undefined()
     ;
 
 Number

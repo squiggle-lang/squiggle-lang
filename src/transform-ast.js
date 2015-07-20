@@ -239,6 +239,18 @@ var handlers = {
             [es.ArrayExpression(pairs)]
         );
     },
+    True: function(node) {
+        return es.Literal(true);
+    },
+    False: function(node) {
+        return es.Literal(false);
+    },
+    Null: function(node) {
+        return es.Literal(null);
+    },
+    Undefined: function(node) {
+        return es.Identifier('undefined');
+    },
     Number: literal,
     String: literal,
 };
