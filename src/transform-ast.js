@@ -7,9 +7,6 @@ var esprima = require("esprima");
 var es = require("./es");
 var ast = require("./ast");
 
-// TODO: Statically analyze use of undeclared variables.
-// TODO: Freeze functions also.
-
 function transformAst(node) {
     if (!isObject(node)) {
         throw new Error("Not a node: " + jsonify(node));
@@ -184,12 +181,14 @@ var handlers = {
             params,
             es.BlockStatement(body)
         );
+        var callee = es.Identifier('LANG$$freeze');
+        var frozen = es.CallExpression(callee, [innerFn]);
         var outerFn = es.FunctionExpression(
             null,
             [],
             es.BlockStatement([
                 metadata,
-                es.ReturnStatement(innerFn)
+                es.ReturnStatement(frozen)
             ])
         );
         return es.CallExpression(outerFn, []);
