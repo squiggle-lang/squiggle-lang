@@ -39,32 +39,8 @@ var $pipe$gt = function(x, f) {
     }
     return f(x);
 };
-var $at = function(f, x) {
-    if (typeof f !== 'function') {
-        throw new sqgl$$Error('left-side not a function in @');
-    }
-    return f.bind(null, x);
-};
-var $ampersand = function(a, b) {
-    if (arguments.length !== 2) {
-        throw new sqgl$$Error('wrong number of arguments for &');
-    }
-    return (
-        sqgl$$assertBoolean(a) &&
-        sqgl$$assertBoolean(b)
-    );
-};
 var $semicolon = function(a, b) {
     return b;
-};
-var $pipe = function(a, b) {
-    if (arguments.length !== 2) {
-        throw new sqgl$$Error('wrong number of arguments for |');
-    }
-    return (
-        sqgl$$assertBoolean(a) ||
-        sqgl$$assertBoolean(b)
-    );
 };
 var $eq = function recur(a, b) {
     if (typeof a !== typeof b) {
