@@ -84,7 +84,7 @@ var handlers = {
         var prop = ast.String(node.prop.data);
         return transformAst(
             ast.Call(
-                ast.Identifier('LANG$$js_method_get'),
+                ast.Identifier('sqgl$$methodGet'),
                 [prop, obj]
             )
         );
@@ -95,7 +95,7 @@ var handlers = {
         var args = ast.List(node.args);
         return transformAst(
             ast.Call(
-                ast.Identifier('LANG$$js_method_call'),
+                ast.Identifier('sqgl$$methodCall'),
                 [prop, obj, args]
             )
         );
@@ -105,7 +105,7 @@ var handlers = {
         var prop = ast.String(node.prop.data);
         return transformAst(
             ast.Call(
-                ast.Identifier('LANG$$js_get'),
+                ast.Identifier('sqgl$$get'),
                 [prop, obj]
             )
         );
@@ -114,7 +114,7 @@ var handlers = {
         var assertBoolean = function(x) {
             return transformAst(
                 ast.Call(
-                    ast.Identifier('LANG$$assert_boolean'),
+                    ast.Identifier('sqgl$$assertBoolean'),
                     [x]
                 )
             );
@@ -152,7 +152,7 @@ var handlers = {
         var n = node.parameters.length;
         var arityCheck = esprima.parse(
             "if (arguments.length !== " + n + ") { " +
-            "throw new LANG$$js_Error(" +
+            "throw new sqgl$$Error(" +
                 "'expected " + n + " argument(s), " +
                 "got ' + arguments.length" +
                 "); " +
@@ -160,7 +160,7 @@ var handlers = {
         ).body;
         var preCheck = esprima.parse(
             "if (metadata.pre && !metadata.pre.apply(null, arguments)) {" +
-                "throw new LANG$$js_Error(" +
+                "throw new sqgl$$Error(" +
                     "'Failed precondition'" +
                 ");" +
             "}"
@@ -181,7 +181,7 @@ var handlers = {
             params,
             es.BlockStatement(body)
         );
-        var callee = es.Identifier('LANG$$freeze');
+        var callee = es.Identifier('sqgl$$freeze');
         var frozen = es.CallExpression(callee, [innerFn]);
         var outerFn = es.FunctionExpression(
             null,
@@ -223,7 +223,7 @@ var handlers = {
     List: function(node) {
         var pairs = node.data.map(transformAst);
         var array = es.ArrayExpression(pairs);
-        var callee = es.Identifier('LANG$$freeze');
+        var callee = es.Identifier('sqgl$$freeze');
         return es.CallExpression(callee, [array]);
     },
     Pair: function(node) {
@@ -235,7 +235,7 @@ var handlers = {
     Map: function(node) {
         var pairs = node.data.map(transformAst);
         return es.CallExpression(
-            es.Identifier('LANG$$object'),
+            es.Identifier('sqgl$$object'),
             [es.ArrayExpression(pairs)]
         );
     },

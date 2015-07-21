@@ -23,7 +23,7 @@ let (
     ),
     updateHandler = ~( _ | update() ),
     showSum = ~( a, b |
-        js_set("textContent", a + b, elements.c)
+        set("textContent", a + b, elements.c)
     )
 ) in
 listen(elements.a, "input", updateHandler);

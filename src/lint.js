@@ -39,7 +39,7 @@ function getDeclarationName(node) {
 function isValidIdentifier(id) {
     return (
         id.indexOf('$') !== 0 &&
-        id.indexOf('LANG$$') !== 0
+        id.indexOf('sqgl$$') !== 0
     );
 }
 
