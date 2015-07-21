@@ -1,12 +1,25 @@
 # squiggle
 
-The title is not final. If you have a good idea, let me know.
-
 ## What is it?
 
 A compile-to-JS programming language.
 
-## Another one?
+## How do I install it?
+
+    npm install -g saikobee/squiggle
+
+## How do I use it?
+
+Put the following in `hello.squiggle`:
+
+    console.log("Hello, world!")
+
+Then run:
+
+    squiggle hello.squiggle -o hello.js
+    node hello.js
+
+## Another programming language?
 
 Yes.
 
