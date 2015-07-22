@@ -4,7 +4,7 @@
 var undefined = void 0;
 var global = (1, eval)("this");
 var print = function(x) { return sqgl$$log(x); };
-var not = function(x) { return !!x; };
+var not = function(x) { return !x; };
 var $lt = function(a, b) {
     var ta = typeof a;
     var tb = typeof b;
