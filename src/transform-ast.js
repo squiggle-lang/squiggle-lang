@@ -122,13 +122,20 @@ var handlers = {
         var d = node.operator.data;
         if (d === 'and' || d === 'or') {
             var op = {and: '&&', or: '||'}[d];
-            var a = assertBoolean(node.left);
-            var b = assertBoolean(node.right);
-            return es.LogicalExpression(op, a, b);
+            return es.LogicalExpression(op,
+                assertBoolean(node.left),
+                assertBoolean(node.right)
+            );
+        } else if (d === ';') {
+            return es.SequenceExpression([
+                transformAst(node.left),
+                transformAst(node.right)
+            ]);
+        } else {
+            var f = ast.Identifier(node.operator.data);
+            var args = [node.left, node.right];
+            return transformAst(ast.Call(f, args));
         }
-        var f = ast.Identifier(node.operator.data);
-        var args = [node.left, node.right];
-        return transformAst(ast.Call(f, args));
     },
     Identifier: function(node) {
         return es.Identifier(cleanIdentifier(node.data));

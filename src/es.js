@@ -5,6 +5,7 @@ var es = nm({
     Literal: ['value'],
     Identifier: ['name'],
     LogicalExpression: ['operator', 'left', 'right'],
+    SequenceExpression: ['expressions'],
     ExpressionStatement: ['expression'],
     AssignmentExpression: ['operator', 'left', 'right'],
     MemberExpression: ['computed', 'object', 'property'],

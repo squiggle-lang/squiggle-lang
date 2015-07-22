@@ -39,9 +39,6 @@ var $pipe$gt = function(x, f) {
     }
     return f(x);
 };
-var $semicolon = function(a, b) {
-    return b;
-};
 var $eq = function recur(a, b) {
     if (typeof a !== typeof b) {
         return false;
