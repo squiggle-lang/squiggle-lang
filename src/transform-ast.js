@@ -159,7 +159,7 @@ var handlers = {
             "}"
         ).body;
         var preCheck = esprima.parse(
-            "if (metadata.pre && !metadata.pre.apply(null, arguments)) {" +
+            "if ($metadata.pre && !$metadata.pre.apply(null, arguments)) {" +
                 "throw new sqgl$$Error(" +
                     "'Failed precondition'" +
                 ");" +
@@ -167,7 +167,7 @@ var handlers = {
         ).body;
         var metadata = es.VariableDeclaration('var', [
             es.VariableDeclarator(
-                es.Identifier('metadata'),
+                es.Identifier('$metadata'),
                 transformAst(node.metadata)
             )
         ]);
