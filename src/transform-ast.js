@@ -155,7 +155,14 @@ var handlers = {
         var params = node
             .parameters
             .map(transformAst);
-        var returnExpr = es.ReturnStatement(transformAst(node.body));
+        var bodyExpr = transformAst(node.body);
+        var setRet = es.VariableDeclaration('var', [
+            es.VariableDeclarator(
+                es.Identifier('$ret'),
+                bodyExpr
+            )
+        ]);
+        var returnExpr = es.ReturnStatement(es.Identifier('$ret'));
         var n = node.parameters.length;
         var arityCheck = esprima.parse(
             "if (arguments.length !== " + n + ") { " +
@@ -181,7 +188,9 @@ var handlers = {
         var body = flatten([
             arityCheck,
             preCheck,
-            [returnExpr]
+            setRet,
+            esprima.parse("'TODO: check post-conditions'").body,
+            returnExpr
         ]);
         var innerFn = es.FunctionExpression(
             null,
