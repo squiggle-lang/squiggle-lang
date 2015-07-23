@@ -1,14 +1,6 @@
 let (
-    _printP = ~{
-        "pre": ~( x | x > 0 )
-    }( x |
-        print(x)
-    ),
-    _foo = ~( x | print(x) ),
-    _log = global.console::log
-) in [
-    true,
-    false,
-    null,
-    undefined
-]
+    printP = ~{
+        "pre":  ~( x | print("> in pre");  x > 0 ),
+        "post": ~( x | print("> in post"); x = 0 )
+    }( x | print(x); 0 )
+) in print(printP(1))

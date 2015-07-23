@@ -4,6 +4,8 @@ var predefAst = require("./predef-ast");
 var traverse = require("./traverse");
 var OverlayMap = require("./overlay-map");
 
+// TODO: Complain about *using* variables starting with underscores.
+
 function lint(ast) {
     return flatten([
         findUnusedOrUndeclaredBindings(ast)

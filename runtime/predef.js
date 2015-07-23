@@ -4,7 +4,7 @@
 var undefined = void 0;
 var global = (1, eval)("this");
 var print = function(x) { return sqgl$$log(x); };
-var not = function(x) { return !!x; };
+var not = function(x) { return !x; };
 var $lt = function(a, b) {
     var ta = typeof a;
     var tb = typeof b;
@@ -38,9 +38,6 @@ var $pipe$gt = function(x, f) {
         throw new sqgl$$Error('right-side not a function in |>');
     }
     return f(x);
-};
-var $semicolon = function(a, b) {
-    return b;
 };
 var $eq = function recur(a, b) {
     if (typeof a !== typeof b) {

@@ -122,13 +122,20 @@ var handlers = {
         var d = node.operator.data;
         if (d === 'and' || d === 'or') {
             var op = {and: '&&', or: '||'}[d];
-            var a = assertBoolean(node.left);
-            var b = assertBoolean(node.right);
-            return es.LogicalExpression(op, a, b);
+            return es.LogicalExpression(op,
+                assertBoolean(node.left),
+                assertBoolean(node.right)
+            );
+        } else if (d === ';') {
+            return es.SequenceExpression([
+                transformAst(node.left),
+                transformAst(node.right)
+            ]);
+        } else {
+            var f = ast.Identifier(node.operator.data);
+            var args = [node.left, node.right];
+            return transformAst(ast.Call(f, args));
         }
-        var f = ast.Identifier(node.operator.data);
-        var args = [node.left, node.right];
-        return transformAst(ast.Call(f, args));
     },
     Identifier: function(node) {
         return es.Identifier(cleanIdentifier(node.data));
@@ -148,7 +155,14 @@ var handlers = {
         var params = node
             .parameters
             .map(transformAst);
-        var returnExpr = es.ReturnStatement(transformAst(node.body));
+        var bodyExpr = transformAst(node.body);
+        var setRet = es.VariableDeclaration('var', [
+            es.VariableDeclarator(
+                es.Identifier('$ret'),
+                bodyExpr
+            )
+        ]);
+        var returnExpr = es.ReturnStatement(es.Identifier('$ret'));
         var n = node.parameters.length;
         var arityCheck = esprima.parse(
             "if (arguments.length !== " + n + ") { " +
@@ -165,6 +179,13 @@ var handlers = {
                 ");" +
             "}"
         ).body;
+        var postCheck = esprima.parse(
+            "if ($metadata.post && !$metadata.post($ret)) {" +
+                "throw new sqgl$$Error(" +
+                    "'Failed postcondition'" +
+                ");" +
+            "}"
+        ).body;
         var metadata = es.VariableDeclaration('var', [
             es.VariableDeclarator(
                 es.Identifier('$metadata'),
@@ -174,7 +195,9 @@ var handlers = {
         var body = flatten([
             arityCheck,
             preCheck,
-            [returnExpr]
+            setRet,
+            postCheck,
+            returnExpr
         ]);
         var innerFn = es.FunctionExpression(
             null,
