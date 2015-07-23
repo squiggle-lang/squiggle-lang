@@ -179,6 +179,13 @@ var handlers = {
                 ");" +
             "}"
         ).body;
+        var postCheck = esprima.parse(
+            "if ($metadata.post && !$metadata.post($ret)) {" +
+                "throw new sqgl$$Error(" +
+                    "'Failed postcondition'" +
+                ");" +
+            "}"
+        ).body;
         var metadata = es.VariableDeclaration('var', [
             es.VariableDeclarator(
                 es.Identifier('$metadata'),
@@ -189,7 +196,7 @@ var handlers = {
             arityCheck,
             preCheck,
             setRet,
-            esprima.parse("'TODO: check post-conditions'").body,
+            postCheck,
             returnExpr
         ]);
         var innerFn = es.FunctionExpression(
