@@ -49,7 +49,21 @@ function die(message) {
 
 function compileTo(src, dest) {
     var txt = fs.readFileSync(src, "utf-8");
-    var ast = parse(txt);
+    try {
+        var ast = parse(txt);
+    } catch (e) {
+        var expectations = e
+            .expected
+            .map(function(x) {
+                return "'" + x.description + "' (" + x.type + ")";
+            })
+            .join(" or ");
+        die(
+            e.line + ":" + e.column +
+            " expected " + expectations +
+            ", but found '" + e.found + "'."
+        );
+    }
     var warnings = lint(ast);
     warnings.forEach(function(m) {
         error('squiggle: lint: ' + m);
