@@ -25,6 +25,15 @@ function literal(node) {
     return es.Literal(node.data);
 }
 
+function assertBoolean(x) {
+    return transformAst(
+        ast.Call(
+            ast.Identifier('sqgl$$assertBoolean'),
+            [x]
+        )
+    );
+}
+
 var PREDEF = require("./predef-ast");
 
 function moduleExportsEq(x) {
@@ -91,7 +100,12 @@ var handlers = {
     },
     CallMethod: function(node) {
         var obj = node.obj;
-        var prop = ast.String(node.prop.data);
+        var prop;
+        if (node.prop.type === "Identifier") {
+            prop = ast.String(node.prop.data);
+        } else {
+            prop = node.prop;
+        }
         var args = ast.List(node.args);
         return transformAst(
             ast.Call(
@@ -102,7 +116,10 @@ var handlers = {
     },
     GetProperty: function(node) {
         var obj = node.obj;
-        var prop = ast.String(node.prop.data);
+        var prop = node.prop;
+        if (prop.type === "Identifier") {
+            prop = ast.String(prop.data);
+        }
         return transformAst(
             ast.Call(
                 ast.Identifier('sqgl$$get'),
@@ -111,14 +128,6 @@ var handlers = {
         );
     },
     BinOp: function(node) {
-        var assertBoolean = function(x) {
-            return transformAst(
-                ast.Call(
-                    ast.Identifier('sqgl$$assertBoolean'),
-                    [x]
-                )
-            );
-        };
         var d = node.operator.data;
         if (d === 'and' || d === 'or') {
             var op = {and: '&&', or: '||'}[d];
@@ -217,7 +226,7 @@ var handlers = {
         return es.CallExpression(outerFn, []);
     },
     If: function(node) {
-        var p = transformAst(node.p);
+        var p = assertBoolean(node.p);
         var t = transformAst(node.t);
         var f = transformAst(node.f);
         return es.ConditionalExpression(p, t, f);

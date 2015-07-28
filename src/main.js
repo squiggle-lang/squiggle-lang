@@ -54,13 +54,11 @@ function compileTo(src, dest) {
     } catch (e) {
         var expectations = e
             .expected
-            .map(function(x) {
-                return "'" + x.description + "' (" + x.type + ")";
-            })
-            .join(" or ");
+            .map(function(x) { return x.description; })
+            .join(", ");
         die(
             e.line + ":" + e.column +
-            " expected " + expectations +
+            " expected one of " + expectations +
             ", but found '" + e.found + "'."
         );
     }
