@@ -34,6 +34,13 @@ function assertBoolean(x) {
     );
 }
 
+function coerceIdentToString(node) {
+    if (node.type === "Identifier") {
+        return ast.String(node.data);
+    }
+    return node;
+}
+
 var PREDEF = require("./predef-ast");
 
 function moduleExportsEq(x) {
@@ -100,12 +107,7 @@ var handlers = {
     },
     CallMethod: function(node) {
         var obj = node.obj;
-        var prop;
-        if (node.prop.type === "Identifier") {
-            prop = ast.String(node.prop.data);
-        } else {
-            prop = node.prop;
-        }
+        var prop = coerceIdentToString(node.prop);
         var args = ast.List(node.args);
         return transformAst(
             ast.Call(
@@ -116,10 +118,7 @@ var handlers = {
     },
     GetProperty: function(node) {
         var obj = node.obj;
-        var prop = node.prop;
-        if (prop.type === "Identifier") {
-            prop = ast.String(prop.data);
-        }
+        var prop = coerceIdentToString(node.prop);
         return transformAst(
             ast.Call(
                 ast.Identifier('sqgl$$get'),
