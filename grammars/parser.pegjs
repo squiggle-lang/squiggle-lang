@@ -54,14 +54,21 @@ Binding
 Expr2
     = Bop1
 
-Bop1 = a:Bop3 xs:((o:"|>"                                   _ b:Bop3)  { return [o, b]; })* { return lbo(a, xs); }
-Bop3 = a:Bop4 xs:((o:("and" / "or")                         _ b:Bop4)  { return [o, b]; })* { return lbo(a, xs); }
-Bop4 = a:Bop5 xs:((o:(">=" / "<=" / "<" / ">" / "=" / "!=") _ b:Bop5)  { return [o, b]; })* { return lbo(a, xs); }
-Bop5 = a:Bop6 xs:((o:"++"                                   _ b:Bop6)  { return [o, b]; })* { return lbo(a, xs); }
-Bop6 = a:Bop7 xs:((o:("+" / "-")                            _ b:Bop7)  { return [o, b]; })* { return lbo(a, xs); }
-Bop7 = a:Bop8 xs:((o:("*" / "/")                            _ b:Bop8)  { return [o, b]; })* { return lbo(a, xs); }
+b1 = "|>"
+b2 = "and" / "or"
+b3 = ">=" / "<=" / "<" / ">" / "=" / "!="
+b4 = "++"
+b5 = "+" / "-"
+b6 = "*" / "/"
 
-Bop8 = Expr3
+Bop1 = a:Bop2 xs:((o:b1 _ b:Bop2)  { return [o, b]; })* { return lbo(a, xs); }
+Bop2 = a:Bop3 xs:((o:b2 _ b:Bop3)  { return [o, b]; })* { return lbo(a, xs); }
+Bop3 = a:Bop4 xs:((o:b3 _ b:Bop4)  { return [o, b]; })* { return lbo(a, xs); }
+Bop4 = a:Bop5 xs:((o:b4 _ b:Bop5)  { return [o, b]; })* { return lbo(a, xs); }
+Bop5 = a:Bop6 xs:((o:b5 _ b:Bop6)  { return [o, b]; })* { return lbo(a, xs); }
+Bop6 = a:Bop7 xs:((o:b6 _ b:Bop7)  { return [o, b]; })* { return lbo(a, xs); }
+
+Bop7 = Expr3
 
 Expr3
     =   e:Expr4
