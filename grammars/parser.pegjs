@@ -28,8 +28,9 @@ Keyword
     / "export"
 
 Expr
-    = a:Expr0 xs:((o:";" _ b:Expr0) { return [o, b]; })*
-    { return lbo(a, xs); }
+    = "do" _ "{" _ es:(e:Expr ";" _ { return e; })+ "}" _
+    { return ast.Block(es); }
+    / Expr0
 
 Expr0
     = "if"   _ p:Bop1

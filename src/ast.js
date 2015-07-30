@@ -7,6 +7,7 @@ var ast = nm({
     GetMethod:   ["obj", "prop"],
     CallMethod:  ["obj", "prop", "args"],
     Identifier:  ["data"],
+    Block:       ["expressions"],
     IdentifierExpression: ["data"],
     Call:        ["f", "args"],
     Function:    ["metadata", "parameters", "body"],

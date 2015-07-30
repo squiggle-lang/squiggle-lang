@@ -32,6 +32,9 @@ function _walk(parents, obj, ast) {
             node.parameters.forEach(recur);
             recur(node.body);
         },
+        Block: function(node) {
+            node.expressions.forEach(recur);
+        },
         If: function(node) {
             recur(node.p);
             recur(node.t);

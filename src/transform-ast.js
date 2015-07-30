@@ -17,6 +17,19 @@ function transformAst(node) {
     throw new Error("Unknown AST node: " + jsonify(node));
 }
 
+function unary(f) {
+    return function(x) {
+        return f(x);
+    };
+}
+
+function mapLastSpecial(f, g, xs) {
+    var n = xs.length;
+    var ys = xs.slice(0, n - 1).map(unary(f));
+    var y = unary(g)(xs[n - 1]);
+    return ys.concat([y]);
+}
+
 function jsonify(x) {
     return JSON.stringify(x);
 }
@@ -116,6 +129,18 @@ var handlers = {
             )
         );
     },
+    Block: function(node) {
+        var exprs = node
+            .expressions
+            .map(transformAst)
+        var statements = mapLastSpecial(
+            es.ExpressionStatement,
+            es.ReturnStatement,
+            exprs
+        );
+        var fn = es.FunctionExpression(null, [], es.BlockStatement(statements));
+        return es.CallExpression(fn, []);
+    },
     GetProperty: function(node) {
         var obj = node.obj;
         var prop = coerceIdentToString(node.prop);
@@ -134,11 +159,6 @@ var handlers = {
                 assertBoolean(node.left),
                 assertBoolean(node.right)
             );
-        } else if (d === ';') {
-            return es.SequenceExpression([
-                transformAst(node.left),
-                transformAst(node.right)
-            ]);
         } else {
             var f = ast.Identifier(node.operator.data);
             var args = [node.left, node.right];
