@@ -1,121 +1,193 @@
-Program = _ e:Expression { return { type: "Root", expr: e } }
+{
+    // Yikes... what a horrible import path.
+    var ast = require("../../../src/ast");
 
-Newline "newline"
-    = "\n"
-
-Space "space"
-    =  " "
-
-Whitespace = Newline / Space
-Anything = [^\n]*
-Comment "comment"
-    = "#" Anything Newline
-WS = Whitespace / Comment
-
-_ "whitespace" = WS*
-
-// Expression "expression"
-//     = BinExpr
-//     / OtherExpr
-
-Expression "expression"
-    = OtherExpr
-
-E = Expression
-
-BinExpr
-    = "<" _ "(" _ a:E b:E ")" _ { return {type: "Lt", a: a, b: b} }
-    / ">" _ "(" _ a:E b:E ")" _ { return {type: "Gt", a: a, b: b} }
-    / "*" _ "(" _ a:E b:E ")" _ { return {type: "Mul", a: a, b: b} }
-    / "/" _ "(" _ a:E b:E ")" _ { return {type: "Div", a: a, b: b} }
-    / "+" _ "(" _ a:E b:E ")" _ { return {type: "Add", a: a, b: b} }
-    / "-" _ "(" _ a:E b:E ")" _ { return {type: "Sub", a: a, b: b} }
-
-NoncallExpr = If / Let / Function / Literal / Identifier / ParenExpr
-OtherExpr = Call / NoncallExpr
-
-Argument "argument"
-    = e:Expression _ { return e }
-
-Call "function call"
-    = f:E "(" _ args:Argument* ")" _ {
-        return { type: "Call", f: f, args: args }
+    function foldLeft(f, z, xs) {
+        return xs.reduce(function(acc, x) {
+            return f(acc, x);
+        }, z);
     }
 
-ParenExpr "parenthesized expression"
-    = "(" _ a:Expression ")" _ { return a }
+    // Left-associative binary operator helper.
+    function lbo(a, xs) {
+        return foldLeft(function(acc, pair) {
+            return ast.BinOp(ast.Operator(pair[0]), acc, pair[1]);
+        }, a, xs);
+    }
+}
 
-If "if expression" =
-    "if" _ p:Expression
-    "then" _ t:Expression
-    "else" _ f:Expression {
-      return { type: "If", p: p, t: t, f: f }
+Program
+    = _ "export" _ e:Expr _ { return ast.Module(e); }
+    / _ e:Expr _            { return ast.Script(e); }
+
+Keyword
+    = "if" / "then" / "else"
+    / "let" / "in"
+    / "true" / "false"
+    / "undefined" / "null"
+    / "export"
+
+Expr
+    = a:Expr0 xs:((o:";" _ b:Expr0) { return [o, b]; })*
+    { return lbo(a, xs); }
+
+Expr0
+    = "if"   _ p:Bop1
+      "then" _ t:Expr
+      "else" _ f:Expr
+    { return ast.If(p, t, f); }
+    / Expr1
+
+Expr1
+    = "let" _ "(" _ b:Bindings ")" _ "in" _ e:Expr
+    { return ast.Let(b, e); }
+    / Expr2
+
+Bindings
+    = b:Binding bs:(("," _ b2:Binding) { return b2; })*
+    { return [b].concat(bs); }
+
+Binding
+    = i:Identifier "=" _ e:Expr
+    { return ast.Binding(i, e); }
+
+Expr2
+    = Bop1
+
+b1 = "|>"
+b2 = "and" / "or"
+b3 = ">=" / "<=" / "<" / ">" / "=" / "!="
+b4 = "++"
+b5 = "+" / "-"
+b6 = "*" / "/"
+
+Bop1 = a:Bop2 xs:((o:b1 _ b:Bop2)  { return [o, b]; })* { return lbo(a, xs); }
+Bop2 = a:Bop3 xs:((o:b2 _ b:Bop3)  { return [o, b]; })* { return lbo(a, xs); }
+Bop3 = a:Bop4 xs:((o:b3 _ b:Bop4)  { return [o, b]; })* { return lbo(a, xs); }
+Bop4 = a:Bop5 xs:((o:b4 _ b:Bop5)  { return [o, b]; })* { return lbo(a, xs); }
+Bop5 = a:Bop6 xs:((o:b5 _ b:Bop6)  { return [o, b]; })* { return lbo(a, xs); }
+Bop6 = a:Bop7 xs:((o:b6 _ b:Bop7)  { return [o, b]; })* { return lbo(a, xs); }
+
+Bop7 = Expr3
+
+Expr3
+    =   e:Expr4
+        xs:(
+            ("." _ i:Identifier) { return i; } /
+            ("[" _ i:Expr "]" _) { return i; }
+        )*
+    { return foldLeft(ast.GetProperty, e, xs); }
+
+Expr4
+    = e:Expr5 xs:(("::" _ i:Identifier) { return i; })*
+    { return foldLeft(ast.GetMethod, e, xs); }
+
+Expr5
+    = e:Expr6 calls:(
+        ("." _ i:Identifier "(" _ xs:ListItems? ")" _)
+        { return [i, xs || []]; }
+    )*
+    {
+        return foldLeft(function(acc, call) {
+            return ast.CallMethod(acc, call[0], call[1]);
+        }, e, calls);
     }
 
-Param "parameter"
-    = p:Identifier _ { return p }
+Expr6
+    = e:Expr7 calls:(("(" _ xs:ListItems? ")" _) { return xs || []; })*
+    { return foldLeft(ast.Call, e, calls); }
 
-Function "function" =
-    "~" _ param:Identifier ":" _ body:Expression {
-        return {
-            type: "Function",
-            parameters: [param],
-            body: body
-        }
-    } /
-    "~" _ "(" _ params:Param* ")" _ ":" _ body:Expression {
-        return {
-            type: "Function",
-            parameters: params,
-            body: body
-        }
-    }
+Expr7
+    = Literal
+    / List
+    / Map
+    / Function
+    / IdentExpr
+    / ParenExpr
 
-Binding "variable binding"
-    = i:Identifier "=" _ e:Expression
-    { return [i, e] }
+Literal "literal"
+    = Number
+    / String
+    / True
+    / False
+    / Undefined
+    / Null
 
-Let "let binding" =
-    "let" _ "(" _
-    bs:Binding+
-    ")" _ "in" _ e:Expression {
-        return { type: "Let", bindings: bs, expr: e }
-    }
+IdentExpr
+    = i:Identifier
+    { return ast.IdentifierExpression(i); }
 
-IdentChars0 = [_a-zA-Z\&\*\!\?\<\>\-\+\/]
-IdentCharsN = $(IdentChars0 / [0-9])
+Function "function"
+    = "~" _ m:Map? "(" _ p:Parameters? "|" _ e:Expr ")" _
+    { return ast.Function(m || ast.Map([]), p || [], e); }
 
-Identifier "identifier"
-    = s:$(IdentChars0 IdentCharsN*) _ {
-        return { type: "Identifier", data: s }
-    }
+Parameters
+    = p:Parameter ps:(("," _ p2: Parameter) { return p2; })*
+    { return [p].concat(ps); }
 
-Literal = Number / String / Map / List
+Parameter
+    = i:Identifier
+    { return ast.Parameter(i); }
 
-Item "list item" =
-    item:Expression { return item }
+ParenExpr "parenthesized-expression"
+    = "(" _ e:Expr ")" _
+    { return e; }
 
 List "list"
-    = "[" _ items:Item* "]" _ {
-        return { type: "List", data: items }
-    }
+    = "[" _ xs:ListItems? "]" _
+    { return ast.List(xs || []); }
 
-Pair "map pair" =
-    k:String _ v:Expression {
-        return [k, v]
-    }
+ListItems
+    = e:Expr es:(("," _ e2:Expr) { return e2; })*
+    { return [e].concat(es); }
 
 Map "map"
-    = "{" _ pairs:Pair* "}" _ {
-        return { type: "Map", data: pairs }
-    }
+    = "{" _ xs:MapPairs? "}" _
+    { return ast.Map(xs || []); }
 
-String "string"
-    = '"' s:$([^"]*) '"' _ {
-        return { type: "String", data: s }
-    }
+MapPairs
+    = p:Pair ps:(("," _ p2:Pair) { return p2; })*
+    { return [p].concat(ps); }
+
+Pair
+    = k:Expr ":" _ v:Expr
+    { return ast.Pair(k, v); }
+
+Identifier "identifier"
+    = i:$([_a-zA-Z][_a-zA-Z0-9]*) _
+    { return ast.Identifier(i); }
+
+True "true"
+    = "true" _
+    { return ast.True(); }
+
+False "false"
+    = "false" _
+    { return ast.False(); }
+
+Undefined "undefined"
+    = "undefined" _
+    { return ast.Undefined(); }
+
+Null "null"
+    = "null" _
+    { return ast.Null(); }
 
 Number "number"
-    = s:$([+-]?[0-9]+) _ {
-      return { type: "Number", data: Number(s) }
-    }
+    = n:$([0-9]+) _
+    { return ast.Number(+n); }
+
+String "string"
+    = '"' s:$([^"\n]+) '"' _
+    { return ast.String(s); }
+
+_  = (WS / NL / Comment)*
+
+WS "whitespace"
+    = [\ \t]+
+
+NL "newline"
+    = [\n]+
+
+Comment "comment"
+    = "#" (!NL .)* NL

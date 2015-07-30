@@ -1,12 +1,66 @@
 let (
     http = require("http"),
-    handler = ~( _req, res |
+    keys = global.Object.keys,
+    fromCharCode = global.String.fromCharCode,
+    omap = ~( f, obj |
+        map(~( k | f(k, obj[k]) ), keys(obj))
+    ),
+    NL = fromCharCode(10),
+    handler = ~( req, res |
+        console.log(req.method ++ " " ++ req.url);
         res.writeHead(200, {"Content-Type": "text/plain"});
-        res.end("Hello, world!")
+        let (
+            lines = omap(~( k, v | k ++ ": " ++ v ), req.headers),
+            str = reduce(~( acc, x | acc ++ NL ++ x ), lines) ++ NL
+        ) in res.end(str)
     )
 ) in
 http.createServer(handler).listen(1337, "127.0.0.1");
 print("Server started at http://127.0.0.1:1337/")
+
+# (if P
+# then A; B; C
+# else D; E; F);
+
+# xs
+#     .map(~( x | x + 1 ))
+#     .reduce(~( acc, x | acc + x ))
+#     .forEach(~( x, _, _ | print(x)));
+
+# G
+
+# console.log(1; if true then 3; 4 else 5; 6);
+
+# (if true
+# then print(1)
+# else print(2));
+
+# print(3);
+# print(4)
+
+# [2 != 3] ++ []
+
+# 3 |> console::log;
+# console.log(4)
+
+# 1 |> console::log;
+# let (
+#     x =
+#         if true and false or true or 4 + 5 * 6 - 7 / 7 > 8 * 9
+#         then [2 != 3] ++ ["no" ++ "pe"]
+#         else 4 >= 3 and 3 <= 4,
+#     y = x
+# ) in print(y)
+
+# let (
+#     http = require("http"),
+#     handler = ~( _req, res |
+#         res.writeHead(200, {"Content-Type": "text/plain"});
+#         res.end("Hello, world!")
+#     )
+# ) in
+# http.createServer(handler).listen(1337, "127.0.0.1");
+# print("Server started at http://127.0.0.1:1337/")
 
 # var http = require('http');
 # http.createServer(function (req, res) {

@@ -35,7 +35,7 @@ var not = function(x) {
 };
 var $pipe$gt = function(x, f) {
     if (typeof f !== 'function') {
-        throw new sqgl$$Error('right-side not a function in |>');
+        throw new sqgl$$Error('right-side not a function in |>, ' + f);
     }
     return f(x);
 };

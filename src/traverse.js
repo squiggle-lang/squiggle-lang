@@ -77,7 +77,7 @@ function _walk(parents, obj, ast) {
     };
     var shouldSkip = enter(ast, last(parents)) === SKIP;
     if (!(ast.type in handlers)) {
-        throw new Error('unknown AST node type ' + ast.type);
+        throw new Error('unknown AST node type ' + JSON.stringify(ast));
     }
     if (!shouldSkip) {
         parents.push(ast);
