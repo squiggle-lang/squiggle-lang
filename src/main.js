@@ -52,6 +52,9 @@ function compileTo(src, dest) {
     try {
         var ast = parse(txt);
     } catch (e) {
+        if (!("expected" in e)) {
+            throw e;
+        }
         var expectations = e
             .expected
             .map(function(x) { return x.description; })

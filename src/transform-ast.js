@@ -214,17 +214,17 @@ var handlers = {
                 ");" +
             "}"
         ).body;
-        var metadata = es.VariableDeclaration('var', [
-            es.VariableDeclarator(
-                es.Identifier('$metadata'),
-                transformAst(node.metadata)
-            )
-        ]);
+        // var metadata = es.VariableDeclaration('var', [
+        //     es.VariableDeclarator(
+        //         es.Identifier('$metadata'),
+        //         transformAst(node.metadata)
+        //     )
+        // ]);
         var body = flatten([
             arityCheck,
-            preCheck,
+            // preCheck,
             setRet,
-            postCheck,
+            // postCheck,
             returnExpr
         ]);
         var innerFn = es.FunctionExpression(
@@ -238,11 +238,12 @@ var handlers = {
             null,
             [],
             es.BlockStatement([
-                metadata,
+                // metadata,
                 es.ReturnStatement(frozen)
             ])
         );
-        return es.CallExpression(outerFn, []);
+        // return es.CallExpression(outerFn, []);
+        return innerFn;
     },
     If: function(node) {
         var p = assertBoolean(node.p);

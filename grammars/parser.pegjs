@@ -119,8 +119,8 @@ IdentExpr
     { return ast.IdentifierExpression(i); }
 
 Function "function"
-    = "~" _ m:Map? "(" _ p:Parameters? "|" _ e:Expr ")" _
-    { return ast.Function(m || ast.Map([]), p || [], e); }
+    = "fn" _ "(" _ p:Parameters? ")" _ e:Expr
+    { return ast.Function(p || [], e); }
 
 Parameters
     = p:Parameter ps:(("," _ p2: Parameter) { return p2; })*
