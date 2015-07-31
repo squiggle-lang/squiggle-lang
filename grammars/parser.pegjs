@@ -23,6 +23,7 @@ Program
 Keyword
     = "if" / "else"
     / "let" / "in"
+    / "do"
     / "true" / "false"
     / "undefined" / "null"
     / "export"
