@@ -13,9 +13,9 @@ let (
         let (
             lines = omap(between(": "), req.headers),
             str = reduce(concat, map(fn(x) x ++ NL, lines))
-        ) in res.end(str);
+        ) res.end(str);
     }
-) in do {
+) do {
     http.createServer(handler).listen(1337, "127.0.0.1");
     print("Server started at http://127.0.0.1:1337/");
 }
