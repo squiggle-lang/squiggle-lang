@@ -8,30 +8,40 @@ var USAGE = [
     "Examples: squiggle main.squiggle -o main.js"
 ].join("\n");
 
+function K(x) { return function() { return x; }; }
+
 var pkg = require("../package.json");
 var fs = require("fs");
 var path = require("path");
 var chalk = require("chalk");
-var argv = require("yargs")
-    .demand(1)
-    .usage(USAGE)
-    .option("o", {
-        alias: "output",
-        describe: "Write JavaScript to this file or directory",
-        nargs: 1,
-        string: true,
-        demand: true
+var argv = require("nomnom")
+    .option("input", {
+        position: 0,
+        metavar: "FILE",
+        help: "Compile this Squiggle file",
+        required: true,
+        type: "string"
     })
-    .option("h", {
-        alias: "help",
-        describe: "Print this message"
+    .option("output", {
+        abbr: "o",
+        metavar: "FILE",
+        help: "Write JavaScript to this file",
+        required: true,
+        type: "string"
     })
-    .alias("v", "version")
-    .version(pkg.version)
-    .epilogue("Version " + pkg.version)
-    .showHelpOnFail(true)
-    .strict()
-    .argv;
+    .option("help", {
+        abbr: "h",
+        help: "Print this message",
+        flag: true,
+        callback: K(USAGE)
+    })
+    .option("version", {
+        abbr: "v",
+        help: "Print verision number",
+        flag: true,
+        callback: K(pkg.version)
+    })
+    .parse();
 
 var parse = require("./parse");
 var transformAst = require("./transform-ast");
