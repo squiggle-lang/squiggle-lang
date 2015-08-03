@@ -17,6 +17,19 @@ function transformAst(node) {
     throw new Error("Unknown AST node: " + jsonify(node));
 }
 
+function unary(f) {
+    return function(x) {
+        return f(x);
+    };
+}
+
+function mapLastSpecial(f, g, xs) {
+    var n = xs.length;
+    var ys = xs.slice(0, n - 1).map(unary(f));
+    var y = unary(g)(xs[n - 1]);
+    return ys.concat([y]);
+}
+
 function jsonify(x) {
     return JSON.stringify(x);
 }
@@ -116,6 +129,18 @@ var handlers = {
             )
         );
     },
+    Block: function(node) {
+        var exprs = node
+            .expressions
+            .map(transformAst)
+        var statements = mapLastSpecial(
+            es.ExpressionStatement,
+            es.ReturnStatement,
+            exprs
+        );
+        var fn = es.FunctionExpression(null, [], es.BlockStatement(statements));
+        return es.CallExpression(fn, []);
+    },
     GetProperty: function(node) {
         var obj = node.obj;
         var prop = coerceIdentToString(node.prop);
@@ -134,11 +159,6 @@ var handlers = {
                 assertBoolean(node.left),
                 assertBoolean(node.right)
             );
-        } else if (d === ';') {
-            return es.SequenceExpression([
-                transformAst(node.left),
-                transformAst(node.right)
-            ]);
         } else {
             var f = ast.Identifier(node.operator.data);
             var args = [node.left, node.right];
@@ -164,13 +184,7 @@ var handlers = {
             .parameters
             .map(transformAst);
         var bodyExpr = transformAst(node.body);
-        var setRet = es.VariableDeclaration('var', [
-            es.VariableDeclarator(
-                es.Identifier('$ret'),
-                bodyExpr
-            )
-        ]);
-        var returnExpr = es.ReturnStatement(es.Identifier('$ret'));
+        var returnExpr = es.ReturnStatement(bodyExpr);
         var n = node.parameters.length;
         var arityCheck = esprima.parse(
             "if (arguments.length !== " + n + ") { " +
@@ -180,31 +194,8 @@ var handlers = {
                 "); " +
             "}"
         ).body;
-        var preCheck = esprima.parse(
-            "if ($metadata.pre && !$metadata.pre.apply(null, arguments)) {" +
-                "throw new sqgl$$Error(" +
-                    "'Failed precondition'" +
-                ");" +
-            "}"
-        ).body;
-        var postCheck = esprima.parse(
-            "if ($metadata.post && !$metadata.post($ret)) {" +
-                "throw new sqgl$$Error(" +
-                    "'Failed postcondition'" +
-                ");" +
-            "}"
-        ).body;
-        var metadata = es.VariableDeclaration('var', [
-            es.VariableDeclarator(
-                es.Identifier('$metadata'),
-                transformAst(node.metadata)
-            )
-        ]);
         var body = flatten([
             arityCheck,
-            preCheck,
-            setRet,
-            postCheck,
             returnExpr
         ]);
         var innerFn = es.FunctionExpression(
@@ -214,15 +205,7 @@ var handlers = {
         );
         var callee = es.Identifier('sqgl$$freeze');
         var frozen = es.CallExpression(callee, [innerFn]);
-        var outerFn = es.FunctionExpression(
-            null,
-            [],
-            es.BlockStatement([
-                metadata,
-                es.ReturnStatement(frozen)
-            ])
-        );
-        return es.CallExpression(outerFn, []);
+        return frozen;
     },
     If: function(node) {
         var p = assertBoolean(node.p);

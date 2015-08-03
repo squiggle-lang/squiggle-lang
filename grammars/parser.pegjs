@@ -21,30 +21,30 @@ Program
     / _ e:Expr _            { return ast.Script(e); }
 
 Keyword
-    = "if" / "then" / "else"
+    = "if" / "else"
     / "let" / "in"
+    / "do"
     / "true" / "false"
     / "undefined" / "null"
     / "export"
 
 Expr
-    = a:Expr0 xs:((o:";" _ b:Expr0) { return [o, b]; })*
-    { return lbo(a, xs); }
+    = "do" _ "{" _ es:(e:Expr ";" _ { return e; })+ "}" _
+    { return ast.Block(es); }
+    / Expr0
 
 Expr0
-    = "if"   _ p:Bop1
-      "then" _ t:Expr
-      "else" _ f:Expr
+    = "if" _ "(" _ p:Bop1 ")" _ t:Expr "else" _ f:Expr
     { return ast.If(p, t, f); }
     / Expr1
 
 Expr1
-    = "let" _ "(" _ b:Bindings ")" _ "in" _ e:Expr
+    = "let" _ "(" _ b:Bindings ")" _ e:Expr
     { return ast.Let(b, e); }
     / Expr2
 
 Bindings
-    = b:Binding bs:(("," _ b2:Binding) { return b2; })*
+    = b:Binding bs:("," _ b2:Binding { return b2; })*
     { return [b].concat(bs); }
 
 Binding
@@ -73,18 +73,18 @@ Bop7 = Expr3
 Expr3
     =   e:Expr4
         xs:(
-            ("." _ i:Identifier) { return i; } /
-            ("[" _ i:Expr "]" _) { return i; }
+            "." _ i:Identifier { return i; } /
+            "[" _ i:Expr "]" _ { return i; }
         )*
     { return foldLeft(ast.GetProperty, e, xs); }
 
 Expr4
-    = e:Expr5 xs:(("::" _ i:Identifier) { return i; })*
+    = e:Expr5 xs:("::" _ i:Identifier { return i; })*
     { return foldLeft(ast.GetMethod, e, xs); }
 
 Expr5
     = e:Expr6 calls:(
-        ("." _ i:Identifier "(" _ xs:ListItems? ")" _)
+        "." _ i:Identifier "(" _ xs:ListItems? ")" _
         { return [i, xs || []]; }
     )*
     {
@@ -94,7 +94,7 @@ Expr5
     }
 
 Expr6
-    = e:Expr7 calls:(("(" _ xs:ListItems? ")" _) { return xs || []; })*
+    = e:Expr7 calls:("(" _ xs:ListItems? ")" _ { return xs || []; })*
     { return foldLeft(ast.Call, e, calls); }
 
 Expr7
@@ -118,11 +118,11 @@ IdentExpr
     { return ast.IdentifierExpression(i); }
 
 Function "function"
-    = "~" _ m:Map? "(" _ p:Parameters? "|" _ e:Expr ")" _
-    { return ast.Function(m || ast.Map([]), p || [], e); }
+    = "fn" _ "(" _ p:Parameters? ")" _ e:Expr
+    { return ast.Function(p || [], e); }
 
 Parameters
-    = p:Parameter ps:(("," _ p2: Parameter) { return p2; })*
+    = p:Parameter ps:("," _ p2: Parameter { return p2; })*
     { return [p].concat(ps); }
 
 Parameter
@@ -138,7 +138,7 @@ List "list"
     { return ast.List(xs || []); }
 
 ListItems
-    = e:Expr es:(("," _ e2:Expr) { return e2; })*
+    = e:Expr es:("," _ e2:Expr { return e2; })*
     { return [e].concat(es); }
 
 Map "map"
@@ -146,7 +146,7 @@ Map "map"
     { return ast.Map(xs || []); }
 
 MapPairs
-    = p:Pair ps:(("," _ p2:Pair) { return p2; })*
+    = p:Pair ps:("," _ p2:Pair { return p2; })*
     { return [p].concat(ps); }
 
 Pair
