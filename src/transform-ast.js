@@ -184,13 +184,7 @@ var handlers = {
             .parameters
             .map(transformAst);
         var bodyExpr = transformAst(node.body);
-        var setRet = es.VariableDeclaration('var', [
-            es.VariableDeclarator(
-                es.Identifier('$ret'),
-                bodyExpr
-            )
-        ]);
-        var returnExpr = es.ReturnStatement(es.Identifier('$ret'));
+        var returnExpr = es.ReturnStatement(bodyExpr);
         var n = node.parameters.length;
         var arityCheck = esprima.parse(
             "if (arguments.length !== " + n + ") { " +
@@ -200,31 +194,8 @@ var handlers = {
                 "); " +
             "}"
         ).body;
-        var preCheck = esprima.parse(
-            "if ($metadata.pre && !$metadata.pre.apply(null, arguments)) {" +
-                "throw new sqgl$$Error(" +
-                    "'Failed precondition'" +
-                ");" +
-            "}"
-        ).body;
-        var postCheck = esprima.parse(
-            "if ($metadata.post && !$metadata.post($ret)) {" +
-                "throw new sqgl$$Error(" +
-                    "'Failed postcondition'" +
-                ");" +
-            "}"
-        ).body;
-        // var metadata = es.VariableDeclaration('var', [
-        //     es.VariableDeclarator(
-        //         es.Identifier('$metadata'),
-        //         transformAst(node.metadata)
-        //     )
-        // ]);
         var body = flatten([
             arityCheck,
-            // preCheck,
-            setRet,
-            // postCheck,
             returnExpr
         ]);
         var innerFn = es.FunctionExpression(
@@ -234,16 +205,7 @@ var handlers = {
         );
         var callee = es.Identifier('sqgl$$freeze');
         var frozen = es.CallExpression(callee, [innerFn]);
-        var outerFn = es.FunctionExpression(
-            null,
-            [],
-            es.BlockStatement([
-                // metadata,
-                es.ReturnStatement(frozen)
-            ])
-        );
-        // return es.CallExpression(outerFn, []);
-        return innerFn;
+        return frozen;
     },
     If: function(node) {
         var p = assertBoolean(node.p);

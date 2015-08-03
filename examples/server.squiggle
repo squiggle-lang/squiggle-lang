@@ -3,7 +3,8 @@ let (
     keys = global.Object.keys,
     fromCharCode = global.String.fromCharCode,
     omap = fn(f, obj)
-        map(fn(k) f(k, obj[k]), keys(obj)),
+        let (g = fn(k) f(k, obj[k]))
+            map(g, keys(obj)),
     NL = fromCharCode(10),
     between = fn(x) fn(a, b) a ++ x ++ b,
     concat = fn(a, b) a ++ b,
