@@ -19,14 +19,12 @@ var argv = require("nomnom")
         position: 0,
         metavar: "FILE",
         help: "Compile this Squiggle file",
-        required: true,
         type: "string"
     })
     .option("output", {
         abbr: "o",
         metavar: "FILE",
         help: "Write JavaScript to this file",
-        required: true,
         type: "string"
     })
     .option("help", {
@@ -43,10 +41,11 @@ var argv = require("nomnom")
     })
     .parse();
 
-var parse = require("./parse");
+var parser = require("./file-parse");
 var transformAst = require("./transform-ast");
 var compile = require("./compile");
 var lint = require("./lint");
+var repl = require("./repl");
 
 function error(message) {
     console.error(chalk.bold.red(message));
@@ -60,9 +59,9 @@ function die(message) {
 function compileTo(src, dest) {
     var txt = fs.readFileSync(src, "utf-8");
     try {
-        var ast = parse(txt);
+        var ast = parser.parse(txt);
     } catch (e) {
-        if (!("expected" in e)) {
+        if (!(e instanceof parser.SyntaxError)) {
             throw e;
         }
         var expectations = e
@@ -84,4 +83,8 @@ function compileTo(src, dest) {
     fs.writeFileSync(dest, code, UTF8);
 }
 
-compileTo(argv._[0], argv.output);
+if (argv._.length === 0) {
+    repl.start();
+} else {
+    compileTo(argv._[0], argv.output);
+}
