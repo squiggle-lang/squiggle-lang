@@ -24,6 +24,11 @@ function loadPredef() {
     var es = require("./predef-ast");
     var js = compile(es);
     globalEval(js);
+    globalEval("var help = 'You may have meant to type :help';");
+    globalEval("var quit = 'You may have meant to type :quit';");
+    globalEval("var h = help;");
+    globalEval("var q = quit;");
+    globalEval("var exit = quit;");
 }
 
 function prettySyntaxError(e) {
