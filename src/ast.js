@@ -8,7 +8,6 @@ var ast = nm({
     CallMethod:  ["obj", "prop", "args"],
     Identifier:  ["data"],
     Block:       ["expressions"],
-    IdentifierExpression: ["data"],
     Call:        ["f", "args"],
     Function:    ["parameters", "body"],
     Parameter:   ["identifier"],
@@ -24,10 +23,14 @@ var ast = nm({
     False:       [],
     Null:        [],
     Undefined:   [],
-    ReplBinding: ["binding"],
-    ReplExpression: ["expression"],
     Binding:     ["identifier", "value"],
     Pair:        ["key", "value"],
+    IdentifierExpression: ["data"],
+
+    ReplHelp:       [],
+    ReplQuit:       [],
+    ReplBinding:    ["binding"],
+    ReplExpression: ["expression"],
 });
 
 module.exports = ast;

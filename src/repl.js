@@ -7,12 +7,14 @@ var compile = require("./compile");
 var transformAst = require("./transform-ast");
 var prettyPrint = require("./pretty-print");
 
-function squiggleEval(text) {
-    var ast = parse(text);
+function transformAndEval(ast) {
     var es = transformAst(ast);
     var js = compile(es);
-    return eval(js);
+    return globalEval(js);
 }
+
+// TODO: Run the compiled code in a completely separate node context, so that
+// REPL interactions can't interact with REPL implementation details.
 
 // This grabs a version of eval that executes in the global context, so
 // predef.js doesn't just declare its variables inside `loadPredef`.
@@ -37,24 +39,41 @@ function prettySyntaxError(e) {
 }
 
 function processLine(rl, text) {
-    if (text.trim() === ":quit") {
-        process.exit();
-    } else if (text.trim() === ":help") {
-        console.log(help());
-    } else if (text.trim() === "") {
+    if (text.trim() === "") {
         rl.prompt();
-    } else {
-        try {
-            console.log(prettyPrint(squiggleEval(text)));
-        } catch (e) {
-            if (e.name !== "SyntaxError") {
-                console.log(error(e.stack));
-            } else {
-                console.log(prettySyntaxError(e));
-            }
+        return;
+    }
+
+    try {
+        var ast = parse(text);
+    } catch (e) {
+        if (e.name !== "SyntaxError") {
+            console.log(error(e.stack));
+        } else {
+            console.log(prettySyntaxError(e));
         }
         console.log();
+        rl.prompt();
+        return;
     }
+
+    if (ast.type === "ReplQuit") {
+        process.exit();
+    }
+
+    if (ast.type === "ReplHelp") {
+        console.log(help());
+        rl.prompt();
+        return;
+    }
+
+    try {
+        console.log(prettyPrint(transformAndEval(ast)));
+    } catch (e) {
+        console.log(error(e.stack));
+    }
+
+    console.log();
     rl.prompt();
 }
 
