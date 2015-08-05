@@ -25,6 +25,7 @@ var ast = nm({
     Null:        [],
     Undefined:   [],
     ReplBinding: ["binding"],
+    ReplExpression: ["expression"],
     Binding:     ["identifier", "value"],
     Pair:        ["key", "value"],
 });

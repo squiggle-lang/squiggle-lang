@@ -28,7 +28,8 @@ Script
 ReplStart
     = _ ":set" _ b:Binding _
     { return ast.ReplBinding(b); }
-    / Script
+    / _ e:Expr _
+    { return ast.ReplExpression(e); }
 
 Keyword
     = "if" / "else"

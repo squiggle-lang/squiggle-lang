@@ -69,6 +69,12 @@ function _walk(parents, obj, ast) {
         IdentifierExpression: function(node) {
             recur(node.data);
         },
+        ReplExpression: function(node) {
+            recur(node.expression);
+        },
+        ReplBinding: function(node) {
+            recur(node.binding);
+        },
         True: function(node) {},
         False: function(node) {},
         Null: function(node) {},
