@@ -105,12 +105,12 @@ function S(n) {
 
 function help() {
     return [
-        keyword(":set ") + meta("x = y") + S(2) + "Set " + meta("x") +
-            " to the value of the " + meta("y") + " globally.",
-        keyword(":help") + S(7) + "Show this help message.",
-        keyword(":quit") + S(7) + "Quit Squiggle.",
-        meta("expr") + S(8) + "Evaluate " + meta("expr") +
-            " as a Squiggle expression.",
+        keyword(":set ") + meta("x = expr") + S(2) + "Set " + meta("x") +
+            " to the value of " + meta("expr") + " globally.",
+        keyword(":help") + S(10) + "Show this help message.",
+        keyword(":quit") + S(10) + "Quit Squiggle.",
+        meta("expr") + S(11) + "Evaluate " + meta("expr") +
+            " as an expression.",
         "",
         "This is the Squiggle interactive interpreter (REPL).",
         "If you want Squiggle compiler help, please quit and run:",
