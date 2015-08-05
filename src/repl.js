@@ -2,13 +2,13 @@ var pkg = require("../package.json");
 var readline = require("readline");
 var chalk = require("chalk");
 
-var parser = require("./repl-parse");
+var parse = require("./repl-parse");
 var compile = require("./compile");
 var transformAst = require("./transform-ast");
 var prettyPrint = require("./pretty-print");
 
 function squiggleEval(text) {
-    var ast = parser.parse(text);
+    var ast = parse(text);
     var es = transformAst(ast);
     var js = compile(es);
     return eval(js);
@@ -24,6 +24,18 @@ function loadPredef() {
     globalEval(js);
 }
 
+function prettySyntaxError(e) {
+    var expectations = e
+        .expected
+        .map(function(e) { return e.description; })
+        .join(", ");
+    return error(
+        "syntax error:" +
+        " expected one of " + expectations +
+        " but got '" + e.found + "'"
+    );
+}
+
 function processLine(rl, text) {
     if (text.trim() === ":quit") {
         process.exit();
@@ -35,7 +47,11 @@ function processLine(rl, text) {
         try {
             console.log(prettyPrint(squiggleEval(text)));
         } catch (e) {
-            console.log(error(e.stack));
+            if (e.name !== "SyntaxError") {
+                console.log(error(e.stack));
+            } else {
+                console.log(prettySyntaxError(e));
+            }
         }
         console.log();
     }
@@ -70,17 +86,18 @@ function S(n) {
 
 function help() {
     return [
-        "This is the Squiggle interactive interpreter (REPL).",
-        "If you want help about the Squiggle compiler,",
-        "please quit and run " + keyword("squiggle --help") + ".",
-        "",
         keyword(":set ") + meta("x = y") + S(2) + "Set " + meta("x") +
             " to the value of the " + meta("y") + " globally.",
         keyword(":help") + S(7) + "Show this help message.",
         keyword(":quit") + S(7) + "Quit Squiggle.",
         meta("expr") + S(8) + "Evaluate " + meta("expr") +
             " as a Squiggle expression.",
-        ""
+        "",
+        "This is the Squiggle interactive interpreter (REPL).",
+        "If you want Squiggle compiler help, please quit and run:",
+        "",
+        S(4) + header("squiggle --help"),
+        "",
     ].join("\n");
 }
 

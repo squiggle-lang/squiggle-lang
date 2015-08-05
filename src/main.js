@@ -41,7 +41,7 @@ var argv = require("nomnom")
     })
     .parse();
 
-var parser = require("./file-parse");
+var parse = require("./file-parse");
 var transformAst = require("./transform-ast");
 var compile = require("./compile");
 var lint = require("./lint");
@@ -59,9 +59,9 @@ function die(message) {
 function compileTo(src, dest) {
     var txt = fs.readFileSync(src, "utf-8");
     try {
-        var ast = parser.parse(txt);
+        var ast = parse(txt);
     } catch (e) {
-        if (!(e instanceof parser.SyntaxError)) {
+        if (e.name !== "SyntaxError") {
             throw e;
         }
         var expectations = e

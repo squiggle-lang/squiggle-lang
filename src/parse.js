@@ -8,5 +8,5 @@ var grammar = fs.readFileSync(filename, "utf8");
 module.exports = function parserFor(opts) {
     opts = opts || {};
     opts.cache = true;
-    return peg.buildParser(grammar, opts);
+    return peg.buildParser(grammar, opts).parse;
 }

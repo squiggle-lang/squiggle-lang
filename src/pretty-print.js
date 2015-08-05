@@ -5,6 +5,7 @@ var opts = {
     depth: null,
 }
 
+// TODO: Print out values that look like Squiggle source code.
 function prettyPrint(x) {
     return util.inspect(x, opts);
 }
