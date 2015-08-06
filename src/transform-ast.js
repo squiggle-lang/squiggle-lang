@@ -68,6 +68,24 @@ function moduleExportsEq(x) {
     );
 }
 
+function globalComputedEq(name, x) {
+    var literallyThis = es.Literal("this");
+    var indirectEval = es.LogicalExpression("||",
+        es.Literal(false),
+        es.Identifier("eval")
+    );
+    var global = es.CallExpression(indirectEval, [literallyThis]);
+    return es.ExpressionStatement(
+        es.AssignmentExpression('=',
+            es.MemberExpression(true,
+                global,
+                es.Literal(name)
+            ),
+            x
+        )
+    );
+}
+
 function cleanIdentifier(s) {
     if (/^if|else|while|do$/.test(s)) {
         return '$' + s;
@@ -93,6 +111,8 @@ function fileWrapper(body) {
     var useStrict = es.ExpressionStatement(es.Literal('use strict'));
     var newBody = [useStrict].concat(body);
     var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
+    var i = newBody.length - 1;
+    newBody[i] = es.ReturnStatement(newBody[i]);
     return es.Program([es.CallExpression(fn, [])]);
 }
 
@@ -128,6 +148,14 @@ var handlers = {
                 [prop, obj, args]
             )
         );
+    },
+    ReplBinding: function(node) {
+        var name = node.binding.identifier.data;
+        var expr = transformAst(node.binding.value);
+        return fileWrapper(globalComputedEq(name, expr));
+    },
+    ReplExpression: function(node) {
+        return fileWrapper(transformAst(node.expression))
     },
     Block: function(node) {
         var exprs = node

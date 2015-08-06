@@ -2,11 +2,6 @@
 "use strict";
 
 var UTF8 = "utf-8";
-var USAGE = [
-    "Usage: squiggle [file] -o [file]",
-    "",
-    "Examples: squiggle main.squiggle -o main.js"
-].join("\n");
 
 function K(x) { return function() { return x; }; }
 
@@ -14,39 +9,43 @@ var pkg = require("../package.json");
 var fs = require("fs");
 var path = require("path");
 var chalk = require("chalk");
-var argv = require("nomnom")
+var nomnom = require("nomnom")
+    .script("squiggle")
     .option("input", {
         position: 0,
         metavar: "FILE",
         help: "Compile this Squiggle file",
-        required: true,
         type: "string"
     })
     .option("output", {
         abbr: "o",
         metavar: "FILE",
         help: "Write JavaScript to this file",
-        required: true,
         type: "string"
+    })
+    .option("interactive", {
+        abbr: "i",
+        help: "Enter interactive shell",
+        flag: true
     })
     .option("help", {
         abbr: "h",
         help: "Print this message",
-        flag: true,
-        callback: K(USAGE)
+        flag: true
     })
     .option("version", {
         abbr: "v",
         help: "Print verision number",
         flag: true,
         callback: K(pkg.version)
-    })
-    .parse();
+    });
+var argv = nomnom.parse();
 
-var parse = require("./parse");
+var parse = require("./file-parse");
 var transformAst = require("./transform-ast");
 var compile = require("./compile");
 var lint = require("./lint");
+var repl = require("./repl");
 
 function error(message) {
     console.error(chalk.bold.red(message));
@@ -62,7 +61,7 @@ function compileTo(src, dest) {
     try {
         var ast = parse(txt);
     } catch (e) {
-        if (!("expected" in e)) {
+        if (e.name !== "SyntaxError") {
             throw e;
         }
         var expectations = e
@@ -84,4 +83,11 @@ function compileTo(src, dest) {
     fs.writeFileSync(dest, code, UTF8);
 }
 
-compileTo(argv._[0], argv.output);
+if (argv.interactive) {
+    repl.start();
+} else if (argv._.length === 1 && argv.output) {
+    compileTo(argv._[0], argv.output);
+} else {
+    console.log(nomnom.getUsage());
+    process.exit(1);
+}

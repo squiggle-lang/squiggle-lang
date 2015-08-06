@@ -16,9 +16,24 @@
     }
 }
 
-Program
-    = _ "export" _ e:Expr _ { return ast.Module(e); }
-    / _ e:Expr _            { return ast.Script(e); }
+Module
+    = _ "export" _ e:Expr _
+    { return ast.Module(e); }
+    / Script
+
+Script
+    = _ e:Expr _
+    { return ast.Script(e); }
+
+ReplStart
+    = _ ":set" _ b:Binding _
+    { return ast.ReplBinding(b); }
+    / _ ":help" _
+    { return ast.ReplHelp(); }
+    / _ ":quit" _
+    { return ast.ReplQuit(); }
+    / _ e:Expr _
+    { return ast.ReplExpression(e); }
 
 Keyword
     = "if" / "else"
