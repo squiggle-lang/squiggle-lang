@@ -49,8 +49,9 @@ function processLine(rl, text) {
         return;
     }
 
+    var ast;
     try {
-        var ast = parse(text);
+        ast = parse(text);
     } catch (e) {
         if (e.name !== "SyntaxError") {
             console.log(error(e.stack));

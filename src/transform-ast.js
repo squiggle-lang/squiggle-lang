@@ -155,12 +155,12 @@ var handlers = {
         return fileWrapper(globalComputedEq(name, expr));
     },
     ReplExpression: function(node) {
-        return fileWrapper(transformAst(node.expression))
+        return fileWrapper(transformAst(node.expression));
     },
     Block: function(node) {
         var exprs = node
             .expressions
-            .map(transformAst)
+            .map(transformAst);
         var statements = mapLastSpecial(
             es.ExpressionStatement,
             es.ReturnStatement,

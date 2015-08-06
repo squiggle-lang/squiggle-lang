@@ -9,4 +9,4 @@ module.exports = function parserFor(opts) {
     opts = opts || {};
     opts.cache = true;
     return peg.buildParser(grammar, opts).parse;
-}
+};

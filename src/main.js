@@ -3,8 +3,6 @@
 
 var UTF8 = "utf-8";
 
-function K(x) { return function() { return x; }; }
-
 var pkg = require("../package.json");
 var fs = require("fs");
 var path = require("path");
@@ -37,7 +35,7 @@ var nomnom = require("nomnom")
         abbr: "v",
         help: "Print verision number",
         flag: true,
-        callback: K(pkg.version)
+        callback: function() { return pkg.version; }
     });
 var argv = nomnom.parse();
 
@@ -58,8 +56,9 @@ function die(message) {
 
 function compileTo(src, dest) {
     var txt = fs.readFileSync(src, "utf-8");
+    var ast;
     try {
-        var ast = parse(txt);
+        ast = parse(txt);
     } catch (e) {
         if (e.name !== "SyntaxError") {
             throw e;
