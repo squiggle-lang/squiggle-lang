@@ -18,6 +18,10 @@ Then run:
 
     squiggle hello.squiggle -o hello.js
     node hello.js
+    
+## Code of conduct
+
+This project uses the [Contributor Covenant](https://github.com/saikobee/squiggle/blob/master/CODE_OF_CONDUCT.md) as its code of conduct.
 
 ## Another programming language?
 
