@@ -167,6 +167,8 @@ MapPairs
 Pair
     = k:Expr ":" _ v:Expr
     { return ast.Pair(k, v); }
+    / i:Identifier
+    { return ast.Pair(ast.String(i.data), i); }
 
 Identifier "identifier"
     = i:$([_a-zA-Z][_a-zA-Z0-9]*) _
