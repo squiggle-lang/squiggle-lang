@@ -2,3 +2,5 @@ node_modules/
 npm-debug.log
 
 examples/**/*.js
+.sass-cache/
+_site/
