@@ -8,6 +8,10 @@
         }, z);
     }
 
+    function cons(x, xs) {
+        return [x].concat(xs);
+    }
+
     // Left-associative binary operator helper.
     function lbo(a, xs) {
         return foldLeft(function(acc, pair) {
@@ -56,7 +60,49 @@ Expr0
 Expr1
     = "let" _ "(" _ b:Bindings ")" _ e:Expr
     { return ast.Let(b, e); }
+    / Match
     / Expr2
+
+Match
+    = "match" _ "(" _ e:Expr ")" _ "{" _ b:MatchClause+ "}" _
+    { return ast.Match(e, b); }
+
+MatchClause
+    = p:MatchPattern "=>" _ e:Expr
+    { return ast.MatchClause(p, e); }
+
+MatchPattern
+    = MatchPatternSimple
+    / MatchPatternArray
+    / MatchPatternObject
+
+MatchPatternSimple
+    = i:Identifier
+    { return ast.MatchPatternSimple(i); }
+
+MatchPatternArray
+    = "[" _ ps:MatchPatternArrayItems? "]" _
+    { return ast.MatchPatternArray(ps || []); }
+
+MatchPatternArrayItems
+    = p:MatchPatternSimple
+      ps:("," _ pp:MatchPatternSimple { return pp; })*
+    { return cons(p, ps); }
+
+MatchPatternObject
+    = "{" _ ps:MatchPatternObjectItems? "}" _
+    { return ast.MatchPatternObject(ps || []); }
+
+MatchPatternObjectItems
+    = p:MatchPatternObjectPair
+      ps:("," _ pp:MatchPatternObjectPair { return pp; })*
+    { return cons(p, ps); }
+
+MatchPatternObjectPair
+    = k:Identifier ":" _ v:Identifier
+    { return ast.MatchPatternObjectPair(k, v); }
+    / i:Identifier
+    { return ast.MatchPatternObjectPair(ast.String(i.data), i); }
 
 Bindings
     = b:Binding bs:("," _ b2:Binding { return b2; })*
@@ -69,19 +115,19 @@ Binding
 Expr2
     = Bop1
 
-b1 = ("|>") _
-b2 = ("and" / "or") _
-b3 = (">=" / "<=" / "<" / ">" / "=" / "!=") _
-b4 = ("++") _
-b5 = ("+" / "-") _
-b6 = ("*" / "/") _
+b1 = "|>"
+b2 = "and" / "or"
+b3 = ">=" / "<=" / "<" / ">" / "=" / "!="
+b4 = "++"
+b5 = "+" / "-"
+b6 = "*" / "/"
 
-Bop1 = a:Bop2 xs:(o:b1 b:Bop2)* { return lbo(a, xs); }
-Bop2 = a:Bop3 xs:(o:b2 b:Bop3)* { return lbo(a, xs); }
-Bop3 = a:Bop4 xs:(o:b3 b:Bop4)* { return lbo(a, xs); }
-Bop4 = a:Bop5 xs:(o:b4 b:Bop5)* { return lbo(a, xs); }
-Bop5 = a:Bop6 xs:(o:b5 b:Bop6)* { return lbo(a, xs); }
-Bop6 = a:Bop7 xs:(o:b6 b:Bop7)* { return lbo(a, xs); }
+Bop1 = a:Bop2 xs:(o:b1 _ b:Bop2 { return [o, b]; })* { return lbo(a, xs); }
+Bop2 = a:Bop3 xs:(o:b2 _ b:Bop3 { return [o, b]; })* { return lbo(a, xs); }
+Bop3 = a:Bop4 xs:(o:b3 _ b:Bop4 { return [o, b]; })* { return lbo(a, xs); }
+Bop4 = a:Bop5 xs:(o:b4 _ b:Bop5 { return [o, b]; })* { return lbo(a, xs); }
+Bop5 = a:Bop6 xs:(o:b5 _ b:Bop6 { return [o, b]; })* { return lbo(a, xs); }
+Bop6 = a:Bop7 xs:(o:b6 _ b:Bop7 { return [o, b]; })* { return lbo(a, xs); }
 
 Bop7 = Expr3
 

@@ -57,14 +57,12 @@ function coerceIdentToString(node) {
 var PREDEF = require("./predef-ast");
 
 function moduleExportsEq(x) {
-    return es.ExpressionStatement(
-        es.AssignmentExpression('=',
-            es.MemberExpression(false,
-                es.Identifier('module'),
-                es.Identifier('exports')
-            ),
-            x
-        )
+    return es.AssignmentExpression('=',
+        es.MemberExpression(false,
+            es.Identifier('module'),
+            es.Identifier('exports')
+        ),
+        x
     );
 }
 
@@ -113,7 +111,8 @@ function fileWrapper(body) {
     var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
     var i = newBody.length - 1;
     newBody[i] = es.ReturnStatement(newBody[i]);
-    return es.Program([es.CallExpression(fn, [])]);
+    var st = es.ExpressionStatement(es.CallExpression(fn, []));
+    return es.Program([st]);
 }
 
 var handlers = {
@@ -152,10 +151,10 @@ var handlers = {
     ReplBinding: function(node) {
         var name = node.binding.identifier.data;
         var expr = transformAst(node.binding.value);
-        return fileWrapper(globalComputedEq(name, expr));
+        return fileWrapper([globalComputedEq(name, expr)]);
     },
     ReplExpression: function(node) {
-        return fileWrapper(transformAst(node.expression));
+        return fileWrapper([transformAst(node.expression)]);
     },
     Block: function(node) {
         var exprs = node
@@ -280,6 +279,33 @@ var handlers = {
             es.Identifier('sqgl$$object'),
             [es.ArrayExpression(pairs)]
         );
+    },
+    Match: function(node) {
+        // TODO
+        var e = transformAst(node.expression);
+        var body = node.clauses.map(transformAst);
+        var block = es.BlockStatement(body);
+        var id = es.Identifier("$match");
+        var fn = es.FunctionExpression(null, [id], block);
+        return es.CallExpression(fn, [e]);
+    },
+    MatchClause: function(node) {
+        // TODO
+        var j = JSON.stringify;
+        var s = "" + j(node.pattern) + " => " + j(node.expression);
+        return es.ExpressionStatement(es.Literal(s));
+    },
+    MatchPatternSimple: function(node) {
+        // TODO
+    },
+    MatchPatternArray: function(node) {
+        // TODO
+    },
+    MatchPatternObject: function(node) {
+        // TODO
+    },
+    MatchPatternObjectPair: function(node) {
+        // TODO
     },
     True: function(node) {
         return es.Literal(true);
