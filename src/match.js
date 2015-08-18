@@ -102,7 +102,7 @@ var __pluckPattern = {
         acc.expressions.push(objGet(root, p.key.data));
         return acc;
     },
-}
+};
 
 function _pluckPattern(acc, root, p) {
     if (p.type in __pluckPattern) {
