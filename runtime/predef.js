@@ -5,6 +5,8 @@ var undefined = void 0;
 var global = (1, eval)("this");
 var print = function(x) { return sqgl$$log(x); };
 var not = function(x) { return !x; };
+// TODO: Polyfill.
+var is = Object.is;
 var $lt = function(a, b) {
     var ta = typeof a;
     var tb = typeof b;
@@ -190,6 +192,7 @@ var sqgl$$assertBoolean = function(x) {
 };
 var sqgl$$freeze = Object.freeze;
 var sqgl$$create = Object.create;
+var sqgl$$is = is;
 var sqgl$$isArray = Array.isArray;
 var sqgl$$keys = Object.keys;
 var sqgl$$get = get;

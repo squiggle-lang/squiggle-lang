@@ -73,8 +73,13 @@ MatchClause
 
 MatchPattern
     = MatchPatternSimple
+    / MatchPatternLiteral
     / MatchPatternArray
     / MatchPatternObject
+
+MatchPatternLiteral
+    = x:(Number / String / NamedLiteral)
+    { return ast.MatchPatternLiteral(x); }
 
 MatchPatternSimple
     = i:Identifier
@@ -235,6 +240,12 @@ Undefined "undefined"
 Null "null"
     = "null" _
     { return ast.Null(); }
+
+NamedLiteral
+    = True
+    / False
+    / Undefined
+    / Null
 
 Number "number"
     = n:$([0-9]+) _

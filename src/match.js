@@ -48,6 +48,10 @@ var _satisfiesPattern = {
     MatchPatternSimple: function(root, p) {
         return esTrue;
     },
+    MatchPatternLiteral: function(root, p) {
+        var lit = es.Literal(p.data.data);
+        return es.CallExpression(es.Identifier("sqgl$$is"), [root, lit]);
+    },
     MatchPatternArray: function(root, p) {
         var ps = p.patterns;
         var n = ps.length;
@@ -83,6 +87,10 @@ var __pluckPattern = {
     MatchPatternSimple: function(acc, root, p) {
         acc.identifiers.push(es.Identifier(p.identifier.data));
         acc.expressions.push(root);
+        return acc;
+    },
+    MatchPatternLiteral: function(acc, root, p) {
+        // Literals are just for the expression, they don't bind any values.
         return acc;
     },
     MatchPatternArray: function(acc, root, p) {
