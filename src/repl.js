@@ -7,10 +7,14 @@ var compile = require("./compile");
 var transformAst = require("./transform-ast");
 var prettyPrint = require("./pretty-print");
 
+var SHOW_JS = true;
+
 function transformAndEval(ast) {
     var es = transformAst(ast);
     var js = compile(es);
-    console.log(chalk.bold("JAVASCRIPT\n") + chalk.cyan(js));
+    if (SHOW_JS) {
+        console.log(chalk.cyan(js));
+    }
     return globalEval(js);
 }
 
@@ -75,7 +79,6 @@ function processLine(rl, text) {
     }
 
     try {
-        console.log(prettyPrint(ast));
         console.log(prettyPrint(transformAndEval(ast)));
     } catch (e) {
         console.log(error(e.stack));

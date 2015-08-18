@@ -68,7 +68,7 @@ Match
     { return ast.Match(e, b); }
 
 MatchClause
-    = p:MatchPattern "=>" _ e:Expr
+    = "case" _ p:MatchPattern "=>" _ e:Expr
     { return ast.MatchClause(p, e); }
 
 MatchPattern
