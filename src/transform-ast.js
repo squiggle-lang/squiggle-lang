@@ -6,6 +6,7 @@ var jsbeautify = require("js-beautify");
 var esprima = require("esprima");
 var es = require("./es");
 var ast = require("./ast");
+var match = require("./match");
 
 function transformAst(node) {
     if (!isObject(node)) {
@@ -284,28 +285,29 @@ var handlers = {
         // TODO
         var e = transformAst(node.expression);
         var body = node.clauses.map(transformAst);
-        var block = es.BlockStatement(body);
+        var matchError = esprima.parse(
+            "throw new sqgl$$Error('pattern match failure');"
+        ).body;
+        var block = es.BlockStatement(body.concat(matchError));
         var id = es.Identifier("$match");
         var fn = es.FunctionExpression(null, [id], block);
         return es.CallExpression(fn, [e]);
     },
     MatchClause: function(node) {
-        // TODO
-        var j = JSON.stringify;
-        var s = "" + j(node.pattern) + " => " + j(node.expression);
-        return es.ExpressionStatement(es.Literal(s));
+        var e = transformAst(node.expression);
+        return match(node.pattern, e);
     },
     MatchPatternSimple: function(node) {
-        // TODO
+        throw new Error("you shouldn't be here");
     },
     MatchPatternArray: function(node) {
-        // TODO
+        throw new Error("you shouldn't be here");
     },
     MatchPatternObject: function(node) {
-        // TODO
+        throw new Error("you shouldn't be here");
     },
     MatchPatternObjectPair: function(node) {
-        // TODO
+        throw new Error("you shouldn't be here");
     },
     True: function(node) {
         return es.Literal(true);

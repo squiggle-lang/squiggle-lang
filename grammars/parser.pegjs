@@ -99,7 +99,7 @@ MatchPatternObjectItems
     { return cons(p, ps); }
 
 MatchPatternObjectPair
-    = k:Identifier ":" _ v:Identifier
+    = k:String ":" _ v:Identifier
     { return ast.MatchPatternObjectPair(k, v); }
     / i:Identifier
     { return ast.MatchPatternObjectPair(ast.String(i.data), i); }

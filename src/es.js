@@ -17,6 +17,8 @@ var es = nm({
     FunctionExpression: ['id', 'params', 'body'],
     VariableDeclaration: ['kind', 'declarations'],
     VariableDeclarator: ['id', 'init'],
+    BinaryExpression: ['operator', 'left', 'right'],
+    IfStatement: ['test', 'consequent', 'alternate'],
 });
 
 module.exports = es;
