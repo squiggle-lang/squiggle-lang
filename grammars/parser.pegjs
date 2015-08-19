@@ -83,7 +83,6 @@ MatchPatternNonterminal
     = MatchPatternArray
     / MatchPatternObject
 
-
 MatchPatternLiteral
     = x:(Number / String / NamedLiteral)
     { return ast.MatchPatternLiteral(x); }
@@ -114,7 +113,12 @@ MatchPatternObjectPair
     = k:String ":" _ v:MatchPattern
     { return ast.MatchPatternObjectPair(k, v); }
     / i:Identifier
-    { return ast.MatchPatternObjectPair(ast.String(i.data), i); }
+    {
+        return ast.MatchPatternObjectPair(
+            ast.String(i.data),
+            ast.MatchPatternSimple(i)
+        );
+    }
 
 Bindings
     = b:Binding bs:("," _ b2:Binding { return b2; })*

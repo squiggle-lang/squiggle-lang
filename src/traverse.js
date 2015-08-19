@@ -75,6 +75,27 @@ function _walk(parents, obj, ast) {
         ReplBinding: function(node) {
             recur(node.binding);
         },
+        Match: function(node) {
+            // TODO
+        },
+        MatchClause: function(node) {
+            // TODO
+        },
+        MatchPatternSimple: function(node) {
+            // TODO
+        },
+        MatchPatternLiteral: function(node) {
+            // TODO
+        },
+        MatchPatternArray: function(node) {
+            // TODO
+        },
+        MatchPatternObject: function(node) {
+            // TODO
+        },
+        MatchPatternObjectPair: function(node) {
+            // TODO
+        },
         True: function(node) {},
         False: function(node) {},
         Null: function(node) {},

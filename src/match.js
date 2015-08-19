@@ -98,7 +98,7 @@ function satisfiesPattern(root, p) {
     if (p.type in _satisfiesPattern) {
         return _satisfiesPattern[p.type](root, p);
     }
-    throw new Error("can't satisfiesPattern of " + p);
+    throw new Error("can't satisfiesPattern of " + j(p));
 }
 
 var __pluckPattern = {
@@ -135,7 +135,7 @@ function _pluckPattern(acc, root, p) {
     if (p.type in __pluckPattern) {
         return __pluckPattern[p.type](acc, root, p);
     }
-    throw new Error("can't pluckPattern of " + p);
+    throw new Error("can't pluckPattern of " + j(p));
 }
 
 function pluckPattern(root, p) {
