@@ -25,7 +25,7 @@ function esProp(obj, prop) {
     return es.MemberExpression(false, obj, es.Identifier(prop));
 }
 
-function arrayNth(a, i) {
+function esNth(a, i) {
     return es.MemberExpression(true, a, es.Literal(i));
 }
 
@@ -44,6 +44,14 @@ function esTypeof(x) {
 
 var esTrue = es.Literal(true);
 
+function notEsTrue(x) {
+    return !isEsTrue(x);
+}
+
+function isEsTrue(x) {
+    return x.type === "Literal" && x.value === true;
+}
+
 var _satisfiesPattern = {
     MatchPatternSimple: function(root, p) {
         return esTrue;
@@ -56,23 +64,33 @@ var _satisfiesPattern = {
         var ps = p.patterns;
         var n = ps.length;
         var lengthEq = esEq(esProp(root, "length"), es.Literal(n));
-        return lengthEq;
+        return ps
+            .map(function(x, i) {
+                return satisfiesPattern(esNth(root, i), x);
+            })
+            .filter(notEsTrue)
+            .reduce(esAnd, esAnd(root, lengthEq));
     },
     MatchPatternObject: function(root, p) {
         var t = esTypeof(root);
         var o = es.Literal("object");
-        var isObject = esAnd(root, esEq(t, o));
+        var isObject = es.CallExpression(
+            es.Identifier("sqgl$$isObject"),
+            [root]
+        );
         return p
             .pairs
-            .map(function(p) {
-                return esIn(es.Literal(p.key.data), root);
+            .map(function(x) {
+                return satisfiesPattern(root, x);
             })
+            .filter(notEsTrue)
             .reduce(esAnd, isObject);
     },
     MatchPatternObjectPair: function(root, p) {
         // TODO: Don't assume the key is a string literal.
-        var s = es.Literal(p.key.data);
-        return esEq(s, s);
+        var has = esIn(es.Literal(p.key.data), root);
+        var rootObj = esNth(root, p.key.data);
+        return esAnd(has, satisfiesPattern(rootObj, p.value));
     },
 };
 
@@ -95,7 +113,7 @@ var __pluckPattern = {
     },
     MatchPatternArray: function(acc, root, p) {
         p.patterns.forEach(function(x, i) {
-            _pluckPattern(acc, arrayNth(root, i), x);
+            _pluckPattern(acc, esNth(root, i), x);
         });
         return acc;
     },
@@ -106,8 +124,9 @@ var __pluckPattern = {
         return acc;
     },
     MatchPatternObjectPair: function(acc, root, p) {
-        acc.identifiers.push(es.Identifier(p.value.data));
-        acc.expressions.push(objGet(root, p.key.data));
+        // TODO: Don't assume p.key is a string literal.
+        var objRoot = objGet(root, p.key.data);
+        _pluckPattern(acc, objRoot, p.value);
         return acc;
     },
 };

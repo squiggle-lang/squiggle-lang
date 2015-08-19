@@ -72,10 +72,17 @@ MatchClause
     { return ast.MatchClause(p, e); }
 
 MatchPattern
-    = MatchPatternSimple
-    / MatchPatternLiteral
-    / MatchPatternArray
+    = MatchPatternTerminal
+    / MatchPatternNonterminal
+
+MatchPatternTerminal
+    = MatchPatternLiteral
+    / MatchPatternSimple
+
+MatchPatternNonterminal
+    = MatchPatternArray
     / MatchPatternObject
+
 
 MatchPatternLiteral
     = x:(Number / String / NamedLiteral)
@@ -90,8 +97,8 @@ MatchPatternArray
     { return ast.MatchPatternArray(ps || []); }
 
 MatchPatternArrayItems
-    = p:MatchPatternSimple
-      ps:("," _ pp:MatchPatternSimple { return pp; })*
+    = p:MatchPattern
+      ps:("," _ pp:MatchPattern { return pp; })*
     { return cons(p, ps); }
 
 MatchPatternObject
@@ -104,7 +111,7 @@ MatchPatternObjectItems
     { return cons(p, ps); }
 
 MatchPatternObjectPair
-    = k:String ":" _ v:Identifier
+    = k:String ":" _ v:MatchPattern
     { return ast.MatchPatternObjectPair(k, v); }
     / i:Identifier
     { return ast.MatchPatternObjectPair(ast.String(i.data), i); }
