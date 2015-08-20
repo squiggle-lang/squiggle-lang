@@ -87,6 +87,10 @@ function findUnusedOrUndeclaredBindings(ast) {
             identifiers.forEach(function(b) {
                 scopes.setBest(b.identifier.data, false);
             });
+        } else if (node.type === 'MatchClause') {
+            scopes = OverlayMap(scopes);
+        } else if (node.type === 'MatchPatternSimple') {
+            scopes.setBest(node.identifier.data, false);
         } else if (isIdentifierUsage(node, parent)) {
             // Only look at identifiers that are being used for their
             // values, not their names.
@@ -104,7 +108,7 @@ function findUnusedOrUndeclaredBindings(ast) {
         }
     }
     function exit(node, parent) {
-        if (isNewScope(node, parent)) {
+        if (isNewScope(node, parent) || node.type === 'MatchClause') {
             // Pop the scope stack and investigate for unused variables.
             scopes.ownKeys().forEach(function(k) {
                 if (isIdentifierOkayToNotUse(k) && !scopes.get(k)) {

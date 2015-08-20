@@ -4,7 +4,6 @@ let (
     address = "127.0.0.1",
     Number = global.Number,
     String = global.String,
-    NL = String.fromCharCode(10),
     factorial = fn(n) match (n) {
         case 0 => 1
         case n => n * factorial(n - 1)
@@ -18,7 +17,7 @@ let (
             a = mod(s, 0),
             b = mod(s, n - 1)
         ) s.slice(a, n - b).split("/"),
-    dispatchGet = fn(url) match (tail(url.split("/"))) {
+    dispatchGet = fn(url) match (parsePath(url)) {
         case ["factorial", x] => handlerFactorial(x)
         case ["echo", s] => s
         case _ => "I don't know what you want to GET"

@@ -76,25 +76,28 @@ function _walk(parents, obj, ast) {
             recur(node.binding);
         },
         Match: function(node) {
-            // TODO
+            recur(node.expression);
+            node.clauses.forEach(recur);
         },
         MatchClause: function(node) {
-            // TODO
+            recur(node.pattern);
+            recur(node.expression);
         },
         MatchPatternSimple: function(node) {
-            // TODO
+            recur(node.identifier);
         },
         MatchPatternLiteral: function(node) {
-            // TODO
+            recur(node.data);
         },
         MatchPatternArray: function(node) {
-            // TODO
+            node.patterns.forEach(recur);
         },
         MatchPatternObject: function(node) {
-            // TODO
+            node.pairs.forEach(recur);
         },
         MatchPatternObjectPair: function(node) {
-            // TODO
+            recur(node.key);
+            recur(node.value);
         },
         True: function(node) {},
         False: function(node) {},
