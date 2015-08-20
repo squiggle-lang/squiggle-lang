@@ -1,22 +1,40 @@
 let (
     http = require("http"),
-    keys = global.Object.keys,
-    fromCharCode = global.String.fromCharCode,
-    omap = fn(f, obj)
-        let (g = fn(k) f(k, obj[k]))
-            map(g, keys(obj)),
-    NL = fromCharCode(10),
-    between = fn(x) fn(a, b) a ++ x ++ b,
-    concat = fn(a, b) a ++ b,
-    handler = fn(req, res) do {
-        console.log(req.method ++ " " ++ req.url);
-        res.writeHead(200, {"Content-Type": "text/plain"});
+    port = 1337,
+    address = "127.0.0.1",
+    Number = global.Number,
+    String = global.String,
+    NL = String.fromCharCode(10),
+    factorial = fn(n) match (n) {
+        case 0 => 1
+        case n => n * factorial(n - 1)
+    },
+    handlerFactorial = fn(x)
+        String(factorial(Number(x))),
+    parsePath = fn(s)
         let (
-            lines = omap(between(": "), req.headers),
-            str = reduce(concat, map(fn(x) x ++ NL, lines))
-        ) res.end(str);
+            mod = fn(s, i) Number(s.charAt(i) = "/"),
+            n = s.length,
+            a = mod(s, 0),
+            b = mod(s, n - 1)
+        ) s.slice(a, n - b).split("/"),
+    dispatchGet = fn(url) match (tail(url.split("/"))) {
+        case ["factorial", x] => handlerFactorial(x)
+        case ["echo", s] => s
+        case _ => "I don't know what you want to GET"
+    },
+    dispatch = fn(method, url) match ([method, url]) {
+        case ["GET", p] => dispatchGet(p)
+        case ["POST", _] => "Looks like you POST-ed me!"
+        case ["DELETE", _] => "Not interested in DELETE-ing!"
+        case ["OPTIONS", _] => "What OPTIONS are you looking for?"
+        case _ => "ERROR"
+    },
+    handler = fn(req, res) match (req) {
+        case {method, url} =>
+            res.end(dispatch(method, url))
     }
 ) do {
-    http.createServer(handler).listen(1337, "127.0.0.1");
-    print("Server started at http://127.0.0.1:1337/");
+    http.createServer(handler).listen(port, address);
+    console.log("Server running at http://127.0.0.1:1337/");
 }
