@@ -1,6 +1,6 @@
 {
     // Yikes... what a horrible import path.
-    var ast = require("../../../src/ast");
+    var ast = require("../src/ast");
 
     function foldLeft(f, z, xs) {
         return xs.reduce(function(acc, x) {
@@ -43,6 +43,7 @@ Keyword
     = "if" / "else"
     / "let" / "in"
     / "do"
+    / "match" / "case"
     / "true" / "false"
     / "undefined" / "null"
     / "export"

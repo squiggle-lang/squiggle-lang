@@ -1,11 +1,9 @@
-var peg = require("pegjs");
-var path = require("path");
-var fs = require("fs");
+var parser = require("../build/parser");
 
-var grammar = fs.readFileSync(__dirname + "/../grammars/parser.pegjs", "utf8");
+function parse(options) {
+    return function(code) {
+        return parser.parse(code);
+    };
+}
 
-module.exports = function parserFor(opts) {
-    opts = opts || {};
-    opts.cache = true;
-    return peg.buildParser(grammar, opts).parse;
-};
+module.exports = parse;
