@@ -7,9 +7,14 @@ var compile = require("./compile");
 var transformAst = require("./transform-ast");
 var prettyPrint = require("./pretty-print");
 
+var SHOW_JS = true;
+
 function transformAndEval(ast) {
     var es = transformAst(ast);
     var js = compile(es);
+    if (SHOW_JS) {
+        console.log(chalk.cyan(js));
+    }
     return globalEval(js);
 }
 

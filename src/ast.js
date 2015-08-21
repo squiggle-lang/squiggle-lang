@@ -27,6 +27,14 @@ var ast = nm({
     Pair:        ["key", "value"],
     IdentifierExpression: ["data"],
 
+    Match: ["expression", "clauses"],
+    MatchClause: ["pattern", "expression"],
+    MatchPatternSimple: ["identifier"],
+    MatchPatternLiteral: ["data"],
+    MatchPatternArray: ["patterns"],
+    MatchPatternObject: ["pairs"],
+    MatchPatternObjectPair: ["key", "value"],
+
     ReplHelp:       [],
     ReplQuit:       [],
     ReplBinding:    ["binding"],

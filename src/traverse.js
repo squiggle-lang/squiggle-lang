@@ -75,6 +75,30 @@ function _walk(parents, obj, ast) {
         ReplBinding: function(node) {
             recur(node.binding);
         },
+        Match: function(node) {
+            recur(node.expression);
+            node.clauses.forEach(recur);
+        },
+        MatchClause: function(node) {
+            recur(node.pattern);
+            recur(node.expression);
+        },
+        MatchPatternSimple: function(node) {
+            recur(node.identifier);
+        },
+        MatchPatternLiteral: function(node) {
+            recur(node.data);
+        },
+        MatchPatternArray: function(node) {
+            node.patterns.forEach(recur);
+        },
+        MatchPatternObject: function(node) {
+            node.pairs.forEach(recur);
+        },
+        MatchPatternObjectPair: function(node) {
+            recur(node.key);
+            recur(node.value);
+        },
         True: function(node) {},
         False: function(node) {},
         Null: function(node) {},

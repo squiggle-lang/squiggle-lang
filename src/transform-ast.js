@@ -6,6 +6,7 @@ var jsbeautify = require("js-beautify");
 var esprima = require("esprima");
 var es = require("./es");
 var ast = require("./ast");
+var match = require("./match");
 
 function transformAst(node) {
     if (!isObject(node)) {
@@ -57,14 +58,12 @@ function coerceIdentToString(node) {
 var PREDEF = require("./predef-ast");
 
 function moduleExportsEq(x) {
-    return es.ExpressionStatement(
-        es.AssignmentExpression('=',
-            es.MemberExpression(false,
-                es.Identifier('module'),
-                es.Identifier('exports')
-            ),
-            x
-        )
+    return es.AssignmentExpression('=',
+        es.MemberExpression(false,
+            es.Identifier('module'),
+            es.Identifier('exports')
+        ),
+        x
     );
 }
 
@@ -113,7 +112,8 @@ function fileWrapper(body) {
     var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
     var i = newBody.length - 1;
     newBody[i] = es.ReturnStatement(newBody[i]);
-    return es.Program([es.CallExpression(fn, [])]);
+    var st = es.ExpressionStatement(es.CallExpression(fn, []));
+    return es.Program([st]);
 }
 
 var handlers = {
@@ -152,10 +152,10 @@ var handlers = {
     ReplBinding: function(node) {
         var name = node.binding.identifier.data;
         var expr = transformAst(node.binding.value);
-        return fileWrapper(globalComputedEq(name, expr));
+        return fileWrapper([globalComputedEq(name, expr)]);
     },
     ReplExpression: function(node) {
-        return fileWrapper(transformAst(node.expression));
+        return fileWrapper([transformAst(node.expression)]);
     },
     Block: function(node) {
         var exprs = node
@@ -280,6 +280,34 @@ var handlers = {
             es.Identifier('sqgl$$object'),
             [es.ArrayExpression(pairs)]
         );
+    },
+    Match: function(node) {
+        // TODO
+        var e = transformAst(node.expression);
+        var body = node.clauses.map(transformAst);
+        var matchError = esprima.parse(
+            "throw new sqgl$$Error('pattern match failure');"
+        ).body;
+        var block = es.BlockStatement(body.concat(matchError));
+        var id = es.Identifier("$match");
+        var fn = es.FunctionExpression(null, [id], block);
+        return es.CallExpression(fn, [e]);
+    },
+    MatchClause: function(node) {
+        var e = transformAst(node.expression);
+        return match(node.pattern, e);
+    },
+    MatchPatternSimple: function(node) {
+        throw new Error("you shouldn't be here");
+    },
+    MatchPatternArray: function(node) {
+        throw new Error("you shouldn't be here");
+    },
+    MatchPatternObject: function(node) {
+        throw new Error("you shouldn't be here");
+    },
+    MatchPatternObjectPair: function(node) {
+        throw new Error("you shouldn't be here");
     },
     True: function(node) {
         return es.Literal(true);
