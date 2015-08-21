@@ -1,6 +1,1 @@
-module.exports = require("./parse")({
-    allowedStartRules: [
-        "ReplStart",
-        "Script",
-    ]
-});
+module.exports = require("../build/repl-parser").parse;

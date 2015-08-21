@@ -1,6 +1,6 @@
 module.exports = {
     parse: require("./file-parse"),
-    transformAst: require("./transform-ast"),
     lint: require("./lint"),
+    transformAst: require("./transform-ast"),
     compile: require("./compile"),
 };

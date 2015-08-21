@@ -2,17 +2,25 @@
 require "json"
 
 PATH = `npm bin`.chomp
-PEG_OPTS = ["--cache", "--optimize", "size"]
+PEGJS = "#{PATH}/pegjs"
 PEG_IN = "grammars/parser.pegjs"
-PEG_OUT = "build/parser.js"
+REPL_OUT = "build/repl-parser.js"
+FILE_OUT = "build/file-parser.js"
 PREDEF_IN = "runtime/predef.js"
 PREDEF_OUT = "build/predef.json"
+PEG_OPTS = [
+    "--cache",
+    "--optimize", "size",
+    "--allowed-start-rules",
+]
 
 def pegjs(*args)
-    system("#{PATH}/pegjs", *(PEG_OPTS + args))
+    args = PEG_OPTS + args
+    system PEGJS, *args
 end
 
-pegjs PEG_IN, PEG_OUT
+pegjs "ReplStart,Script", PEG_IN, REPL_OUT
+pegjs "Module", PEG_IN, FILE_OUT
 
 json = File.read(PREDEF_IN).to_json
 File.write(PREDEF_OUT, json)

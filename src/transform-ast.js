@@ -1,7 +1,5 @@
 var isObject = require("lodash/lang/isObject");
 var flatten = require("lodash/array/flatten");
-var fs = require("fs");
-var path = require("path");
 var jsbeautify = require("js-beautify");
 var esprima = require("esprima");
 var es = require("./es");

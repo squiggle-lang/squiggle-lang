@@ -1,1 +1,1 @@
-module.exports = require("./parse")();
+module.exports = require("../build/file-parser").parse;

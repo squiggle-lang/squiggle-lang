@@ -5,7 +5,7 @@
   "bin": "src/main.js",
   "main": "src/api.js",
   "scripts": {
-    "test": "bash travis.sh"
+    "test": "bash ./bin/travis.sh"
   },
   "author": "Brian Mock <brian@mockbrian.com>",
   "license": "MIT",
