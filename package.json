@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "An experimental programming language",
   "bin": "src/main.js",
+  "main": "src/api.js",
   "scripts": {
     "test": "bash travis.sh"
   },
