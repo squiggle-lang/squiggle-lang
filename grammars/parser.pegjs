@@ -234,7 +234,7 @@ Pair
     { return ast.Pair(ast.String(i.data), i); }
 
 Identifier "identifier"
-    = i:$([_a-zA-Z][_a-zA-Z0-9]*) _
+    = i:$(!Keyword [_a-zA-Z][_a-zA-Z0-9]*) _
     { return ast.Identifier(i); }
 
 True "true"
