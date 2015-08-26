@@ -140,15 +140,29 @@ var flip = function(f) {
         return f(y, x);
     };
 };
+var toString = function(x) {
+    if (x) {
+        if ('toString' in x) {
+            return x.toString();
+        } else {
+            return '{WEIRD_OBJECT}';
+        }
+    } else {
+        return '' + x;
+    }
+};
 var get = function(k, obj) {
-    if (k in obj) {
+    if (obj !== null && obj !== undefined k in obj) {
         return obj[k];
     }
-    throw new sqgl$$Error('key ' + k + ' not in ' + obj);
+    throw new sqgl$$Error('key ' + k + ' not in ' + toString(obj));
 };
 var set = function(k, v, obj) {
     if (obj === null || typeof obj !== 'object') {
-        throw new sqgl$$Error('cannot set ' + k + ' on ' + obj);
+        throw new sqgl$$Error('cannot set ' + k + ' on ' + toString(obj));
+    }
+    if (sqgl$$isFrozen(obj)) {
+        throw new sqgl$$Error('cannot set ' + k + ' on frozen object');
     }
     obj[k] = v;
     return obj;
@@ -159,6 +173,13 @@ var methodGet = function(method, obj) {
 var methodCall = function(method, obj, args) {
     return obj[method].apply(obj, args);
 };
+var update = function(a, b) {
+    var c = Object.create(Object.getPrototypeOf(a));
+    Object.keys(a).forEach(function(k) { c[k] = a[k]; });
+    Object.keys(b).forEach(function(k) { c[k] = b[k]; });
+    return sqgl$$freeze(c);
+};
+var $tilde = update;
 var sqgl$$object = function(data) {
     if (!sqgl$$isArray(data)) {
         throw new sqgl$$Error(
@@ -189,11 +210,13 @@ var sqgl$$isObject = function(x) {
 };
 var sqgl$$assertBoolean = function(x) {
     if (typeof x !== 'boolean') {
-        throw new sqgl$$Error('not a boolean: ' + x);
+        throw new sqgl$$Error('not a boolean: ' + toString(x));
     }
     return x;
 };
+var sqgl$$update = update;
 var sqgl$$isObject = isObject;
+var sqgl$$isFrozen = Object.isFrozen;
 var sqgl$$freeze = Object.freeze;
 var sqgl$$create = Object.create;
 var sqgl$$is = is;
