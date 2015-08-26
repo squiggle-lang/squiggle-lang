@@ -264,7 +264,7 @@ Number "number"
     { return ast.Number(+n); }
 
 String "string"
-    = '"' s:$([^"\n]+) '"' _
+    = '"' s:$([^"\n]*) '"' _
     { return ast.String(s); }
 
 _  = (WS / NL / Comment)*
