@@ -29,6 +29,10 @@ function mapLastSpecial(f, g, xs) {
     return ys.concat([y]);
 }
 
+function freeze(esNode) {
+    return es.CallExpression(es.Identifier("sqgl$$freeze"), [esNode]);
+}
+
 function jsonify(x) {
     return JSON.stringify(x);
 }
@@ -259,6 +263,33 @@ var handlers = {
             ),
             []
         );
+    },
+    Try: function(node) {
+        var expr = transformAst(node.expr);
+        var ok = freeze(es.ArrayExpression([
+            es.Literal("ok"),
+            expr,
+        ]));
+        var fail =  freeze(es.ArrayExpression([
+            es.Literal("fail"),
+            es.Identifier("$error")
+        ]));
+        var catch_ = es.CatchClause(
+            es.Identifier("$error"),
+            es.BlockStatement([
+                es.ReturnStatement(fail)
+            ])
+        );
+        var block = es.BlockStatement([
+            es.ReturnStatement(ok)
+        ]);
+        var internalError = esprima.parse(
+            "throw new sqgl$$Error('squiggle: internal error');"
+        ).body;
+        var try_ = es.TryStatement(block, catch_);
+        var body = [try_].concat(internalError);
+        var fn = es.FunctionExpression(null, [], es.BlockStatement(body));
+        return es.CallExpression(fn, []);
     },
     List: function(node) {
         var pairs = node.data.map(transformAst);

@@ -19,6 +19,8 @@ var es = nm({
     VariableDeclarator: ['id', 'init'],
     BinaryExpression: ['operator', 'left', 'right'],
     IfStatement: ['test', 'consequent', 'alternate'],
+    TryStatement: ['block', 'handler'],
+    CatchClause: ['param', 'body'],
 });
 
 module.exports = es;

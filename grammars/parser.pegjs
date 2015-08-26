@@ -43,6 +43,7 @@ Keyword
     = "if" / "else"
     / "let" / "in"
     / "do"
+    / "try"
     / "match" / "case"
     / "true" / "false"
     / "undefined" / "null"
@@ -61,6 +62,8 @@ Expr0
 Expr1
     = "let" _ "(" _ b:Bindings ")" _ e:Expr
     { return ast.Let(b, e); }
+    / "try" _ e:Expr
+    { return ast.Try(e); }
     / Match
     / Expr2
 
