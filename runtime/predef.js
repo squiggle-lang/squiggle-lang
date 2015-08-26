@@ -152,7 +152,7 @@ var toString = function(x) {
     }
 };
 var get = function(k, obj) {
-    if (obj !== null && obj !== undefined k in obj) {
+    if (k in obj) {
         return obj[k];
     }
     throw new sqgl$$Error('key ' + k + ' not in ' + toString(obj));
