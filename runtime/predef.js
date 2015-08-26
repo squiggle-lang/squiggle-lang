@@ -151,6 +151,13 @@ var toString = function(x) {
         return '' + x;
     }
 };
+var denew = function(Class) {
+    return function WrappedConstructor() {
+        var args = toArray(arguments);
+        var f = Class.bind.apply(Class, [Class].concat(args));
+        return new f;
+    };
+};
 var get = function(k, obj) {
     if (k in obj) {
         return obj[k];
