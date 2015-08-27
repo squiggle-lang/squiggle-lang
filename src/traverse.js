@@ -99,6 +99,15 @@ function _walk(parents, obj, ast) {
             recur(node.key);
             recur(node.value);
         },
+        Error: function(node) {
+            recur(node.message);
+        },
+        Throw: function(node) {
+            recur(node.exception);
+        },
+        Try: function(node) {
+            recur(node.expr);
+        },
         True: function(node) {},
         False: function(node) {},
         Null: function(node) {},
