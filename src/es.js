@@ -21,6 +21,8 @@ var es = nm({
     IfStatement: ['test', 'consequent', 'alternate'],
     TryStatement: ['block', 'handler'],
     CatchClause: ['param', 'body'],
+    ThrowStatement: ['argument'],
+    NewExpression: ['callee', 'arguments'],
 });
 
 module.exports = es;

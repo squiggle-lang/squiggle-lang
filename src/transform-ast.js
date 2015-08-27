@@ -87,6 +87,13 @@ function globalComputedEq(name, x) {
     );
 }
 
+function throwHelper(esNode) {
+    var throw_ = es.ThrowStatement(esNode);
+    var body = [throw_];
+    var fn = es.FunctionExpression(null, [], es.BlockStatement(body));
+    return es.CallExpression(fn, []);
+}
+
 function cleanIdentifier(s) {
     if (/^if|else|while|do$/.test(s)) {
         return '$' + s;
@@ -290,6 +297,18 @@ var handlers = {
         var body = [try_].concat(internalError);
         var fn = es.FunctionExpression(null, [], es.BlockStatement(body));
         return es.CallExpression(fn, []);
+    },
+    Error: function(node) {
+        var message = transformAst(node.message);
+        var exception = es.NewExpression(
+            es.Identifier("sqgl$$Error"),
+            [message]
+        );
+        return throwHelper(exception);
+    },
+    Throw: function(node) {
+        var exception = transformAst(node.exception);
+        return throwHelper(exception);
     },
     List: function(node) {
         var pairs = node.data.map(transformAst);

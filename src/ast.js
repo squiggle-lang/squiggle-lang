@@ -15,6 +15,8 @@ var ast = nm({
     If:          ["p", "t", "f"],
     Let:         ["bindings", "expr"],
     BinOp:       ["operator", "left", "right"],
+    Error:       ["message"],
+    Throw:       ["exception"],
     Operator:    ["data"],
     List:        ["data"],
     Map:         ["data"],

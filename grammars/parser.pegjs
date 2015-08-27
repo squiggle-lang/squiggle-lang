@@ -44,6 +44,7 @@ Keyword
     / "let" / "in"
     / "do"
     / "try"
+    / "throw" / "error"
     / "match" / "case"
     / "true" / "false"
     / "undefined" / "null"
@@ -64,6 +65,10 @@ Expr1
     { return ast.Let(b, e); }
     / "try" _ e:Expr
     { return ast.Try(e); }
+    / "throw" _ e:Expr
+    { return ast.Throw(e); }
+    / "error" _ e:Expr
+    { return ast.Error(e); }
     / Match
     / Expr2
 
