@@ -85,15 +85,14 @@ var _satisfiesPattern = {
     },
     MatchPatternArraySlurpy: function(root, p) {
         var ps = p.patterns;
-        var n = ps.length;
-        var atLeastLength = esGe(esProp(root, "length"), es.Literal(n));
+        var n = es.Literal(ps.length);
+        var atLeastLength = esGe(esProp(root, "length"), n);
         var a = ps
             .map(function(x, i) {
                 return satisfiesPattern(esNth(root, i), x);
             })
             .filter(notEsTrue)
             .reduce(esAnd, esAnd(root, atLeastLength));
-        var n = es.Literal(p.patterns.length);
         var b = satisfiesPattern(esSlice(root, n), p.slurp);
         return esAnd(a, b);
     },
