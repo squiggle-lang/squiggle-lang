@@ -92,6 +92,10 @@ function _walk(parents, obj, ast) {
         MatchPatternArray: function(node) {
             node.patterns.forEach(recur);
         },
+        MatchPatternArraySlurpy: function(node) {
+            node.patterns.forEach(recur);
+            recur(node.slurp);
+        },
         MatchPatternObject: function(node) {
             node.pairs.forEach(recur);
         },

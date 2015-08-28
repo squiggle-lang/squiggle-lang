@@ -17,8 +17,18 @@ function esAnd(a, b) {
 function esEq(a, b) {
     return es.BinaryExpression("===", a, b);
 }
+
+function esGe(a, b) {
+    return es.BinaryExpression(">=", a, b);
+}
+
 function esIn(a, b) {
     return es.BinaryExpression("in", a, b);
+}
+
+function esSlice(xs, i) {
+    var slice = es.Identifier("sqgl$$slice");
+    return es.CallExpression(slice, [i, xs]);
 }
 
 function esProp(obj, prop) {
@@ -41,6 +51,8 @@ function esTypeof(x) {
         argument: x,
     };
 }
+
+var j = JSON.stringify;
 
 var esTrue = es.Literal(true);
 
@@ -70,6 +82,20 @@ var _satisfiesPattern = {
             })
             .filter(notEsTrue)
             .reduce(esAnd, esAnd(root, lengthEq));
+    },
+    MatchPatternArraySlurpy: function(root, p) {
+        var ps = p.patterns;
+        var n = ps.length;
+        var atLeastLength = esGe(esProp(root, "length"), es.Literal(n));
+        var a = ps
+            .map(function(x, i) {
+                return satisfiesPattern(esNth(root, i), x);
+            })
+            .filter(notEsTrue)
+            .reduce(esAnd, esAnd(root, atLeastLength));
+        var n = es.Literal(p.patterns.length);
+        var b = satisfiesPattern(esSlice(root, n), p.slurp);
+        return esAnd(a, b);
     },
     MatchPatternObject: function(root, p) {
         var t = esTypeof(root);
@@ -115,6 +141,14 @@ var __pluckPattern = {
         p.patterns.forEach(function(x, i) {
             _pluckPattern(acc, esNth(root, i), x);
         });
+        return acc;
+    },
+    MatchPatternArraySlurpy: function(acc, root, p) {
+        p.patterns.forEach(function(x, i) {
+            _pluckPattern(acc, esNth(root, i), x);
+        });
+        var n = es.Literal(p.patterns.length);
+        _pluckPattern(acc, esSlice(root, n), p.slurp);
         return acc;
     },
     MatchPatternObject: function(acc, root, p) {

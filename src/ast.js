@@ -35,6 +35,7 @@ var ast = nm({
     MatchPatternSimple: ["identifier"],
     MatchPatternLiteral: ["data"],
     MatchPatternArray: ["patterns"],
+    MatchPatternArraySlurpy: ["patterns", "slurp"],
     MatchPatternObject: ["pairs"],
     MatchPatternObjectPair: ["key", "value"],
 

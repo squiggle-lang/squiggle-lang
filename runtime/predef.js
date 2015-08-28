@@ -10,6 +10,9 @@ var is = Object.is;
 var isObject = function(x) {
     return x && typeof x === "object";
 };
+var slice = function(i, xs) {
+    return [].slice.call(xs, i);
+};
 var $lt = function(a, b) {
     var ta = typeof a;
     var tb = typeof b;
@@ -221,6 +224,7 @@ var sqgl$$assertBoolean = function(x) {
     }
     return x;
 };
+var sqgl$$slice = slice;
 var sqgl$$update = update;
 var sqgl$$isObject = isObject;
 var sqgl$$isFrozen = Object.isFrozen;

@@ -101,8 +101,16 @@ MatchPatternSimple
     { return ast.MatchPatternSimple(i); }
 
 MatchPatternArray
-    = "[" _ ps:MatchPatternArrayItems? "]" _
+    = MatchPatternArraySlurpy
+    / "[" _ ps:MatchPatternArrayItems? "]" _
     { return ast.MatchPatternArray(ps || []); }
+
+MatchPatternArraySlurpy
+    = "[" _
+      ps:(p:MatchPattern "," _ { return p; })*
+      ppss:("..." _ pps:MatchPattern { return pps; })
+      "]" _
+    { return ast.MatchPatternArraySlurpy(ps, ppss); }
 
 MatchPatternArrayItems
     = p:MatchPattern
