@@ -39,17 +39,6 @@ ReplStart
     / _ e:Expr _
     { return ast.ReplExpression(e); }
 
-Keyword
-    = "if" / "else"
-    / "let" / "in"
-    / "do"
-    / "try"
-    / "throw" / "error"
-    / "match" / "case"
-    / "true" / "false"
-    / "undefined" / "null"
-    / "export"
-
 Expr
     = "do" _ "{" _ es:(e:Expr ";" _ { return e; })+ "}" _
     { return ast.Block(es); }
@@ -249,8 +238,42 @@ Pair
     / i:Identifier
     { return ast.Pair(ast.String(i.data), i); }
 
+Keyword
+    = "if"
+    / "else"
+    / "let"
+    / "in"
+    / "do"
+    / "try"
+    / "throw"
+    / "error"
+    / "match"
+    / "case"
+    / "true"
+    / "false"
+    / "undefined"
+    / "null"
+    / "export"
+
 Identifier "identifier"
-    = i:$(!Keyword [_a-zA-Z][_a-zA-Z0-9]*) _
+    = i:$([_a-zA-Z][_a-zA-Z0-9]*) _
+    ! {
+        return i === "if"
+            || i === "else"
+            || i === "let"
+            || i === "in"
+            || i === "do"
+            || i === "try"
+            || i === "throw"
+            || i === "error"
+            || i === "match"
+            || i === "case"
+            || i === "true"
+            || i === "false"
+            || i === "undefined"
+            || i === "null"
+            || i === "export";
+    }
     { return ast.Identifier(i); }
 
 True "true"
