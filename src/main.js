@@ -3,6 +3,8 @@
 
 var UTF8 = "utf-8";
 
+var WRITE_TO_STDOUT = {_: "WRITE_TO_STDOUT"};
+
 var pkg = require("../package.json");
 var fs = require("fs");
 var path = require("path");
@@ -16,7 +18,7 @@ var nomnom = require("nomnom")
         type: "string"
     })
     .option("output", {
-        abbr: "o",
+        position: 1,
         metavar: "FILE",
         help: "Write JavaScript to this file",
         type: "string"
@@ -79,13 +81,19 @@ function compileTo(src, dest) {
     });
     var es = transformAst(ast);
     var code = compile(es);
-    fs.writeFileSync(dest, code, UTF8);
+    if (dest === WRITE_TO_STDOUT) {
+        console.log(code);
+    } else {
+        fs.writeFileSync(dest, code, UTF8);
+    }
 }
 
 if (argv.interactive) {
     repl.start();
-} else if (argv._.length === 1 && argv.output) {
-    compileTo(argv._[0], argv.output);
+} else if (argv._.length === 1) {
+    compileTo(argv._[0], WRITE_TO_STDOUT);
+} else if (argv._.length === 2) {
+    compileTo(argv._[0], argv._[1]);
 } else {
     console.log(nomnom.getUsage());
     process.exit(1);
