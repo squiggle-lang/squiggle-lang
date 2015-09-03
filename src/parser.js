@@ -123,17 +123,6 @@ var Call = P.seq(
     ArgList.atLeast(1)
 ).map(spread(foldLeft(ast.Call)));
 
-// TODO: Allow computed fields via [] form.
-var CallMethod = P.seq(
-    BottomExpr,
-    P.seq(
-        word(".").then(Identifier),
-        ArgList
-    ).atLeast(1)
-).map(spread(foldLeft(function(acc, x) {
-    return ast.CallMethod(acc, x[0], x[1]);
-})));
-
 var DotProp =
     word(".")
     .then(Identifier)
@@ -148,6 +137,17 @@ var GetProperty = P.seq(
     BottomExpr,
     _.then(P.alt(DotProp, BracketProp)).atLeast(1)
 ).map(spread(foldLeft(ast.GetProperty)));
+
+// TODO: Allow computed fields via [] form.
+var CallMethod = P.seq(
+    BottomExpr,
+    P.seq(
+        _.then(P.alt(DotProp, BracketProp)),
+        _.then(ArgList)
+    ).atLeast(1)
+).map(spread(foldLeft(function(acc, x) {
+    return ast.CallMethod(acc, x[0], x[1]);
+})));
 
 var GetMethod = P.seq(
     BottomExpr,

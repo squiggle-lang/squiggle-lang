@@ -139,7 +139,7 @@ var handlers = {
     },
     GetMethod: function(node) {
         var obj = node.obj;
-        var prop = ast.String(node.prop.data);
+        var prop = node.prop;
         return transformAst(
             ast.Call(
                 ast.Identifier('sqgl$$methodGet'),
