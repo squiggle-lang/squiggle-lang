@@ -37,14 +37,14 @@ function loadPredef() {
 }
 
 function prettySyntaxError(e) {
+    console.error(e);
     var expectations = e
         .expected
         .map(function(e) { return e.description; })
         .join(", ");
     return error(
-        "syntax error:" +
-        " expected one of " + expectations +
-        " but got '" + e.found + "'"
+        "syntax error at character " + (e.index + 1) +
+        ": expected " + e.expected.join(" or ")
     );
 }
 
@@ -54,15 +54,20 @@ function processLine(rl, text) {
         return;
     }
 
+    var res;
     var ast;
     try {
-        ast = parse(text);
-    } catch (e) {
-        if (e.name !== "SyntaxError") {
-            console.log(error(e.stack));
+        res = parse(text);
+        if (res.status) {
+            ast = res.value;
         } else {
-            console.log(prettySyntaxError(e));
+            console.log(prettySyntaxError(res));
+            console.log();
+            rl.prompt();
+            return;
         }
+    } catch (e) {
+        console.log(error(e.stack));
         console.log();
         rl.prompt();
         return;
