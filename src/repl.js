@@ -6,6 +6,7 @@ var parse = require("./repl-parse");
 var compile = require("./compile");
 var transformAst = require("./transform-ast");
 var prettyPrint = require("./pretty-print");
+var predefAst = require("./predef-ast");
 
 var SHOW_JS = true;
 
@@ -26,9 +27,7 @@ function transformAndEval(ast) {
 var globalEval = false || eval;
 
 function loadPredef() {
-    var es = require("./predef-ast");
-    var js = compile(es);
-    globalEval(js);
+    globalEval(compile(predefAst));
     globalEval("var help = 'You may have meant to type :help';");
     globalEval("var quit = 'You may have meant to type :quit';");
     globalEval("var h = help;");
@@ -37,7 +36,6 @@ function loadPredef() {
 }
 
 function prettySyntaxError(e) {
-    console.error(e);
     var expectations = e
         .expected
         .map(function(e) { return e.description; })

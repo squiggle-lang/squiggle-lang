@@ -68,9 +68,9 @@ var TopExpr = P.lazy(function() {
 
 var OtherOpExpr = P.lazy(function() {
     return P.alt(
-        GetProperty,
-        Call,
         CallMethod,
+        Call,
+        GetProperty,
         // GetMethod,
         BottomExpr
     );
@@ -112,13 +112,15 @@ var Terminator = spaced(P.string(";"));
 var Identifier = P.regex(/[a-z][a-z0-9]*/i)
     .map(ast.Identifier);
 
+var IdentExpr = Identifier.map(ast.IdentifierExpression);
+
 var ArgList =
     word("(")
     .then(list0(Separator, Expr))
     .skip(word(")"));
 var Call = P.seq(
     BottomExpr,
-    ArgList.many()
+    ArgList.atLeast(1)
 ).map(spread(foldLeft(ast.Call)));
 
 // TODO: Allow computed fields via [] form.
@@ -127,7 +129,7 @@ var CallMethod = P.seq(
     P.seq(
         word(".").then(Identifier),
         ArgList
-    ).many()
+    ).atLeast(1)
 ).map(spread(foldLeft(function(acc, x) {
     return ast.CallMethod(acc, x[0], x[1]);
 })));
@@ -144,7 +146,7 @@ var BracketProp = wrap(
 );
 var GetProperty = P.seq(
     BottomExpr,
-    _.then(P.alt(DotProp, BracketProp)).many()
+    _.then(P.alt(DotProp, BracketProp)).atLeast(1)
 ).map(spread(foldLeft(ast.GetProperty)));
 
 var Parameter = Identifier.map(ast.Parameter);
@@ -188,9 +190,7 @@ var b2 = lbo("and or", b3);
 var b1 = lbo("|>", b2);
 
 var BinExpr = b1;
-
-var IdentExpr = Identifier.map(ast.IdentifierExpression);
-
+BottomExpr
 var Try = word("try").then(Expr).map(ast.Try);
 var Throw = word("throw").then(Expr).map(ast.Throw);
 var Error = word("error").then(Expr).map(ast.Error);
@@ -250,6 +250,11 @@ var Module = P.alt(
 );
 
 module.exports = {
+    // GET RID OF THIS
+    CallMethod: CallMethod,
+    GetProperty: GetProperty,
+    // GET RID OF THIS
+
     Module: Module,
     Expr: Expr,
     Binding: Binding,
