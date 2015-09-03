@@ -138,7 +138,6 @@ var GetProperty = P.seq(
     _.then(P.alt(DotProp, BracketProp)).atLeast(1)
 ).map(spread(foldLeft(ast.GetProperty)));
 
-// TODO: Allow computed fields via [] form.
 var CallMethod = P.seq(
     BottomExpr,
     P.seq(
