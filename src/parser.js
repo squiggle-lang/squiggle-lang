@@ -71,7 +71,7 @@ var OtherOpExpr = P.lazy(function() {
         CallMethod,
         Call,
         GetProperty,
-        // GetMethod,
+        GetMethod,
         BottomExpr
     );
 });
@@ -148,6 +148,11 @@ var GetProperty = P.seq(
     BottomExpr,
     _.then(P.alt(DotProp, BracketProp)).atLeast(1)
 ).map(spread(foldLeft(ast.GetProperty)));
+
+var GetMethod = P.seq(
+    BottomExpr,
+    _.then(word("::").then(Identifier)).atLeast(1)
+).map(spread(foldLeft(ast.GetMethod)));
 
 var Parameter = Identifier.map(ast.Parameter);
 var Parameters = list0(Separator, Parameter);
