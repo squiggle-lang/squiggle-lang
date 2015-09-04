@@ -116,10 +116,10 @@ var IdentExpr = Identifier.map(ast.IdentifierExpression);
 
 var MatchPattern = P.lazy(function() {
     return P.alt(
-        MatchPatternLiteral,
-        MatchPatternSimple,
         MatchPatternArray,
-        MatchPatternObject
+        MatchPatternObject,
+        MatchPatternLiteral,
+        MatchPatternSimple
     );
 });
 var MatchPatternSimple = Identifier.map(ast.MatchPatternSimple);
@@ -133,10 +133,12 @@ var MatchPatternLiteral = P.lazy(function() {
         Null
     ).map(ast.MatchPatternLiteral);
 });
-var MatchPatternObjectPairBasic = P.seq(
-    String_,
-    _.then(word(":")).then(MatchPattern)
-).map(spread(MatchPatternObjectPair));
+var MatchPatternObjectPairBasic = P.lazy(function() {
+    return P.seq(
+        String_.skip(_),
+        word(":").then(MatchPattern)
+    ).map(spread(ast.MatchPatternObjectPair));
+});
 var MatchPatternObjectPairShorthand = Identifier.map(function(i) {
     return ast.MatchPatternObjectPair(
         ast.String(i.data),
@@ -149,14 +151,22 @@ var MatchPatternObjectPair = P.alt(
 );
 var MatchPatternObject = wrap(
     P.string("{").then(_),
-    MatchPatternObjectPair.many(),
+    list0(Separator, MatchPatternObjectPair),
     _.then(P.string("}"))
-).map(spread(ast.MatchPatternObject));
-var MatchPatternArrayStrict = list0(Separator, MatchPattern)
-    .map(ast.MatchPatternArray);
+).map(ast.MatchPatternObject);
+var MatchPatternArrayStrict = wrap(
+    P.string("["),
+    spaced(list0(Separator, MatchPattern)),
+    P.string("]")
+).map(ast.MatchPatternArray);
 var MatchPatternArraySlurpy = P.seq(
-    list0(Separator, MatchPattern),
-    word("...").then(MatchPattern)
+    P.string("[")
+        .then(_)
+        .then(MatchPattern.skip(Separator).many()),
+    _.then(word("..."))
+        .then(MatchPattern)
+        .skip(_)
+        .skip(P.string("]"))
 ).map(spread(ast.MatchPatternArraySlurpy));
 var MatchPatternArray = P.alt(
     MatchPatternArrayStrict,
