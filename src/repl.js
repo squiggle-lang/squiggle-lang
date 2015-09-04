@@ -2,17 +2,20 @@ var pkg = require("../package.json");
 var readline = require("readline");
 var chalk = require("chalk");
 
+var es = require("./es");
 var parse = require("./repl-parse");
 var compile = require("./compile");
 var transformAst = require("./transform-ast");
 var prettyPrint = require("./pretty-print");
 var predefAst = require("./predef-ast");
+var fileWrapper = require("./file-wrapper");
 
 var SHOW_JS = true;
 
 function transformAndEval(ast) {
-    var es = transformAst(ast);
-    var js = compile(es);
+    var esAst = transformAst(ast);
+    var expr = fileWrapper(esAst);
+    var js = compile(expr);
     if (SHOW_JS) {
         console.log(chalk.cyan(js));
     }

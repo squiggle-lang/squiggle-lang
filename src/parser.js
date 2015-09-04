@@ -61,7 +61,7 @@ var TopExpr = P.lazy(function() {
         Try,
         Throw,
         Error_,
-        // Match,
+        Match,
         BinExpr
     );
 });
@@ -113,6 +113,70 @@ var Identifier = P.regex(/[a-z][a-z0-9]*/i)
     .map(ast.Identifier);
 
 var IdentExpr = Identifier.map(ast.IdentifierExpression);
+
+var MatchPattern = P.lazy(function() {
+    return P.alt(
+        MatchPatternLiteral,
+        MatchPatternSimple,
+        MatchPatternArray,
+        MatchPatternObject
+    );
+});
+var MatchPatternSimple = Identifier.map(ast.MatchPatternSimple);
+var MatchPatternLiteral = P.lazy(function() {
+    return P.alt(
+        Number_,
+        String_,
+        True,
+        False,
+        Undefined,
+        Null
+    ).map(ast.MatchPatternLiteral);
+});
+var MatchPatternObjectPairBasic = P.seq(
+    String_,
+    _.then(word(":")).then(MatchPattern)
+).map(spread(MatchPatternObjectPair));
+var MatchPatternObjectPairShorthand = Identifier.map(function(i) {
+    return ast.MatchPatternObjectPair(
+        ast.String(i.data),
+        ast.MatchPatternSimple(i)
+    );
+});
+var MatchPatternObjectPair = P.alt(
+    MatchPatternObjectPairBasic,
+    MatchPatternObjectPairShorthand
+);
+var MatchPatternObject = wrap(
+    P.string("{").then(_),
+    MatchPatternObjectPair.many(),
+    _.then(P.string("}"))
+).map(spread(ast.MatchPatternObject));
+var MatchPatternArrayStrict = list0(Separator, MatchPattern)
+    .map(ast.MatchPatternArray);
+var MatchPatternArraySlurpy = P.seq(
+    list0(Separator, MatchPattern),
+    word("...").then(MatchPattern)
+).map(spread(ast.MatchPatternArraySlurpy));
+var MatchPatternArray = P.alt(
+    MatchPatternArrayStrict,
+    MatchPatternArraySlurpy
+);
+var MatchClause = P.seq(
+    word("case").then(MatchPattern),
+    word("=>").then(Expr)
+).map(spread(ast.MatchClause));
+var Match = P.seq(
+    word("match")
+        .then(word("("))
+        .then(Expr)
+        .skip(_)
+        .skip(word(")")),
+    word("{")
+        .then(MatchClause.atLeast(1))
+        .skip(_)
+        .skip(P.string("}"))
+).map(spread(ast.Match));
 
 var ArgList =
     word("(")
@@ -247,18 +311,13 @@ var String_ = wrap(DoubleQuote, StringChars, DoubleQuote)
     .desc("string")
     .map(ast.String);
 
-var Script = spaced(Expr).map(spread(ast.Script));
+var Script = spaced(Expr).map(ast.Script);
 var Module = P.alt(
     spaced(word("export").then(Expr)).map(ast.Module),
     Script
 );
 
 module.exports = {
-    // GET RID OF THIS
-    CallMethod: CallMethod,
-    GetProperty: GetProperty,
-    // GET RID OF THIS
-
     Module: Module,
     Expr: Expr,
     Binding: Binding,

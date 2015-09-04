@@ -2,9 +2,11 @@ var isObject = require("lodash/lang/isObject");
 var flatten = require("lodash/array/flatten");
 var jsbeautify = require("js-beautify");
 var esprima = require("esprima");
+
 var es = require("./es");
 var ast = require("./ast");
 var match = require("./match");
+var fileWrapper = require("./file-wrapper");
 
 function transformAst(node) {
     if (!isObject(node)) {
@@ -113,16 +115,6 @@ function cleanIdentifier(s) {
         .replace(/</g, '$lt')
         .replace(/>/g, '$gt')
         .replace(/=/g, '$eq');
-}
-
-function fileWrapper(body) {
-    var useStrict = es.ExpressionStatement(es.Literal('use strict'));
-    var newBody = [useStrict].concat(body);
-    var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
-    var i = newBody.length - 1;
-    newBody[i] = es.ReturnStatement(newBody[i]);
-    var st = es.ExpressionStatement(es.CallExpression(fn, []));
-    return es.Program([st]);
 }
 
 var handlers = {
