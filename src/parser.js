@@ -60,7 +60,7 @@ var TopExpr = P.lazy(function() {
         Let,
         Try,
         Throw,
-        Error,
+        Error_,
         // Match,
         BinExpr
     );
@@ -79,9 +79,9 @@ var OtherOpExpr = P.lazy(function() {
 var BottomExpr = P.lazy(function() {
     return P.alt(
         Literal,
-        Array,
-        Object,
-        Function,
+        Array_,
+        Object_,
+        Function_,
         IdentExpr,
         ParenExpr
     );
@@ -96,8 +96,8 @@ var ParenExpr =
 
 var Literal = P.lazy("literal", function() {
     return P.alt(
-        Number,
-        String,
+        Number_,
+        String_,
         True,
         False,
         Undefined,
@@ -155,7 +155,7 @@ var GetMethod = P.seq(
 
 var Parameter = Identifier.map(ast.Parameter);
 var Parameters = list0(Separator, Parameter);
-var Function = P.seq(
+var Function_ = P.seq(
     word("fn").then(word("(")).then(Parameters),
     word(")").then(Expr)
 ).map(spread(ast.Function));
@@ -194,10 +194,10 @@ var b2 = lbo("and or", b3);
 var b1 = lbo("|>", b2);
 
 var BinExpr = b1;
-BottomExpr
+
 var Try = word("try").then(Expr).map(ast.Try);
 var Throw = word("throw").then(Expr).map(ast.Throw);
-var Error = word("error").then(Expr).map(ast.Error);
+var Error_ = word("error").then(Expr).map(ast.Error);
 
 var Binding = P.seq(
     Identifier.skip(_),
@@ -219,13 +219,13 @@ var ObjectPairShorthand = Identifier
     });
 var ObjectPair = ObjectPairNormal.or(ObjectPairShorthand);
 var ObjectPairs = list0(Separator, ObjectPair);
-var Object = wrap(
+var Object_ = wrap(
     P.string("{").then(_),
     ObjectPairs,
     _.then(P.string("}"))
 ).map(ast.Map);
 
-var Array = wrap(
+var Array_ = wrap(
     P.string("[").skip(_),
     list0(Separator, Expr),
     _.then(P.string("]"))
@@ -236,14 +236,14 @@ var False = P.string("false").result(ast.False());
 var Null = P.string("null").result(ast.Null());
 var Undefined = P.string("undefined").result(ast.Undefined());
 
-var Number = P.regex(/[0-9]+/)
+var Number_ = P.regex(/[0-9]+/)
     .desc("number")
     .map(global.Number)
     .map(ast.Number);
 
 var DoubleQuote = P.string('"');
 var StringChars = P.regex(/[^"\n]*/);
-var String = wrap(DoubleQuote, StringChars, DoubleQuote)
+var String_ = wrap(DoubleQuote, StringChars, DoubleQuote)
     .desc("string")
     .map(ast.String);
 
