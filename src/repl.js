@@ -39,6 +39,7 @@ function loadPredef() {
 }
 
 function prettySyntaxError(e) {
+    console.error(e);
     var expectations = e
         .expected
         .map(function(e) { return e.description; })

@@ -322,7 +322,6 @@ var handlers = {
         );
     },
     Match: function(node) {
-        // TODO
         var e = transformAst(node.expression);
         var body = node.clauses.map(transformAst);
         var matchError = esprima.parse(
