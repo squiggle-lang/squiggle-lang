@@ -404,14 +404,12 @@ var Script =
     .map(ast.Script);
 
 var Module =
-    P.alt(
-        spaced(word("export").then(Expr)).map(ast.Module),
-        Script
-    );
+    spaced(word("export").then(Expr))
+    .map(ast.Module)
+    .or(Script)
 
 module.exports = {
     Module: Module,
-    Script: Script,
     Expr: Expr,
     Binding: Binding,
     spaced: spaced,
