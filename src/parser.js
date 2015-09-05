@@ -104,7 +104,7 @@ var BottomExpr = P.lazy(function() {
 
 var Expr = TopExpr.or(BottomExpr);
 
-var ParenExpr = wrap("(", Expr, ")")
+var ParenExpr = wrap("(", Expr, ")");
 
 var Literal = P.lazy("literal", function() {
     return P.alt(
