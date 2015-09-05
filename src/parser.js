@@ -168,12 +168,13 @@ var MatchPatternObjectPairBasic = P.lazy(function() {
     ).map(spread(ast.MatchPatternObjectPair));
 });
 
-var MatchPatternObjectPairShorthand = Identifier.map(function(i) {
-    return ast.MatchPatternObjectPair(
-        ast.String(i.data),
-        ast.MatchPatternSimple(i)
-    );
-});
+var MatchPatternObjectPairShorthand =
+    Identifier.map(function(i) {
+        return ast.MatchPatternObjectPair(
+            ast.String(i.data),
+            ast.MatchPatternSimple(i)
+        );
+    });
 
 var MatchPatternObjectPair = P.alt(
     MatchPatternObjectPairBasic,
@@ -237,12 +238,14 @@ var DotProp =
 var BracketProp =
     wrap("[", Expr, "]");
 
+var Property = DotProp.or(BracketProp);
+
 /// Property get and method calls.
 
 var GetProperty =
     P.seq(
         BottomExpr,
-        _.then(P.alt(DotProp, BracketProp)).atLeast(1)
+        _.then(Property).atLeast(1)
     )
     .map(spread(foldLeft(ast.GetProperty)));
 
@@ -250,7 +253,7 @@ var CallMethod =
     P.seq(
         BottomExpr,
         P.seq(
-            _.then(P.alt(DotProp, BracketProp)),
+            _.then(Property),
             _.then(ArgList)
         ).atLeast(1)
     ).map(spread(foldLeft(function(acc, x) {
@@ -360,7 +363,10 @@ var ObjectPairShorthand =
         return ast.Pair(ast.String(i.data), i);
     });
 
-var ObjectPair = ObjectPairNormal.or(ObjectPairShorthand);
+var ObjectPair = P.alt(
+    ObjectPairNormal,
+    ObjectPairShorthand
+);
 
 var Object_ =
     wrap("{", list0(Separator, ObjectPair), "}")
