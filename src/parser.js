@@ -406,7 +406,7 @@ var Script =
 var Module =
     spaced(word("export").then(Expr))
     .map(ast.Module)
-    .or(Script)
+    .or(Script);
 
 module.exports = {
     Module: Module,
