@@ -320,7 +320,7 @@ function lbo(ops, e) {
 var b6 = lbo("* /", OtherOpExpr);
 var b5 = lbo("+ -", b6);
 var b4 = lbo("++ ~", b5);
-var b3 = lbo("> >= < <= = !=", b4);
+var b3 = lbo(">= <= < > = !=", b4);
 var b2 = lbo("and or", b3);
 var b1 = lbo("|>", b2);
 
