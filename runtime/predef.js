@@ -162,7 +162,10 @@ var denew = function(Class) {
     };
 };
 var get = function(k, obj) {
-    if (k in obj) {
+    if (obj === null || obj === undefined) {
+        throw new sqgl$$Error('cannot get ' + k + ' of ' + obj);
+    }
+    if (k in Object(obj)) {
         return obj[k];
     }
     throw new sqgl$$Error('key ' + k + ' not in ' + toString(obj));
@@ -227,6 +230,7 @@ var sqgl$$assertBoolean = function(x) {
 var sqgl$$slice = slice;
 var sqgl$$update = update;
 var sqgl$$isObject = isObject;
+var sqgl$$Object = Object;
 var sqgl$$isFrozen = Object.isFrozen;
 var sqgl$$freeze = Object.freeze;
 var sqgl$$create = Object.create;

@@ -125,14 +125,17 @@ var Separator = spaced(P.string(","));
 var Terminator = spaced(P.string(";"));
 
 // TODO: Disallow keywords as identifiers.
-var Identifier = P.regex(/[a-z][a-z0-9]*/i)
+var Identifier =
+    P.regex(/[_a-z][_a-z0-9]*/i)
     .map(ast.Identifier);
 
 /// I'm not incredibly a fan of having IdentExpr, but it helps the linter know
 /// when an identifier is being used for its name vs when it's being used for
 /// the value it references.
 
-var IdentExpr = Identifier.map(ast.IdentifierExpression);
+var IdentExpr =
+    Identifier
+    .map(ast.IdentifierExpression);
 
 /// Pattern matching section is kinda huge because it mirrors much of the rest
 /// of the language, but produces different AST nodes, and is slightly
@@ -281,7 +284,7 @@ var Parameters =
 var Function_ =
     P.seq(
         word("fn").then(wrap("(", Parameters, ")")),
-        Expr
+        _.then(Expr)
     ).map(spread(ast.Function));
 
 /// Code blocks start with "do" to avoid ambiguity with object literals.
