@@ -1,1 +1,7 @@
-module.exports = require("../build/file-parser").parse;
+var parser = require("./parser");
+
+function fileParse(text) {
+    return parser.Module.parse(text);
+}
+
+module.exports = fileParse;

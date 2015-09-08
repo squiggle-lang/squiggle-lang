@@ -9,6 +9,7 @@ var pkg = require("../package.json");
 var fs = require("fs");
 var path = require("path");
 var chalk = require("chalk");
+var uniq = require("lodash/array/uniq");
 var nomnom = require("nomnom")
     .script("squiggle")
     .option("input", {
@@ -41,6 +42,9 @@ var nomnom = require("nomnom")
     });
 var argv = nomnom.parse();
 
+var arrow = require("./arrow");
+var stringToLines = require("./string-to-lines");
+var indexToPosition = require("./index-to-position");
 var parse = require("./file-parse");
 var transformAst = require("./transform-ast");
 var compile = require("./compile");
@@ -59,20 +63,18 @@ function die(message) {
 function compileTo(src, dest) {
     var txt = fs.readFileSync(src, "utf-8");
     var ast;
-    try {
-        ast = parse(txt);
-    } catch (e) {
-        if (e.name !== "SyntaxError") {
-            throw e;
-        }
-        var expectations = e
-            .expected
-            .map(function(x) { return x.description; })
-            .join(", ");
+    var result = parse(txt);
+    if (result.status) {
+        ast = result.value;
+    } else {
+        var expectations = uniq(result.expected).join(", ");
+        var pos = indexToPosition(txt, result.index);
+        var lines = stringToLines(txt);
+        var point = chalk.reset.bold(lines[pos.line - 1]) +
+            "\n" + chalk.bold.yellow(arrow(pos.column));
         die(
-            e.line + ":" + e.column +
-            " expected one of " + expectations +
-            ", but found '" + e.found + "'."
+            src + " " + pos.line + ":" + pos.column +
+            " expected one of " + expectations + "\n\n" + point
         );
     }
     var warnings = lint(ast);

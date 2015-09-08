@@ -54,10 +54,11 @@ var $eq = function recur(a, b) {
     if (a === b) {
         return true;
     }
-    // Check if both values are NaN.
+    // TODO: `NaN`s should not be equal under `=`, only `is`.
     if (a !== a && b !== b) {
         return true;
     }
+    // TODO: Only check arrays based on their numeric keys.
     if (sqgl$$isObject(a) && sqgl$$isObject(b)) {
         // TODO: Remove duplicates.
         var ks = sqgl$$keys(a).concat(sqgl$$keys(b)).sort();
@@ -81,11 +82,10 @@ var $plus = function(a, b) {
     throw new sqgl$$Error('incorrect argument types for +');
 };
 var $plus$plus = function(a, b) {
-    var A = Array.isArray;
-    var S = function(x) { return typeof x === 'string'; };
-    var aOk = A(a) && A(b);
-    var sOk = S(a) && S(b)
-    if (aOk || sOk) {
+    if (typeof a === 'string' && typeof b === 'string') {
+        return a + b;
+    }
+    if (sqgl$$isArray(a) && sqgl$$isArray(b)) {
         return a.concat(b);
     }
     throw new sqgl$$Error('incorrect argument types for ++');
@@ -162,7 +162,10 @@ var denew = function(Class) {
     };
 };
 var get = function(k, obj) {
-    if (k in obj) {
+    if (obj === null || obj === undefined) {
+        throw new sqgl$$Error('cannot get ' + k + ' of ' + obj);
+    }
+    if (k in Object(obj)) {
         return obj[k];
     }
     throw new sqgl$$Error('key ' + k + ' not in ' + toString(obj));
@@ -184,9 +187,9 @@ var methodCall = function(method, obj, args) {
     return obj[method].apply(obj, args);
 };
 var update = function(a, b) {
-    var c = Object.create(Object.getPrototypeOf(a));
-    Object.keys(a).forEach(function(k) { c[k] = a[k]; });
-    Object.keys(b).forEach(function(k) { c[k] = b[k]; });
+    var c = sqgl$$create(sqgl$$getPrototypeOf(a));
+    sqgl$$keys(a).forEach(function(k) { c[k] = a[k]; });
+    sqgl$$keys(b).forEach(function(k) { c[k] = b[k]; });
     return sqgl$$freeze(c);
 };
 var $tilde = update;
@@ -227,6 +230,7 @@ var sqgl$$assertBoolean = function(x) {
 var sqgl$$slice = slice;
 var sqgl$$update = update;
 var sqgl$$isObject = isObject;
+var sqgl$$Object = Object;
 var sqgl$$isFrozen = Object.isFrozen;
 var sqgl$$freeze = Object.freeze;
 var sqgl$$create = Object.create;
@@ -236,6 +240,7 @@ var sqgl$$keys = Object.keys;
 var sqgl$$get = get;
 var sqgl$$methodGet = methodGet;
 var sqgl$$methodCall = methodCall;
+var sqgl$$getPrototypeOf = Object.getPrototypeOf;
 var sqgl$$Error = Error;
 var sqgl$$customLogger = null;
 var sqgl$$global = global;

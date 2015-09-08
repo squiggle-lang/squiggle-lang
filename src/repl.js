@@ -2,16 +2,20 @@ var pkg = require("../package.json");
 var readline = require("readline");
 var chalk = require("chalk");
 
+var es = require("./es");
 var parse = require("./repl-parse");
 var compile = require("./compile");
 var transformAst = require("./transform-ast");
 var prettyPrint = require("./pretty-print");
+var predefAst = require("./predef-ast");
+var fileWrapper = require("./file-wrapper");
 
 var SHOW_JS = true;
 
 function transformAndEval(ast) {
-    var es = transformAst(ast);
-    var js = compile(es);
+    var esAst = transformAst(ast);
+    var expr = fileWrapper(esAst);
+    var js = compile(expr);
     if (SHOW_JS) {
         console.log(chalk.cyan(js));
     }
@@ -26,9 +30,7 @@ function transformAndEval(ast) {
 var globalEval = false || eval;
 
 function loadPredef() {
-    var es = require("./predef-ast");
-    var js = compile(es);
-    globalEval(js);
+    globalEval(compile(predefAst));
     globalEval("var help = 'You may have meant to type :help';");
     globalEval("var quit = 'You may have meant to type :quit';");
     globalEval("var h = help;");
@@ -37,14 +39,14 @@ function loadPredef() {
 }
 
 function prettySyntaxError(e) {
+    console.error(e);
     var expectations = e
         .expected
         .map(function(e) { return e.description; })
         .join(", ");
     return error(
-        "syntax error:" +
-        " expected one of " + expectations +
-        " but got '" + e.found + "'"
+        "syntax error at character " + (e.index + 1) +
+        ": expected " + e.expected.join(" or ")
     );
 }
 
@@ -54,15 +56,20 @@ function processLine(rl, text) {
         return;
     }
 
+    var res;
     var ast;
     try {
-        ast = parse(text);
-    } catch (e) {
-        if (e.name !== "SyntaxError") {
-            console.log(error(e.stack));
+        res = parse(text);
+        if (res.status) {
+            ast = res.value;
         } else {
-            console.log(prettySyntaxError(e));
+            console.log(prettySyntaxError(res));
+            console.log();
+            rl.prompt();
+            return;
         }
+    } catch (e) {
+        console.log(error(e.stack));
         console.log();
         rl.prompt();
         return;

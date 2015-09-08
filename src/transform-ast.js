@@ -2,9 +2,11 @@ var isObject = require("lodash/lang/isObject");
 var flatten = require("lodash/array/flatten");
 var jsbeautify = require("js-beautify");
 var esprima = require("esprima");
+
 var es = require("./es");
 var ast = require("./ast");
 var match = require("./match");
+var fileWrapper = require("./file-wrapper");
 
 function transformAst(node) {
     if (!isObject(node)) {
@@ -115,16 +117,6 @@ function cleanIdentifier(s) {
         .replace(/=/g, '$eq');
 }
 
-function fileWrapper(body) {
-    var useStrict = es.ExpressionStatement(es.Literal('use strict'));
-    var newBody = [useStrict].concat(body);
-    var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
-    var i = newBody.length - 1;
-    newBody[i] = es.ReturnStatement(newBody[i]);
-    var st = es.ExpressionStatement(es.CallExpression(fn, []));
-    return es.Program([st]);
-}
-
 var handlers = {
     Module: function(node) {
         var value = transformAst(node.expr);
@@ -139,7 +131,7 @@ var handlers = {
     },
     GetMethod: function(node) {
         var obj = node.obj;
-        var prop = ast.String(node.prop.data);
+        var prop = node.prop;
         return transformAst(
             ast.Call(
                 ast.Identifier('sqgl$$methodGet'),
@@ -330,7 +322,6 @@ var handlers = {
         );
     },
     Match: function(node) {
-        // TODO
         var e = transformAst(node.expression);
         var body = node.clauses.map(transformAst);
         var matchError = esprima.parse(
