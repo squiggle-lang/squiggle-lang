@@ -54,10 +54,11 @@ var $eq = function recur(a, b) {
     if (a === b) {
         return true;
     }
-    // Check if both values are NaN.
+    // TODO: `NaN`s should not be equal under `=`, only `is`.
     if (a !== a && b !== b) {
         return true;
     }
+    // TODO: Only check arrays based on their numeric keys.
     if (sqgl$$isObject(a) && sqgl$$isObject(b)) {
         // TODO: Remove duplicates.
         var ks = sqgl$$keys(a).concat(sqgl$$keys(b)).sort();
@@ -81,11 +82,10 @@ var $plus = function(a, b) {
     throw new sqgl$$Error('incorrect argument types for +');
 };
 var $plus$plus = function(a, b) {
-    var A = Array.isArray;
-    var S = function(x) { return typeof x === 'string'; };
-    var aOk = A(a) && A(b);
-    var sOk = S(a) && S(b)
-    if (aOk || sOk) {
+    if (typeof a === 'string' && typeof b === 'string') {
+        return a + b;
+    }
+    if (sqgl$$isArray(a) && sqgl$$isArray(b)) {
         return a.concat(b);
     }
     throw new sqgl$$Error('incorrect argument types for ++');
