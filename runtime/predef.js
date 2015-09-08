@@ -184,9 +184,9 @@ var methodCall = function(method, obj, args) {
     return obj[method].apply(obj, args);
 };
 var update = function(a, b) {
-    var c = Object.create(Object.getPrototypeOf(a));
-    Object.keys(a).forEach(function(k) { c[k] = a[k]; });
-    Object.keys(b).forEach(function(k) { c[k] = b[k]; });
+    var c = sqgl$$create(sqgl$$getPrototypeOf(a));
+    sqgl$$keys(a).forEach(function(k) { c[k] = a[k]; });
+    sqgl$$keys(b).forEach(function(k) { c[k] = b[k]; });
     return sqgl$$freeze(c);
 };
 var $tilde = update;
@@ -236,6 +236,7 @@ var sqgl$$keys = Object.keys;
 var sqgl$$get = get;
 var sqgl$$methodGet = methodGet;
 var sqgl$$methodCall = methodCall;
+var sqgl$$getPrototypeOf = Object.getPrototypeOf;
 var sqgl$$Error = Error;
 var sqgl$$customLogger = null;
 var sqgl$$global = global;
