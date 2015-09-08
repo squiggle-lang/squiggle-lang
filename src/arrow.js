@@ -7,7 +7,7 @@
 // The little point arrow with line thing is what this function generates.
 // Useful for showing error context in command line output.
 
-var SHAFT = "-"
+var SHAFT = "-";
 var TIP = "^";
 
 function arrow(n) {

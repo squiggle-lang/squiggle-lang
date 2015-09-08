@@ -127,6 +127,7 @@ var Terminator = spaced(P.string(";"));
 // TODO: Disallow keywords as identifiers.
 var Identifier =
     P.regex(/[_a-z][_a-z0-9]*/i)
+    .desc("identifier")
     .map(ast.Identifier);
 
 /// I'm not incredibly a fan of having IdentExpr, but it helps the linter know
