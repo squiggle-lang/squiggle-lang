@@ -1,39 +1,50 @@
-let (
-    http = require("http"),
-    port = 1337,
-    address = "127.0.0.1",
-    Number = global.Number,
-    String = global.String,
-    factorial = fn(n) match (n) {
-        case 0 => 1
-        case n => n * factorial(n - 1)
-    },
-    handlerFactorial = fn(x)
-        String(factorial(Number(x))),
-    parsePath = fn(s)
-        let (
-            mod = fn(s, i) Number(s.charAt(i) = "/"),
-            n = s.length,
-            a = mod(s, 0),
-            b = mod(s, n - 1)
-        ) s.slice(a, n - b).split("/"),
-    dispatchGet = fn(url) match (parsePath(url)) {
-        case ["factorial", x] => handlerFactorial(x)
-        case ["echo", s] => s
-        case _ => "I don't know what you want to GET"
-    },
-    dispatch = fn(method, url) match ([method, url]) {
-        case ["GET", p] => dispatchGet(p)
-        case ["POST", _] => "Looks like you POST-ed me!"
-        case ["DELETE", _] => "Not interested in DELETE-ing!"
-        case ["OPTIONS", _] => "What OPTIONS are you looking for?"
-        case _ => "ERROR"
-    },
-    handler = fn(req, res) match (req) {
-        case {method, url} =>
-            res.end(dispatch(method, url))
-    }
-) do {
+let http = require("http")
+let port = 1337
+let address = "127.0.0.1"
+let Number = global.Number
+let String = global.String
+
+def factorial(n) =
+    match n
+    case 0 => 1
+    case n => n * factorial(n - 1)
+
+def factorial2(n) =
+    if n <= 1
+    then 1
+    else n * factorial2(n - 1)
+
+def handlerFactorial(x) =
+    String(factorial(Number(x)))
+
+def parsePath(s) =
+    def mod(s, i) =
+        Number(s.charAt(i) == "/")
+    let n = s.length
+    let a = mod(s, 0)
+    let b = mod(s, n - 1)
+    in s.slice(a, n - b).split("/")
+
+def dispatchGet(url) =
+    match parsePath(url)
+    case ["factorial", x] => handlerFactorial(x)
+    case ["echo", s] => s
+    case _ => "I don't know what you want to GET"
+
+def dispatch(method, url) =
+    match [method, url]
+    case ["GET", p] => dispatchGet(p)
+    case ["POST", _] => "Looks like you POST-ed me!"
+    case ["DELETE", _] => "Not interested in DELETE-ing!"
+    case ["OPTIONS", _] => "What OPTIONS are you looking for?"
+    case _ => "ERROR"
+
+def handler(req, res) =
+    match req
+    case {method, url} =>
+        res.end(dispatch(method, url))
+
+in do
     http.createServer(handler).listen(port, address);
     console.log("Server running at http://127.0.0.1:1337/");
-}
+end

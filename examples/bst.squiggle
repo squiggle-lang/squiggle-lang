@@ -1,30 +1,31 @@
- let (
-    node = ~( x, l, r | {
-        "type": "node",
-        "data": x,
-        "left": l,
-        "right": r
-    }),
-    tip = {"type": "tip"},
-    leaf = ~( x | node(x, tip, tip) ),
-    bst_add = ~( data, n |
-        if n = tip
-        then leaf(data)
-        else if data < n.data
-        then node(n.data, bst_add(data, n.left), n.right)
-        else node(n.data, n.left, bst_add(data, n.right))
-    ),
-    in_order = ~( n |
-        if n = tip
-        then []
-        else let (
-            ls = in_order(n.left),
-            rs = in_order(n.right),
-            ds = [n.data]
-        ) in ls ++ ds ++ rs
-    ),
-    bst_add2 = flip(bst_add),
-    root = foldLeft(bst_add2, tip, [4, 2, 1, 3, 6, 5, 7]),
-    _add = ~( x, y | x + y ),
-    _mul = ~( x, y | x * y )
-) in console.log(in_order(root))
+def Node(x, l, r) = {
+    "type": "Node",
+    "data": x,
+    "left": l,
+    "right": r
+}
+
+let Tip = {"type": "Tip"}
+
+def leaf(x) =
+    Node(x, Tip, Tip)
+
+def bstAdd(d, n) =
+    if n == Tip then
+        leaf(d)
+    else if d < n.data then
+        Node(n.data, bstAdd(d, n.left), n.right)
+    else
+        Node(n.data, n.left, bstAdd(d, n.right))
+
+def inOrder(node) = match node
+    case {"type": "Tip"} => []
+    case {"type": "Node", left, right, data} =>
+        inOrder(left) ++ [data] ++ inOrder(right)
+
+let root = foldRight(bstAdd, Tip, [4, 2, 1, 3, 6, 5, 7])
+
+def _add(x, y) = x + y
+def _mul(x, y) = x * y
+
+in console.log(inOrder(root))

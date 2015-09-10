@@ -10,7 +10,7 @@ var ast = nm({
     Identifier:  ["data"],
     Block:       ["expressions"],
     Call:        ["f", "args"],
-    Function:    ["parameters", "body"],
+    Function:    ["name", "parameters", "body"],
     Parameter:   ["identifier"],
     If:          ["p", "t", "f"],
     Let:         ["bindings", "expr"],

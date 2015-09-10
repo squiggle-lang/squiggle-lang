@@ -209,6 +209,9 @@ var handlers = {
         return transformAst(node.identifier);
     },
     Function: function(node) {
+        var name = node.name ?
+            transformAst(node.name) :
+            null;
         var params = node
             .parameters
             .map(transformAst);
@@ -228,7 +231,7 @@ var handlers = {
             returnExpr
         ]);
         var innerFn = es.FunctionExpression(
-            null,
+            name,
             params,
             es.BlockStatement(body)
         );

@@ -47,7 +47,7 @@ var $pipe$gt = function(x, f) {
     }
     return f(x);
 };
-var $eq = function recur(a, b) {
+var $eq$eq = function recur(a, b) {
     if (typeof a !== typeof b) {
         return false;
     }
