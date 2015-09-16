@@ -6,7 +6,7 @@ function indexToPosition(text, index) {
         throw new Error("index must be non-negative");
     }
     if (index >= text.length) {
-        throw new Error("index exceeds input text length");
+        throw new Error("index too large: " + index + " >= " + text.length);
     }
     var line = 1;
     var column = 1;

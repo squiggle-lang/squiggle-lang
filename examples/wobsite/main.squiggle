@@ -1,31 +1,36 @@
-let (
-    byId = global.document::getElementById,
-    toNumber = ~( x |
-        let (y = global.Number(x))
-        in if isNan(y)
-        then 0
-        else y
-    ),
-    listen = ~( element, name, func |
-        element.addEventListener(name, func, false);
-        undefined
-    ),
-    elements = {
-        "a": byId("number-1"),
-        "b": byId("number-2"),
-        "c": byId("sum")
-    },
-    update = ~(|
-        let (
-            a = toNumber(elements.a.value),
-            b = toNumber(elements.b.value)
-        ) in showSum(a, b)
-    ),
-    updateHandler = ~( _ | update() ),
-    showSum = ~( a, b |
-        set("textContent", a + b, elements.c)
-    )
-) in
-listen(elements.a, "input", updateHandler);
-listen(elements.b, "input", updateHandler);
-update()
+let Number = global.Number
+let NaN = global.NaN
+let document = global.document
+let byId = document::getElementById
+
+def toNumber(x) =
+    let y = Number(x)
+    in if is(y, NaN)
+    then 0
+    else y
+
+def listen(element, name, func) =
+    element.addEventListener(name, func, false)
+
+let elements = {
+    a: byId("number-1"),
+    b: byId("number-2"),
+    c: byId("sum")
+}
+
+def update() =
+    let a = toNumber(elements.a.value)
+    let b = toNumber(elements.b.value)
+    in showSum(a, b)
+
+def updateHandler(_) =
+    update()
+
+def showSum(a, b) =
+    set("textContent", a + b, elements.c)
+
+in do
+    listen(elements.a, "input", updateHandler);
+    listen(elements.b, "input", updateHandler);
+    update();
+end

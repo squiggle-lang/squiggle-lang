@@ -1,6 +1,0 @@
-let (
-    printP = ~{
-        "pre":  ~( x | print("> in pre");  x > 0 ),
-        "post": ~( x | print("> in post"); x = 0 )
-    }( x | print(x); 0 )
-) in print(printP(1))

@@ -86,6 +86,9 @@ function _walk(parents, obj, ast) {
         MatchPatternSimple: function(node) {
             recur(node.identifier);
         },
+        MatchPatternParenExpr: function(node) {
+            recur(node.expr);
+        },
         MatchPatternLiteral: function(node) {
             recur(node.data);
         },
@@ -110,6 +113,12 @@ function _walk(parents, obj, ast) {
             recur(node.exception);
         },
         Try: function(node) {
+            recur(node.expr);
+        },
+        Not: function(node) {
+            recur(node.expr);
+        },
+        Negate: function(node) {
             recur(node.expr);
         },
         True: function(node) {},

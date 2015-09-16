@@ -73,6 +73,8 @@ var TopExpr = P.lazy(function() {
         Block,
         If,
         Let,
+        Not,
+        Negate,
         Try,
         Throw,
         Error_,
@@ -147,12 +149,17 @@ var MatchPattern = P.lazy(function() {
         MatchPatternArray,
         MatchPatternObject,
         MatchPatternLiteral,
-        MatchPatternSimple
+        MatchPatternSimple,
+        MatchPatternParenExpr
     );
 });
 
 var MatchPatternSimple =
     Identifier.map(ast.MatchPatternSimple);
+
+var MatchPatternParenExpr = P.lazy(function() {
+    return ParenExpr.map(ast.MatchPatternParenExpr);
+});
 
 var MatchPatternLiteral = P.lazy(function() {
     return P.alt(
@@ -167,7 +174,7 @@ var MatchPatternLiteral = P.lazy(function() {
 
 var MatchPatternObjectPairBasic = P.lazy(function() {
     return P.seq(
-        String_.skip(_),
+        ObjectPairKey.skip(_),
         word(":").then(MatchPattern)
     ).map(spread(ast.MatchPatternObjectPair));
 });
@@ -216,8 +223,8 @@ var MatchClause =
 
 var Match =
     P.seq(
-        word("match").then(wrap("(", Expr, ")")).skip(_),
-        wrap("{", list1(_, MatchClause), "}")
+        word("match").then(Expr),
+        _.then(MatchClause).atLeast(1).skip(_).skip(P.string("end"))
     ).map(spread(ast.Match));
 
 /// Function calls.
@@ -233,11 +240,14 @@ var Call =
 /// a string literal, so let's treat it that way in the grammar. The compiler
 /// can optimize that part.
 
-var DotProp =
-    word(".")
-    .then(Identifier)
+var IdentifierAsString =
+    Identifier
     .map(function(x) { return x.data; })
     .map(ast.String);
+
+var DotProp =
+    word(".")
+    .then(IdentifierAsString);
 
 var BracketProp =
     wrap("[", Expr, "]");
@@ -271,7 +281,7 @@ var CallMethod =
 var GetMethod =
     P.seq(
         BottomExpr,
-        _.then(word("::").then(Identifier)).atLeast(1)
+        _.then(word("::").then(IdentifierAsString)).atLeast(1)
     ).map(spread(foldLeft(ast.GetMethod)));
 
 /// Function literals.
@@ -284,7 +294,8 @@ var Parameters =
 
 var Function_ =
     P.seq(
-        word("fn").then(wrap("(", Parameters, ")")),
+        word("fn").then(Identifier.or(P.of(null))),
+        _.then(wrap("(", Parameters, ")")),
         _.then(Expr)
     ).map(spread(ast.Function));
 
@@ -294,15 +305,15 @@ var Statement =
     Expr.skip(Terminator);
 
 var Block =
-    word("do").then(wrap("{", Statement.atLeast(1), "}"))
+    wrap("do", Statement.atLeast(1), "end")
     .map(ast.Block);
 
 /// If-expression with mandatory else clause.
 
 var If =
     P.seq(
-        word("if").then(wrap("(", Expr, ")")),
-        spaced(Expr),
+        word("if").then(Expr).skip(_),
+        word("then").then(Expr).skip(_),
         word("else").then(Expr)
     ).map(spread(ast.If));
 
@@ -324,7 +335,7 @@ function lbo(ops, e) {
 var b6 = lbo("* /", OtherOpExpr);
 var b5 = lbo("+ -", b6);
 var b4 = lbo("++ ~", b5);
-var b3 = lbo(">= <= < > = !=", b4);
+var b3 = lbo(">= <= < > == !=", b4);
 var b2 = lbo("and or", b3);
 var b1 = lbo("|>", b2);
 
@@ -333,31 +344,53 @@ var BinExpr = b1;
 /// Various single word "unary operators".
 /// Should probably add "not" and "-" at least.
 
+var Not = word("not").then(Expr).map(ast.Not);
+var Negate = word("-").then(Expr).map(ast.Negate);
 var Try = word("try").then(Expr).map(ast.Try);
 var Throw = word("throw").then(Expr).map(ast.Throw);
 var Error_ = word("error").then(Expr).map(ast.Error);
 
 /// Variable bindings via "let". Probably going to be changed soon.
 
-var Binding =
+var LetBinding =
     P.seq(
-        Identifier.skip(_),
-        word("=").then(Expr)
+        word("let").then(Identifier),
+        _.then(word("=")).then(Expr)
     ).map(spread(ast.Binding));
 
-var Bindings = list1(Separator, Binding);
+var DefBinding =
+    P.seq(
+        word("def").then(Identifier).skip(_),
+        _.then(wrap("(", Parameters, ")")).skip(_),
+        word("=").then(Expr)
+    ).map(spread(function(name, params, body) {
+        var fn = ast.Function(name, params, body);
+        return ast.Binding(name, fn);
+    }));
+
+var Binding = LetBinding.or(DefBinding);
+
+var Bindings = list1(_, Binding);
 
 var Let =
     P.seq(
-        word("let").then(wrap("(", Bindings, ")")),
-        _.then(Expr)
+        Bindings,
+        _.then(word("in")).then(Expr)
     ).map(spread(ast.Let));
 
 /// Object literal.
 
+var ObjectPairKey = P.lazy(function() {
+    return P.alt(
+        IdentifierAsString,
+        String_,
+        ParenExpr
+    );
+});
+
 var ObjectPairNormal =
     P.seq(
-        Expr,
+        ObjectPairKey,
         spaced(P.string(":")).then(Expr)
     ).map(spread(ast.Pair));
 

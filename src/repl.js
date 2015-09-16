@@ -13,6 +13,7 @@ var fileWrapper = require("./file-wrapper");
 var SHOW_JS = true;
 
 function transformAndEval(ast) {
+    console.log(ast);
     var esAst = transformAst(ast);
     var expr = fileWrapper(esAst);
     var js = compile(expr);
