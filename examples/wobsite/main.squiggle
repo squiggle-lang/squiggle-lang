@@ -13,9 +13,9 @@ def listen(element, name, func) =
     element.addEventListener(name, func, false)
 
 let elements = {
-    "a": byId("number-1"),
-    "b": byId("number-2"),
-    "c": byId("sum")
+    a: byId("number-1"),
+    b: byId("number-2"),
+    c: byId("sum")
 }
 
 def update() =

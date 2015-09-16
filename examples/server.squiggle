@@ -29,16 +29,16 @@ def parsePath(s) =
 def dispatchGet(url) =
     match parsePath(url)
     case ["factorial", x] => handlerFactorial(x)
-    case ["echo", s] => s
+    case ["echo", x] => x
     case _ => "I don't know what you want to GET"
     end
 
 def dispatch(method, url) =
-    match [method, url]
-    case ["GET", p] => dispatchGet(p)
-    case ["POST", _] => "Looks like you POST-ed me!"
-    case ["DELETE", _] => "Not interested in DELETE-ing!"
-    case ["OPTIONS", _] => "What OPTIONS are you looking for?"
+    match method
+    case "GET" => dispatchGet(url)
+    case "POST" => "Looks like you POST-ed me!"
+    case "DELETE" => "Not interested in DELETE-ing!"
+    case "OPTIONS" => "What OPTIONS are you looking for?"
     case _ => "ERROR"
     end
 

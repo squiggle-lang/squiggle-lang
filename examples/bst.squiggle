@@ -1,11 +1,11 @@
 def Node(x, l, r) = {
-    "type": "Node",
-    "data": x,
-    "left": l,
-    "right": r
+    type: "Node",
+    data: x,
+    left: l,
+    right: r
 }
 
-let Tip = {"type": "Tip"}
+let Tip = {type: "Tip"}
 
 def leaf(x) =
     Node(x, Tip, Tip)
@@ -20,8 +20,8 @@ def bstAdd(d, n) =
 
 def inOrder(node) =
     match node
-    case {"type": "Tip"} => []
-    case {"type": "Node", left, right, data} =>
+    case {type: "Tip"} => []
+    case {type: "Node", left, right, data} =>
         inOrder(left) ++ [data] ++ inOrder(right)
     end
 
