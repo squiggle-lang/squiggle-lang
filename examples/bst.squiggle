@@ -18,10 +18,12 @@ def bstAdd(d, n) =
     else
         Node(n.data, n.left, bstAdd(d, n.right))
 
-def inOrder(node) = match node
+def inOrder(node) =
+    match node
     case {"type": "Tip"} => []
     case {"type": "Node", left, right, data} =>
         inOrder(left) ++ [data] ++ inOrder(right)
+    end
 
 let root = foldRight(bstAdd, Tip, [4, 2, 1, 3, 6, 5, 7])
 

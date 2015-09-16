@@ -73,6 +73,8 @@ var TopExpr = P.lazy(function() {
         Block,
         If,
         Let,
+        Not,
+        Negate,
         Try,
         Throw,
         Error_,
@@ -147,12 +149,17 @@ var MatchPattern = P.lazy(function() {
         MatchPatternArray,
         MatchPatternObject,
         MatchPatternLiteral,
-        MatchPatternSimple
+        MatchPatternSimple,
+        MatchPatternParenExpr
     );
 });
 
 var MatchPatternSimple =
     Identifier.map(ast.MatchPatternSimple);
+
+var MatchPatternParenExpr = P.lazy(function() {
+    return ParenExpr.map(ast.MatchPatternParenExpr);
+});
 
 var MatchPatternLiteral = P.lazy(function() {
     return P.alt(
@@ -167,7 +174,7 @@ var MatchPatternLiteral = P.lazy(function() {
 
 var MatchPatternObjectPairBasic = P.lazy(function() {
     return P.seq(
-        String_.skip(_),
+        ObjectPairKey.skip(_),
         word(":").then(MatchPattern)
     ).map(spread(ast.MatchPatternObjectPair));
 });
@@ -217,7 +224,7 @@ var MatchClause =
 var Match =
     P.seq(
         word("match").then(Expr),
-        _.then(MatchClause).atLeast(1)
+        _.then(MatchClause).atLeast(1).skip(_).skip(P.string("end"))
     ).map(spread(ast.Match));
 
 /// Function calls.
@@ -337,6 +344,8 @@ var BinExpr = b1;
 /// Various single word "unary operators".
 /// Should probably add "not" and "-" at least.
 
+var Not = word("not").then(Expr).map(ast.Not);
+var Negate = word("-").then(Expr).map(ast.Negate);
 var Try = word("try").then(Expr).map(ast.Try);
 var Throw = word("throw").then(Expr).map(ast.Throw);
 var Error_ = word("error").then(Expr).map(ast.Error);
@@ -371,9 +380,17 @@ var Let =
 
 /// Object literal.
 
+var ObjectPairKey = P.lazy(function() {
+    return P.alt(
+        IdentifierAsString,
+        String_,
+        ParenExpr
+    );
+});
+
 var ObjectPairNormal =
     P.seq(
-        Expr,
+        ObjectPairKey,
         spaced(P.string(":")).then(Expr)
     ).map(spread(ast.Pair));
 

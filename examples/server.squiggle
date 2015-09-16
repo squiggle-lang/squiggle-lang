@@ -8,6 +8,7 @@ def factorial(n) =
     match n
     case 0 => 1
     case n => n * factorial(n - 1)
+    end
 
 def factorial2(n) =
     if n <= 1
@@ -30,6 +31,7 @@ def dispatchGet(url) =
     case ["factorial", x] => handlerFactorial(x)
     case ["echo", s] => s
     case _ => "I don't know what you want to GET"
+    end
 
 def dispatch(method, url) =
     match [method, url]
@@ -38,11 +40,13 @@ def dispatch(method, url) =
     case ["DELETE", _] => "Not interested in DELETE-ing!"
     case ["OPTIONS", _] => "What OPTIONS are you looking for?"
     case _ => "ERROR"
+    end
 
 def handler(req, res) =
     match req
     case {method, url} =>
         res.end(dispatch(method, url))
+    end
 
 in do
     http.createServer(handler).listen(port, address);

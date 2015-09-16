@@ -1,12 +1,21 @@
 // TODO: Add arity checking.
 // TODO: Add type checking.
 
+// MDN polyfill for Object.js.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+var is = Object.is || function(x, y) {
+    // SameValue algorithm
+    if (x === y) { // Steps 1-5, 7-10
+        // Steps 6.b-6.e: +0 != -0
+        return x !== 0 || 1 / x === 1 / y;
+    } else {
+        // Step 6.a: NaN == NaN
+        return x !== x && y !== y;
+    }
+};
+
 var undefined = void 0;
 var global = (1, eval)("this");
-var print = function(x) { return sqgl$$log(x); };
-var not = function(x) { return !x; };
-// TODO: Polyfill.
-var is = Object.is;
 var isObject = function(x) {
     return x && typeof x === "object";
 };
@@ -30,16 +39,13 @@ var $gt = function(a, b) {
     throw new sqgl$$Error('incorrect argument types for >')
 };
 var $lt$eq = function(a, b) {
-    return $lt(a, b) || a === b;
+    return $lt(a, b) || $eq$eq(a, b);
 };
 var $gt$eq = function(a, b) {
-    return $gt(a, b) || a === b;
+    return $gt(a, b) || $eq$eq(a, b);
 };
 var $bang$eq = function(a, b) {
-    return not($eq(a, b));
-};
-var not = function(x) {
-    return !sqgl$$assertBoolean(x);
+    return !$eq(a, b);
 };
 var $pipe$gt = function(x, f) {
     if (typeof f !== 'function') {
@@ -72,9 +78,6 @@ var $eq$eq = function recur(a, b) {
     }
     return false;
 };
-var isNan = function(x) {
-    return x !== x;
-};
 var $plus = function(a, b) {
     if (typeof a === 'number' && typeof b === 'number') {
         return a + b;
@@ -91,13 +94,29 @@ var $plus$plus = function(a, b) {
     throw new sqgl$$Error('incorrect argument types for ++');
 };
 var $minus = function(a, b) {
+    assertNumeric(a);
+    assertNumeric(b);
     return a - b;
 };
 var $star = function(a, b) {
+    assertNumeric(a);
+    assertNumeric(b);
     return a * b;
 };
 var $slash = function(a, b) {
+    assertNumeric(a);
+    assertNumeric(b);
     return a / b;
+};
+var $not = function(x) {
+    return !assertBoolean(x);
+};
+var $negate = function(x) {
+    return -assertNumeric(x);
+};
+var freezeAfter = function(x, f) {
+    f(x);
+    return sqgl$$freeze(x);
 };
 var map = function(f, xs) {
     return xs.map(function(x) {
@@ -116,6 +135,15 @@ var foldLeft = function(f, z, xs) {
 var fold = foldLeft;
 var isEmpty = function(xs) {
     return xs.length === 0;
+};
+var filter = function(xs, f) {
+    var ys = [];
+    for (var i = 0, n = xs.length; i < n; i++) {
+        if (f(xs[i])) {
+            ys.push(xs[i]);
+        }
+    }
+    return sqgl$$freeze(ys);
 };
 var head = function(xs) {
     if (!isEmpty(xs)) {
@@ -227,6 +255,14 @@ var sqgl$$assertBoolean = function(x) {
     }
     return x;
 };
+var sqgl$$assertNumeric = function(x) {
+    if (typeof x !== 'number') {
+        throw new sqgl$$Error('not a number: ' + toString(x));
+    }
+    return x;
+};
+var assertBoolean = sqgl$$assertBoolean;
+var assertNumeric = sqgl$$assertNumeric;
 var sqgl$$slice = slice;
 var sqgl$$update = update;
 var sqgl$$isObject = isObject;
@@ -242,13 +278,4 @@ var sqgl$$methodGet = methodGet;
 var sqgl$$methodCall = methodCall;
 var sqgl$$getPrototypeOf = Object.getPrototypeOf;
 var sqgl$$Error = Error;
-var sqgl$$customLogger = null;
 var sqgl$$global = global;
-var sqgl$$log = function(x) {
-    if (sqgl$$customLogger) {
-        sqgl$$customLogger(x);
-    } else if (sqgl$$global.console && sqgl$$global.console.log) {
-        sqgl$$global.console.log(x);
-    }
-    return x;
-};
