@@ -1,9 +1,12 @@
 // TODO: Add arity checking.
 // TODO: Add type checking.
 
-// MDN polyfill for Object.js.
+var undefined = void 0;
+var global = (1, eval)("this");
+
+// MDN polyfill for `Object.is`.
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-var is = Object.is || function(x, y) {
+var $_is = Object.is || function(x, y) {
     // SameValue algorithm
     if (x === y) { // Steps 1-5, 7-10
         // Steps 6.b-6.e: +0 != -0
@@ -13,47 +16,84 @@ var is = Object.is || function(x, y) {
         return x !== x && y !== y;
     }
 };
+var $is = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $is');
+    }
+    return $_is(a, b);
+};
 
-var undefined = void 0;
-var global = (1, eval)("this");
-var isObject = function(x) {
+var $Object = Object;
+var $isFrozen = Object.isFrozen;
+var $freeze = Object.freeze;
+var $create = Object.create;
+var $isArray = Array.isArray;
+var $keys = Object.keys;
+var $getPrototypeOf = Object.getPrototypeOf;
+var $Error = global.Error;
+
+var $isObject = function(x) {
+    if (arguments.length !== 1) {
+        throw new $Error('wrong number of arguments to $isObject');
+    }
     return x && typeof x === "object";
 };
-var slice = function(i, xs) {
-    return [].slice.call(xs, i);
+var $slice = function(xs, i) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $slice');
+    }
+    return Array.prototype.slice.call(xs, i);
+};
+var $array = function() {
+    return $freeze($slice(arguments, 0));
 };
 var $lt = function(a, b) {
-    var ta = typeof a;
-    var tb = typeof b;
-    if (ta === tb && (ta === 'string' || ta === 'number')) {
-        return a < b;
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $lt');
     }
-    throw new sqgl$$Error('incorrect argument types for <')
+    $number(a);
+    $number(b);
+    return a < b;
 };
 var $gt = function(a, b) {
-    var ta = typeof a;
-    var tb = typeof b;
-    if (ta === tb && (ta === 'string' || ta === 'number')) {
-        return a > b;
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $gt');
     }
-    throw new sqgl$$Error('incorrect argument types for >')
+    $number(a);
+    $number(b);
+    return a > b;
 };
-var $lt$eq = function(a, b) {
-    return $lt(a, b) || $eq$eq(a, b);
+var $lte = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $lte');
+    }
+    return $lt(a, b) || $eq(a, b);
 };
-var $gt$eq = function(a, b) {
-    return $gt(a, b) || $eq$eq(a, b);
+var $gte = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $gte');
+    }
+    return $gt(a, b) || $eq(a, b);
 };
-var $bang$eq = function(a, b) {
+var $neq = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $neq');
+    }
     return !$eq(a, b);
 };
-var $pipe$gt = function(x, f) {
+var $pipe = function(x, f) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $pipe');
+    }
     if (typeof f !== 'function') {
-        throw new sqgl$$Error('right-side not a function in |>, ' + f);
+        throw new $Error('right-side not a function in |>, ' + f);
     }
     return f(x);
 };
-var $eq$eq = function recur(a, b) {
+var $eq = function $eq(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $eq');
+    }
     if (typeof a !== typeof b) {
         return false;
     }
@@ -65,115 +105,180 @@ var $eq$eq = function recur(a, b) {
         return true;
     }
     // TODO: Only check arrays based on their numeric keys.
-    if (sqgl$$isObject(a) && sqgl$$isObject(b)) {
+    if ($isObject(a) && $isObject(b)) {
         // TODO: Remove duplicates.
-        var ks = sqgl$$keys(a).concat(sqgl$$keys(b)).sort();
+        var ks = $keys(a).concat($keys(b)).sort();
         return ks.every(function(k) {
             return (
                 k in a &&
                 k in b &&
-                recur(a[k], b[k])
+                $eq(a[k], b[k])
             );
         });
     }
     return false;
 };
-var $plus = function(a, b) {
-    if (typeof a === 'number' && typeof b === 'number') {
-        return a + b;
+var $add = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $add');
     }
-    throw new sqgl$$Error('incorrect argument types for +');
+    $number(a);
+    $number(b);
+    return a + b;
 };
-var $plus$plus = function(a, b) {
+var $concat = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $concat');
+    }
     if (typeof a === 'string' && typeof b === 'string') {
         return a + b;
     }
-    if (sqgl$$isArray(a) && sqgl$$isArray(b)) {
+    if ($isArray(a) && $isArray(b)) {
         return a.concat(b);
     }
-    throw new sqgl$$Error('incorrect argument types for ++');
+    throw new $Error('incorrect argument types for ++');
 };
-var $minus = function(a, b) {
-    assertNumeric(a);
-    assertNumeric(b);
+var $subtract = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $subtract');
+    }
+    $number(a);
+    $number(b);
     return a - b;
 };
-var $star = function(a, b) {
-    assertNumeric(a);
-    assertNumeric(b);
+var $multiply = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $multiply');
+    }
+    $number(a);
+    $number(b);
     return a * b;
 };
-var $slash = function(a, b) {
-    assertNumeric(a);
-    assertNumeric(b);
+var $divide = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to $divide');
+    }
+    $number(a);
+    $number(b);
     return a / b;
 };
 var $not = function(x) {
-    return !assertBoolean(x);
+    if (arguments.length !== 1) {
+        throw new $Error('wrong number of arguments to $not');
+    }
+    return !$bool(x);
 };
 var $negate = function(x) {
-    return -assertNumeric(x);
+    if (arguments.length !== 1) {
+        throw new $Error('wrong number of arguments to $negate');
+    }
+    return -$number(x);
 };
 var freezeAfter = function(x, f) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to freezeAfter');
+    }
     f(x);
-    return sqgl$$freeze(x);
+    return $freeze(x);
 };
 var map = function(f, xs) {
-    return xs.map(function(x) {
-        return f(x);
-    });
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to map');
+    }
+    var ys = [];
+    for (var i = 0, n = xs.length; i < n; i++) {
+        ys.push(f(xs[i]));
+    }
+    return $freeze(ys);
 };
-var join = function(separator, items) {
+var join = function(items, separator) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to join');
+    }
     return [].join.call(items, separator);
 };
 var foldLeft = function(f, z, xs) {
-    xs.forEach(function(x) {
-        z = f(z, x);
-    });
-    return z;
+    if (arguments.length !== 3) {
+        throw new $Error('wrong number of arguments to foldLeft');
+    }
+    var y = z;
+    for (var i = 0, n = xs.length; i < n; i++) {
+        y = f(z, xs[i]);
+    }
+    return y;
 };
 var fold = foldLeft;
 var isEmpty = function(xs) {
+    if (arguments.length !== 1) {
+        throw new $Error('wrong number of arguments to isEmpty');
+    }
     return xs.length === 0;
 };
 var filter = function(xs, f) {
+    if (arguments.length !== 2) {
+        throw new $Error('wrong number of arguments to filter');
+    }
     var ys = [];
     for (var i = 0, n = xs.length; i < n; i++) {
         if (f(xs[i])) {
             ys.push(xs[i]);
         }
     }
-    return sqgl$$freeze(ys);
+    return $freeze(ys);
 };
 var head = function(xs) {
-    if (!isEmpty(xs)) {
-        return xs[0];
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to head");
     }
-    throw new sqgl$$Error('cannot get head of empty list');
+    if (xs.length === 0) {
+        throw new $Error('cannot get head of empty list');
+    }
+    return xs[0];
 };
 var tail = function(xs) {
-    return [].slice.call(xs, 1);
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to tail");
+    }
+    return $slice(xs, 1);
 };
 var reduce = function(f, xs) {
+    if (arguments.length !== 2) {
+        throw new $Error("wrong number of arguments to reduce");
+    }
     return foldLeft(f, head(xs), tail(xs));
 };
 var foldRight = function(f, z, xs) {
+    if (arguments.length !== 3) {
+        throw new $Error("wrong number of arguments to foldRight");
+    }
     return foldLeft(flip(f), z, reverse(xs));
 };
 var reverse = function(xs) {
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to reverse");
+    }
     return toArray(xs).reverse();
 };
 var toArray = function(xs) {
-    return [].slice.call(xs);
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to toArray");
+    }
+    return slice(xs, 0);
 };
 var flip = function(f) {
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to toString");
+    }
     return function(x, y) {
         return f(y, x);
     };
 };
 var toString = function(x) {
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to toString");
+    }
     if (x) {
-        if ('toString' in x) {
+        if (x.toString) {
             return x.toString();
         } else {
             return '{WEIRD_OBJECT}';
@@ -183,99 +288,90 @@ var toString = function(x) {
     }
 };
 var denew = function(Class) {
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to denew");
+    }
     return function WrappedConstructor() {
         var args = toArray(arguments);
         var f = Class.bind.apply(Class, [Class].concat(args));
         return new f;
     };
 };
-var get = function(k, obj) {
+var $get = function(obj, k) {
+    if (arguments.length !== 2) {
+        throw new $Error("wrong number of arguments to get");
+    }
     if (obj === null || obj === undefined) {
-        throw new sqgl$$Error('cannot get ' + k + ' of ' + obj);
+        throw new $Error('cannot get ' + k + ' of ' + obj);
     }
     if (k in Object(obj)) {
         return obj[k];
     }
-    throw new sqgl$$Error('key ' + k + ' not in ' + toString(obj));
+    throw new $Error('key ' + k + ' not in ' + toString(obj));
 };
 var set = function(k, v, obj) {
-    if (obj === null || typeof obj !== 'object') {
-        throw new sqgl$$Error('cannot set ' + k + ' on ' + toString(obj));
+    if (arguments.length !== 3) {
+        throw new $Error("wrong number of arguments to set");
     }
-    if (sqgl$$isFrozen(obj)) {
-        throw new sqgl$$Error('cannot set ' + k + ' on frozen object');
+    if (obj === null || typeof obj !== 'object') {
+        throw new $Error('cannot set ' + k + ' on ' + toString(obj));
+    }
+    if ($isFrozen(obj)) {
+        throw new $Error('cannot set ' + k + ' on frozen object');
     }
     obj[k] = v;
     return obj;
 };
-var methodGet = function(method, obj) {
+var $method = function(obj, method) {
+    if (arguments.length !== 2) {
+        throw new $Error("wrong number of arguments to $method");
+    }
     return obj[method].bind(obj);
 };
-var methodCall = function(method, obj, args) {
-    return obj[method].apply(obj, args);
+var $update = function(a, b) {
+    if (arguments.length !== 2) {
+        throw new $Error("wrong number of arguments to update");
+    }
+    var c = $create($getPrototypeOf(a));
+    $keys(a).forEach(function(k) { c[k] = a[k]; });
+    $keys(b).forEach(function(k) { c[k] = b[k]; });
+    return $freeze(c);
 };
-var update = function(a, b) {
-    var c = sqgl$$create(sqgl$$getPrototypeOf(a));
-    sqgl$$keys(a).forEach(function(k) { c[k] = a[k]; });
-    sqgl$$keys(b).forEach(function(k) { c[k] = b[k]; });
-    return sqgl$$freeze(c);
-};
-var $tilde = update;
-var sqgl$$object = function(data) {
-    if (!sqgl$$isArray(data)) {
-        throw new sqgl$$Error(
-            'objects can only be constructed from an array'
-        );
+var $object = function() {
+    if (arguments.length % 2 !== 0) {
+        throw new $Error('objects must have an even number of items');
     }
     var obj = {};
     var i = 0;
-    var n = data.length;
+    var n = arguments.length - 1;
     while (i < n) {
-        if (typeof data[i][0] !== "string") {
-            throw new sqgl$$Error(
-                "object keys must be strings: " + data[i]
-            );
+        if (typeof arguments[i] !== "string") {
+            throw new $Error("object keys must be strings: " + arguments[i]);
         }
-        obj[data[i][0]] = data[i][1];
-        i++;
+        obj[arguments[i]] = arguments[i + 1];
+        i += 2;
     }
-    return sqgl$$freeze(obj);
+    return $freeze(obj);
 };
-var sqgl$$isObject = function(x) {
+var $bool = function(x) {
     if (arguments.length !== 1) {
-        throw new sqgl$$Error(
-            'wrong number of arguments to sqgl$$isObject'
-        );
+        throw new $Error('wrong number of arguments to $bool');
     }
-    return x !== null && typeof x === 'object';
-};
-var sqgl$$assertBoolean = function(x) {
     if (typeof x !== 'boolean') {
-        throw new sqgl$$Error('not a boolean: ' + toString(x));
+        throw new $Error('not a boolean: ' + toString(x));
     }
     return x;
 };
-var sqgl$$assertNumeric = function(x) {
+var $number = function(x) {
+    if (arguments.length !== 1) {
+        throw new $Error('wrong number of arguments to $number');
+    }
     if (typeof x !== 'number') {
-        throw new sqgl$$Error('not a number: ' + toString(x));
+        throw new $Error('not a number: ' + toString(x));
     }
     return x;
 };
-var assertBoolean = sqgl$$assertBoolean;
-var assertNumeric = sqgl$$assertNumeric;
-var sqgl$$slice = slice;
-var sqgl$$update = update;
-var sqgl$$isObject = isObject;
-var sqgl$$Object = Object;
-var sqgl$$isFrozen = Object.isFrozen;
-var sqgl$$freeze = Object.freeze;
-var sqgl$$create = Object.create;
-var sqgl$$is = is;
-var sqgl$$isArray = Array.isArray;
-var sqgl$$keys = Object.keys;
-var sqgl$$get = get;
-var sqgl$$methodGet = methodGet;
-var sqgl$$methodCall = methodCall;
-var sqgl$$getPrototypeOf = Object.getPrototypeOf;
-var sqgl$$Error = Error;
-var sqgl$$global = global;
+
+var update = $update;
+var get = $get;
+var is = $is;
