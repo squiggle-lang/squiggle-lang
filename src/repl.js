@@ -11,9 +11,12 @@ var predefAst = require("./predef-ast");
 var fileWrapper = require("./file-wrapper");
 
 var SHOW_JS = true;
+var SHOW_AST = false;
 
 function transformAndEval(ast) {
-    console.log(ast);
+    if (SHOW_AST) {
+        console.log(ast);
+    }
     var esAst = transformAst(ast);
     var expr = fileWrapper(esAst);
     var js = compile(expr);

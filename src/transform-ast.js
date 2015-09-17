@@ -6,6 +6,7 @@ var esprima = require("esprima");
 var es = require("./es");
 var ast = require("./ast");
 var fileWrapper = require("./file-wrapper");
+var isJsReservedWord = require("./is-js-reserved-word");
 
 function transformAst(node) {
     if (!isObject(node)) {
@@ -31,7 +32,7 @@ function mapLastSpecial(f, g, xs) {
 }
 
 function freeze(esNode) {
-    return es.CallExpression(es.Identifier("sqgl$$freeze"), [esNode]);
+    return es.CallExpression(es.Identifier("$freeze"), [esNode]);
 }
 
 function jsonify(x) {
@@ -45,29 +46,22 @@ function literal(node) {
 function assertBoolean(x) {
     return transformAst(
         ast.Call(
-            ast.Identifier('sqgl$$assertBoolean'),
+            ast.Identifier('$bool'),
             [x]
         )
     );
 }
 
-function coerceIdentToString(node) {
-    if (node.type === "Identifier") {
-        return ast.String(node.data);
-    }
-    return node;
-}
-
 var PREDEF = require("./predef-ast");
 
 function moduleExportsEq(x) {
-    return es.AssignmentExpression('=',
-        es.MemberExpression(false,
+    var moduleExports =
+        es.MemberExpression(
+            false,
             es.Identifier('module'),
             es.Identifier('exports')
-        ),
-        x
-    );
+        );
+    return es.AssignmentExpression('=', moduleExports, x);
 }
 
 function globalComputedEq(name, x) {
@@ -96,24 +90,8 @@ function throwHelper(esNode) {
 }
 
 function cleanIdentifier(s) {
-    if (/^if|else|while|do$/.test(s)) {
-        return '$' + s;
-    }
-    return s
-        .replace(/\+/g, '$plus')
-        .replace(/-/g, '$minus')
-        .replace(/\*/g, '$star')
-        .replace(/\//g, '$slash')
-        .replace(/!/g, '$bang')
-        .replace(/;/g, '$semicolon')
-        .replace(/@/g, '$at')
-        .replace(/\?/g, '$question')
-        .replace(/\~/g, '$tilde')
-        .replace(/\&/g, '$ampersand')
-        .replace(/\|/g, '$pipe')
-        .replace(/</g, '$lt')
-        .replace(/>/g, '$gt')
-        .replace(/=/g, '$eq');
+    var suffix = isJsReservedWord(s) ? "_" : "";
+    return s + suffix;
 }
 
 var handlers = {
@@ -133,21 +111,17 @@ var handlers = {
         var prop = node.prop;
         return transformAst(
             ast.Call(
-                ast.Identifier('sqgl$$methodGet'),
-                [prop, obj]
+                ast.Identifier('$method'),
+                [obj, prop]
             )
         );
     },
     CallMethod: function(node) {
-        var obj = node.obj;
-        var prop = coerceIdentToString(node.prop);
-        var args = ast.List(node.args);
-        return transformAst(
-            ast.Call(
-                ast.Identifier('sqgl$$methodCall'),
-                [prop, obj, args]
-            )
-        );
+        var obj = transformAst(node.obj);
+        var prop = transformAst(node.prop);
+        var method = es.MemberExpression(true, obj, prop);
+        var args = node.args.map(transformAst);
+        return es.CallExpression(method, args);
     },
     Not: function(node) {
         var expr = transformAst(node.expr);
@@ -179,11 +153,11 @@ var handlers = {
     },
     GetProperty: function(node) {
         var obj = node.obj;
-        var prop = coerceIdentToString(node.prop);
+        var prop = node.prop;
         return transformAst(
             ast.Call(
-                ast.Identifier('sqgl$$get'),
-                [prop, obj]
+                ast.Identifier('$get'),
+                [obj, prop]
             )
         );
     },
@@ -196,7 +170,23 @@ var handlers = {
                 assertBoolean(node.right)
             );
         } else {
-            var f = ast.Identifier(node.operator.data);
+            var table = {
+                "*": "multiply",
+                "/": "divide",
+                "+": "add",
+                "-": "subtract",
+                "++": "concat",
+                "~": "update",
+                ">=": "gte",
+                "<=": "lte",
+                "<": "lt",
+                ">": "gt",
+                "==": "eq",
+                "!=": "neq",
+                "|>": "pipe"
+            };
+            var name = "$" + table[node.operator.data];
+            var f = ast.Identifier(name);
             var args = [node.left, node.right];
             return transformAst(ast.Call(f, args));
         }
@@ -227,7 +217,7 @@ var handlers = {
         var n = node.parameters.length;
         var arityCheck = esprima.parse(
             "if (arguments.length !== " + n + ") { " +
-            "throw new sqgl$$Error(" +
+            "throw new $Error(" +
                 "'expected " + n + " argument(s), " +
                 "got ' + arguments.length" +
                 "); " +
@@ -242,7 +232,7 @@ var handlers = {
             params,
             es.BlockStatement(body)
         );
-        var callee = es.Identifier('sqgl$$freeze');
+        var callee = es.Identifier('$freeze');
         var frozen = es.CallExpression(callee, [innerFn]);
         return frozen;
     },
@@ -293,7 +283,7 @@ var handlers = {
             es.ReturnStatement(ok)
         ]);
         var internalError = esprima.parse(
-            "throw new sqgl$$Error('squiggle: internal error');"
+            "throw new $Error('squiggle: internal error');"
         ).body;
         var try_ = es.TryStatement(block, catch_);
         var body = [try_].concat(internalError);
@@ -303,7 +293,7 @@ var handlers = {
     Error: function(node) {
         var message = transformAst(node.message);
         var exception = es.NewExpression(
-            es.Identifier("sqgl$$Error"),
+            es.Identifier("$Error"),
             [message]
         );
         return throwHelper(exception);
@@ -315,27 +305,31 @@ var handlers = {
     List: function(node) {
         var pairs = node.data.map(transformAst);
         var array = es.ArrayExpression(pairs);
-        var callee = es.Identifier('sqgl$$freeze');
-        return es.CallExpression(callee, [array]);
+        var callee = es.Identifier('$array');
+        return es.CallExpression(callee, pairs);
     },
     Pair: function(node) {
-        return es.ArrayExpression([
-            transformAst(node.key),
-            transformAst(node.value)
-        ]);
+        throw new Error("shouldn't be here");
     },
     Map: function(node) {
-        var pairs = node.data.map(transformAst);
+        var pairs = node
+            .data
+            .map(function(pair) {
+                return [
+                    transformAst(pair.key),
+                    transformAst(pair.value)
+                ];
+            });
         return es.CallExpression(
-            es.Identifier('sqgl$$object'),
-            [es.ArrayExpression(pairs)]
+            es.Identifier('$object'),
+            flatten(pairs)
         );
     },
     Match: function(node) {
         var e = transformAst(node.expression);
         var body = node.clauses.map(transformAst);
         var matchError = esprima.parse(
-            "throw new sqgl$$Error('pattern match failure');"
+            "throw new $Error('pattern match failure');"
         ).body;
         var block = es.BlockStatement(body.concat(matchError));
         var id = es.Identifier("$match");
@@ -404,7 +398,7 @@ function esIn(a, b) {
 }
 
 function esSlice(xs, i) {
-    var slice = es.Identifier("sqgl$$slice");
+    var slice = es.Identifier("$slice");
     return es.CallExpression(slice, [i, xs]);
 }
 
@@ -447,11 +441,11 @@ var _satisfiesPattern = {
     },
     MatchPatternLiteral: function(root, p) {
         var lit = es.Literal(p.data.data);
-        return es.CallExpression(es.Identifier("sqgl$$is"), [root, lit]);
+        return es.CallExpression(es.Identifier("$is"), [root, lit]);
     },
     MatchPatternParenExpr: function(root, p) {
         var expr = transformAst(p.expr);
-        return es.CallExpression(es.Identifier("$eq$eq"), [root, expr]);
+        return es.CallExpression(es.Identifier("$eq"), [root, expr]);
     },
     MatchPatternArray: function(root, p) {
         var ps = p.patterns;
@@ -481,7 +475,7 @@ var _satisfiesPattern = {
         var t = esTypeof(root);
         var o = es.Literal("object");
         var isObject = es.CallExpression(
-            es.Identifier("sqgl$$isObject"),
+            es.Identifier("$isObject"),
             [root]
         );
         return p
