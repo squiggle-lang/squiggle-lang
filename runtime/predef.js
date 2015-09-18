@@ -197,7 +197,7 @@ var join = function(items, separator) {
     }
     return [].join.call(items, separator);
 };
-var foldLeft = function(f, z, xs) {
+var foldLeft = function(xs, f, z) {
     if (arguments.length !== 3) {
         throw new $Error('wrong number of arguments to foldLeft');
     }
@@ -241,13 +241,13 @@ var tail = function(xs) {
     }
     return $slice(xs, 1);
 };
-var reduce = function(f, xs) {
+var reduce = function(xs, f) {
     if (arguments.length !== 2) {
         throw new $Error("wrong number of arguments to reduce");
     }
     return foldLeft(f, head(xs), tail(xs));
 };
-var foldRight = function(f, z, xs) {
+var foldRight = function(xs, f, z) {
     if (arguments.length !== 3) {
         throw new $Error("wrong number of arguments to foldRight");
     }
