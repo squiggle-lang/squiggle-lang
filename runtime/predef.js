@@ -1,9 +1,6 @@
 // TODO: Add arity checking.
 // TODO: Add type checking.
 
-var undefined = void 0;
-var global = (1, eval)("this");
-
 // MDN polyfill for `Object.is`.
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
 var $_is = Object.is || function(x, y) {
@@ -29,8 +26,9 @@ var $freeze = Object.freeze;
 var $create = Object.create;
 var $isArray = Array.isArray;
 var $keys = Object.keys;
+var $isArray = Array.isArray;
 var $getPrototypeOf = Object.getPrototypeOf;
-var $Error = global.Error;
+var $Error = Error;
 
 var $isObject = function(x) {
     if (arguments.length !== 1) {
@@ -322,6 +320,18 @@ var set = function(k, v, obj) {
     obj[k] = v;
     return obj;
 };
+var typeOf = function typeOf(x) {
+    if (arguments.length !== 1) {
+        throw new $Error("wrong number of arguments to typeOf");
+    }
+    if (x === null) {
+        return "null"
+    }
+    if ($isArray(x)) {
+        return "array";
+    }
+    return typeof x;
+};
 var $method = function(obj, method) {
     if (arguments.length !== 2) {
         throw new $Error("wrong number of arguments to $method");
@@ -371,6 +381,9 @@ var $number = function(x) {
     }
     return x;
 };
+
+var undefined = void 0;
+var global = (1, eval)("this");
 
 var update = $update;
 var get = $get;
