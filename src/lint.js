@@ -108,7 +108,7 @@ function findUnusedOrUndeclaredBindings(ast) {
         }
     }
     function exit(node, parent) {
-        var t = node.type
+        var t = node.type;
         if (t === 'Let' || t === 'Function' || t === 'MatchClause') {
             // Pop the scope stack and investigate for unused variables.
             scopes.ownKeys().forEach(function(k) {
