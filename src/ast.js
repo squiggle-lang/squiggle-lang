@@ -14,6 +14,7 @@ var ast = nm({
     Call:        ["f", "args"],
     Function:    ["name", "parameters", "body"],
     Parameter:   ["identifier"],
+    Parameters:  ["context", "positional", "slurpy"],
     If:          ["p", "t", "f"],
     Let:         ["bindings", "expr"],
     BinOp:       ["operator", "left", "right"],

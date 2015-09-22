@@ -16,13 +16,6 @@ function isIdentifierOkayToNotUse(id) {
     return id.charAt(0) !== '_';
 }
 
-function isNewScope(node, parent) {
-    return (
-        node.type === 'Let' ||
-        node.type === 'Function'
-    );
-}
-
 function isIdentifierUsage(node, parent) {
     return (
         node.type === 'Identifier' &&
@@ -78,18 +71,25 @@ function findUnusedOrUndeclaredBindings(ast) {
     var messages = [];
     var scopes = OverlayMap(null);
     function enter(node, parent) {
-        if (isNewScope(node, parent)) {
-            // Let and Function are the only ways to create variable
-            // bindings currently. Make a new scope when we enter them,
-            // registering all declared identifiers.
-            var identifiers = node.bindings || node.parameters;
+        var t = node.type;
+        if (t === 'Let') {
             scopes = OverlayMap(scopes);
-            identifiers.forEach(function(b) {
+            node.bindings.forEach(function(b) {
                 scopes.setBest(b.identifier.data, false);
             });
-        } else if (node.type === 'MatchClause') {
+        } else if (t === 'Function') {
             scopes = OverlayMap(scopes);
-        } else if (node.type === 'MatchPatternSimple') {
+            flatten([
+                node.parameters.context || [],
+                node.parameters.positional,
+                node.parameters.slurpy || []
+            ]).forEach(function(binding) {
+                console.error("HEY", binding);
+                scopes.setBest(binding.identifier.data, false);
+            });
+        } else if (t === 'MatchClause') {
+            scopes = OverlayMap(scopes);
+        } else if (t === 'MatchPatternSimple') {
             scopes.setBest(node.identifier.data, false);
         } else if (isIdentifierUsage(node, parent)) {
             // Only look at identifiers that are being used for their
@@ -108,7 +108,8 @@ function findUnusedOrUndeclaredBindings(ast) {
         }
     }
     function exit(node, parent) {
-        if (isNewScope(node, parent) || node.type === 'MatchClause') {
+        var t = node.type;
+        if (t === 'Let' || t === 'Function' || t === 'MatchClause') {
             // Pop the scope stack and investigate for unused variables.
             scopes.ownKeys().forEach(function(k) {
                 if (isIdentifierOkayToNotUse(k) && !scopes.get(k)) {

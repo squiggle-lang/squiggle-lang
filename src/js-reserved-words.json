@@ -12,5 +12,6 @@
     "return",
     "if",
     "else",
-    "enum"
+    "enum",
+    "arguments"
 ]
