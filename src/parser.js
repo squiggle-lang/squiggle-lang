@@ -1,7 +1,11 @@
 var P = require("parsimmon");
+var flatten = require("lodash/array/flatten");
 var ast = require("./ast");
 
 function cons(x, xs) {
+    if (arguments.length === 1) {
+        return cons.bind(null, x);
+    }
     return [x].concat(xs);
 }
 
@@ -289,8 +293,37 @@ var GetMethod =
 var Parameter =
     Identifier.map(ast.Parameter);
 
+// Parameters look like this:
+// (@this, a, b, c, ...xs)
+// The first piece (@this) is the context.
+// The second piece (a, b, c) is the positional.
+// The third piece (...xs) is the slurpy.
+// All pieces are optional.
+
+var ParamSlurpy = word("...").then(Parameter);
+var ParamContext = P.string("@").then(Parameter);
+var ParamsPositional = list0(Separator, Parameter);
+
+var Params2 =
+    P.alt(
+        P.seq(ParamsPositional, Separator.then(ParamSlurpy)),
+        P.seq(P.of([]), ParamSlurpy),
+        P.seq(ParamsPositional, P.of(null)),
+        P.of(null)
+    );
+
+var Params1 =
+    P.alt(
+        ParamContext.chain(function(x) {
+            return Separator.then(Params2.map(cons(x)));
+        }),
+        ParamContext.map(function(x) { return [x, [], null]; }),
+        Params2.map(cons(null))
+    );
+
 var Parameters =
-    list0(Separator, Parameter);
+    Params1
+    .map(spread(ast.Parameters));
 
 var Function_ =
     P.seq(

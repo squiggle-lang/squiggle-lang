@@ -31,6 +31,12 @@ function mapLastSpecial(f, g, xs) {
     return ys.concat([y]);
 }
 
+function declareAssign(id, expr) {
+    return es.VariableDeclaration('var', [
+        es.VariableDeclarator(id, expr)
+    ]);
+}
+
 function freeze(esNode) {
     return es.CallExpression(es.Identifier("$freeze"), [esNode]);
 }
@@ -209,22 +215,42 @@ var handlers = {
         var name = node.name ?
             transformAst(node.name) :
             null;
-        var params = node
-            .parameters
-            .map(transformAst);
+        var positional = node.parameters.positional || [];
+        var params = positional.map(transformAst);
+        var n = params.length;
+        var context = node.parameters.context;
+        var bindContext = context ?
+            [declareAssign(transformAst(context), es.ThisExpression())] :
+            [];
+        var slurpy = node.parameters.slurpy;
+        var getSlurpy =
+            es.CallExpression(
+                es.Identifier("$slice"),
+                [es.Identifier("arguments"), es.Literal(n)]
+            );
+        var bindSlurpy = slurpy ?
+            [declareAssign(transformAst(slurpy), getSlurpy)] :
+            [];
         var bodyExpr = transformAst(node.body);
         var returnExpr = es.ReturnStatement(bodyExpr);
-        var n = node.parameters.length;
+        var op = slurpy ? "<" : "!==";
         var arityCheck = esprima.parse(
-            "if (arguments.length !== " + n + ") { " +
+            "if (arguments.length " + op + " " + n + ") { " +
             "throw new $Error(" +
                 "'expected " + n + " argument(s), " +
                 "got ' + arguments.length" +
                 "); " +
             "}"
         ).body;
+        // Argument count will never be less than zero, so remove the
+        // conditional entirely.
+        if (n === 0 && slurpy) {
+            arityCheck = [];
+        }
         var body = flatten([
             arityCheck,
+            bindContext,
+            bindSlurpy,
             returnExpr
         ]);
         var innerFn = es.FunctionExpression(
