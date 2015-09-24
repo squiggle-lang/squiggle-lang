@@ -261,7 +261,7 @@ var toArray = function(xs) {
     if (arguments.length !== 1) {
         throw new $Error("wrong number of arguments to toArray");
     }
-    return slice(xs, 0);
+    return $slice(xs, 0);
 };
 var flip = function(f) {
     if (arguments.length !== 1) {
