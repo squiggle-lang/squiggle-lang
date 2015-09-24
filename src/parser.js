@@ -440,13 +440,13 @@ var ObjectPair = P.alt(
 
 var Object_ =
     wrap("{", list0(Separator, ObjectPair), "}")
-    .map(ast.Map);
+    .map(ast.Object);
 
 /// Array literal.
 
 var Array_ =
     wrap("[", list0(Separator, Expr), "]")
-    .map(ast.List);
+    .map(ast.Array);
 
 /// Named literals.
 
