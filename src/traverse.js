@@ -57,10 +57,10 @@ function _walk(parents, obj, ast) {
             recur(node.identifier);
             recur(node.value);
         },
-        List: function(node) {
+        Array: function(node) {
             node.data.forEach(recur);
         },
-        Map: function(node) {
+        Object: function(node) {
             node.data.forEach(recur);
         },
         BinOp: function(node) {

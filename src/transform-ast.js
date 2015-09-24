@@ -333,7 +333,7 @@ var handlers = {
         var exception = transformAst(node.exception);
         return throwHelper(exception);
     },
-    List: function(node) {
+    Array: function(node) {
         var pairs = node.data.map(transformAst);
         var array = es.ArrayExpression(pairs);
         var callee = es.Identifier('$array');
@@ -342,7 +342,7 @@ var handlers = {
     Pair: function(node) {
         throw new Error("shouldn't be here");
     },
-    Map: function(node) {
+    Object: function(node) {
         var pairs = node
             .data
             .map(function(pair) {
