@@ -21,6 +21,7 @@ var $is = function(a, b) {
 };
 
 var $Object = Object;
+var $preventExtensions = Object.preventExtensions;
 var $isFrozen = Object.isFrozen;
 var $freeze = Object.freeze;
 var $create = Object.create;
@@ -307,7 +308,7 @@ var $get = function(obj, k) {
     }
     throw new $Error('key ' + k + ' not in ' + toString(obj));
 };
-var set = function(k, v, obj) {
+var set = function(obj, k, v) {
     if (arguments.length !== 3) {
         throw new $Error("wrong number of arguments to set");
     }

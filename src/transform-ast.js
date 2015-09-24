@@ -258,9 +258,14 @@ var handlers = {
             params,
             es.BlockStatement(body)
         );
-        var callee = es.Identifier('$freeze');
-        var frozen = es.CallExpression(callee, [innerFn]);
-        return frozen;
+        return innerFn;
+        // React is a jerk and wants to mutate function objects a lot. Maybe one
+        // day we can go back to freezing them, but until then, we'll play nice
+        // with React.
+        //
+        // var callee = es.Identifier('$freeze');
+        // var frozen = es.CallExpression(callee, [innerFn]);
+        // return frozen;
     },
     If: function(node) {
         var p = assertBoolean(node.p);

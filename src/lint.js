@@ -84,7 +84,6 @@ function findUnusedOrUndeclaredBindings(ast) {
                 node.parameters.positional,
                 node.parameters.slurpy || []
             ]).forEach(function(binding) {
-                console.error("HEY", binding);
                 scopes.setBest(binding.identifier.data, false);
             });
         } else if (t === 'MatchClause') {
