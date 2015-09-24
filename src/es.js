@@ -13,6 +13,7 @@ var es = nm({
     ConditionalExpression: ['test', 'consequent', 'alternate'],
     ArrayExpression: ['elements'],
     ReturnStatement: ['argument'],
+    ThisExpression: [],
     UnaryExpression: ['prefix', 'operator', 'argument'],
     BlockStatement: ['body'],
     FunctionExpression: ['id', 'params', 'body'],
