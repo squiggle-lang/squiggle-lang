@@ -77,8 +77,6 @@ var TopExpr = P.lazy(function() {
         Block,
         If,
         Let,
-        Not,
-        Negate,
         Try,
         Throw,
         Error_,
@@ -365,7 +363,14 @@ function lbo(ops, e) {
     });
 }
 
-var b6 = lbo("* /", OtherOpExpr);
+/// Unary operators not (not) and negate (-).
+
+var Not = word("not").then(OtherOpExpr).map(ast.Not);
+var Negate = word("-").then(OtherOpExpr).map(ast.Negate);
+
+var UnaryOps = P.alt(Not, Negate, OtherOpExpr);
+
+var b6 = lbo("* /", UnaryOps);
 var b5 = lbo("+ -", b6);
 var b4 = lbo("++ ~", b5);
 var b3 = lbo(">= <= < > == !=", b4);
@@ -375,10 +380,8 @@ var b1 = lbo("|>", b2);
 var BinExpr = b1;
 
 /// Various single word "unary operators".
-/// Should probably add "not" and "-" at least.
+/// These all happen before binary operators are parsed.
 
-var Not = word("not").then(Expr).map(ast.Not);
-var Negate = word("-").then(Expr).map(ast.Negate);
 var Try = word("try").then(Expr).map(ast.Try);
 var Throw = word("throw").then(Expr).map(ast.Throw);
 var Error_ = word("error").then(Expr).map(ast.Error);
