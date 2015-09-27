@@ -80,15 +80,6 @@ var $neq = function(a, b) {
     }
     return !$eq(a, b);
 };
-var $pipe = function(x, f) {
-    if (arguments.length !== 2) {
-        throw new $Error('wrong number of arguments to $pipe');
-    }
-    if (typeof f !== 'function') {
-        throw new $Error('right-side not a function in |>, ' + f);
-    }
-    return f(x);
-};
 var $eq = function $eq(a, b) {
     if (arguments.length !== 2) {
         throw new $Error('wrong number of arguments to $eq');

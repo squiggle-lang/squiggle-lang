@@ -188,8 +188,7 @@ var handlers = {
                 "<": "lt",
                 ">": "gt",
                 "==": "eq",
-                "!=": "neq",
-                "|>": "pipe"
+                "!=": "neq"
             };
             var name = "$" + table[node.operator.data];
             var f = ast.Identifier(name);

@@ -370,12 +370,11 @@ var Negate = word("-").then(OtherOpExpr).map(ast.Negate);
 
 var UnaryOps = P.alt(Not, Negate, OtherOpExpr);
 
-var b6 = lbo("* /", UnaryOps);
-var b5 = lbo("+ -", b6);
-var b4 = lbo("++ ~", b5);
-var b3 = lbo(">= <= < > == !=", b4);
-var b2 = lbo("and or", b3);
-var b1 = lbo("|>", b2);
+var b5 = lbo("* /", UnaryOps);
+var b4 = lbo("+ -", b5);
+var b3 = lbo("++ ~", b4);
+var b2 = lbo(">= <= < > == !=", b3);
+var b1 = lbo("and or", b2);
 
 var BinExpr = b1;
 
