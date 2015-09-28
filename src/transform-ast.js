@@ -3,6 +3,7 @@ var flatten = require("lodash/array/flatten");
 var jsbeautify = require("js-beautify");
 var esprima = require("esprima");
 
+var PREDEF = require("./predef-ast");
 var es = require("./es");
 var ast = require("./ast");
 var die = require("./die");
@@ -63,8 +64,6 @@ function assertBoolean(x) {
         )
     );
 }
-
-var PREDEF = require("./predef-ast");
 
 function moduleExportsEq(x) {
     var moduleExports =
@@ -294,7 +293,7 @@ var handlers = {
         var namesFound = Object.create(null);
         names.forEach(function(name) {
             if (name in namesFound) {
-                die("cannot rebind " + name);
+                die("squiggle: cannot rebind " + name);
             } else {
                 namesFound[name] = true;
             }
