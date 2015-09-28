@@ -289,7 +289,7 @@ var handlers = {
         var initializations = node.bindings.map(function(b) {
             var id = transformAst(b.identifier);
             var value = transformAst(b.value);
-            var assign = es.AssignmentExpression('=', id, value)
+            var assign = es.AssignmentExpression('=', id, value);
             return es.ExpressionStatement(assign);
         });
         var e = transformAst(node.expr);
