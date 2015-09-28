@@ -5,8 +5,14 @@ var esprima = require("esprima");
 
 var es = require("./es");
 var ast = require("./ast");
+var die = require("./die");
 var fileWrapper = require("./file-wrapper");
 var isJsReservedWord = require("./is-js-reserved-word");
+
+function frozenArray(xs) {
+    var fn = es.Identifier("$array");
+    return es.CallExpression(fn, xs);
+}
 
 function transformAst(node) {
     if (!isObject(node)) {
@@ -280,18 +286,37 @@ var handlers = {
     },
     Let: function(node) {
         var undef = es.Identifier("$undef");
+
+        // Ensure there are no duplicate identifier names.
+        var names = node.bindings.map(function(b) {
+            return b.identifier.data;
+        });
+        var namesFound = Object.create(null);
+        names.forEach(function(name) {
+            if (name in namesFound) {
+                die("cannot rebind " + name);
+            } else {
+                namesFound[name] = true;
+            }
+        });
+
+        // Initialize all variables to $undef so we can perform temporal
+        // deadzone checking.
         var declarations = node.bindings.map(function(b) {
             var id = transformAst(b.identifier);
             return es.VariableDeclaration('var', [
                 es.VariableDeclarator(id, undef)
             ]);
         });
+
+        // Rebind variables to their correct values.
         var initializations = node.bindings.map(function(b) {
             var id = transformAst(b.identifier);
             var value = transformAst(b.value);
             var assign = es.AssignmentExpression('=', id, value);
             return es.ExpressionStatement(assign);
         });
+
         var e = transformAst(node.expr);
         var returnExpr = es.ReturnStatement(e);
         var body = flatten([
@@ -299,25 +324,20 @@ var handlers = {
             initializations,
             returnExpr
         ]);
-        return es.CallExpression(
-            es.FunctionExpression(
-                null,
-                [],
-                es.BlockStatement(body)
-            ),
-            []
-        );
+        var block = es.BlockStatement(body);
+        var fn = es.FunctionExpression(null, [], block);
+        return es.CallExpression(fn);
     },
     Try: function(node) {
         var expr = transformAst(node.expr);
-        var ok = freeze(es.ArrayExpression([
+        var ok = frozenArray([
             es.Literal("ok"),
             expr,
-        ]));
-        var fail =  freeze(es.ArrayExpression([
+        ]);
+        var fail =  frozenArray([
             es.Literal("fail"),
             es.Identifier("$error")
-        ]));
+        ]);
         var catch_ = es.CatchClause(
             es.Identifier("$error"),
             es.BlockStatement([
