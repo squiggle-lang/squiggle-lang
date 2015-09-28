@@ -30,7 +30,15 @@ var $keys = Object.keys;
 var $isArray = Array.isArray;
 var $getPrototypeOf = Object.getPrototypeOf;
 var $Error = Error;
+var $ReferenceError = ReferenceError;
+var $undef = {_: "SQUIGGLE_TEMPORAL_DEADZONE_VALUE"};
 
+var $ref = function $ref(x, name) {
+    if (x === $undef) {
+        throw new $ReferenceError(name + " used before initialization");
+    }
+    return x;
+};
 var $isObject = function(x) {
     if (arguments.length !== 1) {
         throw new $Error('wrong number of arguments to $isObject');

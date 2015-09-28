@@ -200,7 +200,10 @@ var handlers = {
         return es.Identifier(cleanIdentifier(node.data));
     },
     IdentifierExpression: function(node) {
-        return transformAst(node.data);
+        var id = transformAst(node.data);
+        var name = es.Literal(node.data.data);
+        var ref = es.Identifier("$ref");
+        return es.CallExpression(ref, [id, name]);
     },
     Call: function(node) {
         var f = transformAst(node.f);
@@ -273,17 +276,29 @@ var handlers = {
         return es.ConditionalExpression(p, t, f);
     },
     Binding: function(node) {
-        var identifier = transformAst(node.identifier);
-        var value = transformAst(node.value);
-        return es.VariableDeclaration('var', [
-            es.VariableDeclarator(identifier, value)
-        ]);
+        throw new Error("shouldn't be here");
     },
     Let: function(node) {
-        var declarations = node.bindings.map(transformAst);
+        var undef = es.Identifier("$undef");
+        var declarations = node.bindings.map(function(b) {
+            var id = transformAst(b.identifier);
+            return es.VariableDeclaration('var', [
+                es.VariableDeclarator(id, undef)
+            ]);
+        });
+        var initializations = node.bindings.map(function(b) {
+            var id = transformAst(b.identifier);
+            var value = transformAst(b.value);
+            var assign = es.AssignmentExpression('=', id, value)
+            return es.ExpressionStatement(assign);
+        });
         var e = transformAst(node.expr);
         var returnExpr = es.ReturnStatement(e);
-        var body = declarations.concat([returnExpr]);
+        var body = flatten([
+            declarations,
+            initializations,
+            returnExpr
+        ]);
         return es.CallExpression(
             es.FunctionExpression(
                 null,
