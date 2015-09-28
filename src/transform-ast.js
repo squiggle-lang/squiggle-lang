@@ -39,13 +39,13 @@ function mapLastSpecial(f, g, xs) {
 }
 
 function declareAssign(id, expr) {
-    return es.VariableDeclaration('var', [
-        es.VariableDeclarator(id, expr)
-    ]);
+    var init = es.VariableDeclarator(id, expr);
+    return es.VariableDeclaration('var', [init]);
 }
 
 function freeze(esNode) {
-    return es.CallExpression(es.Identifier("$freeze"), [esNode]);
+    var freeze = is.Identifier("$freeze");
+    return es.CallExpression(freeze, [esNode]);
 }
 
 function jsonify(x) {
@@ -57,12 +57,9 @@ function literal(node) {
 }
 
 function assertBoolean(x) {
-    return transformAst(
-        ast.Call(
-            ast.Identifier('$bool'),
-            [x]
-        )
-    );
+    var id = ast.Identifier("$bool");
+    var call = ast.Call(id, [x]);
+    return transformAst(call);
 }
 
 function moduleExportsEq(x) {
