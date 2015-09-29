@@ -97,9 +97,15 @@ function throwHelper(esNode) {
     return es.CallExpression(fn, []);
 }
 
+function isUnusedIdentifier(s) {
+    return s.charAt(0) === "_";
+}
+
 function cleanIdentifier(s) {
-    var suffix = isJsReservedWord(s) ? "_" : "";
-    return s + suffix;
+    if (isJsReservedWord(s)) {
+        return s + "_";
+    }
+    return s;
 }
 
 var handlers = {
@@ -220,7 +226,20 @@ var handlers = {
             transformAst(node.name) :
             null;
         var positional = node.parameters.positional || [];
-        var params = positional.map(transformAst);
+        var params = positional
+            .map(function(x, i) {
+                var n = i + 1;
+                var name = x.identifier.data;
+                if (name === "_") {
+                    return "$" + n;
+                } else if (name.charAt(0) === "_") {
+                    return "$" + n + name.slice(0);
+                } else {
+                    return name;
+                }
+            })
+            .map(function(name) { return ast.Identifier(name); })
+            .map(transformAst);
         var n = params.length;
         var context = node.parameters.context;
         var bindContext = context ?
@@ -298,19 +317,27 @@ var handlers = {
 
         // Initialize all variables to $undef so we can perform temporal
         // deadzone checking.
-        var declarations = node.bindings.map(function(b) {
-            var id = transformAst(b.identifier);
-            return es.VariableDeclaration('var', [
-                es.VariableDeclarator(id, undef)
-            ]);
-        });
+        var declarations = node.bindings
+            .filter(function(b) {
+                return !isUnusedIdentifier(b.identifier.data);
+            })
+            .map(function(b) {
+                var id = transformAst(b.identifier);
+                return es.VariableDeclaration('var', [
+                    es.VariableDeclarator(id, undef)
+                ]);
+            });
 
         // Rebind variables to their correct values.
         var initializations = node.bindings.map(function(b) {
-            var id = transformAst(b.identifier);
             var value = transformAst(b.value);
-            var assign = es.AssignmentExpression('=', id, value);
-            return es.ExpressionStatement(assign);
+            if (isUnusedIdentifier(b.identifier.data)) {
+                return es.ExpressionStatement(value);
+            } else {
+                var id = transformAst(b.identifier);
+                var assign = es.AssignmentExpression('=', id, value);
+                return es.ExpressionStatement(assign);
+            }
         });
 
         var e = transformAst(node.expr);
@@ -322,7 +349,7 @@ var handlers = {
         ]);
         var block = es.BlockStatement(body);
         var fn = es.FunctionExpression(null, [], block);
-        return es.CallExpression(fn);
+        return es.CallExpression(fn, []);
     },
     Try: function(node) {
         var expr = transformAst(node.expr);
