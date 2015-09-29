@@ -585,8 +585,10 @@ function satisfiesPattern(root, p) {
 
 var __pluckPattern = {
     MatchPatternSimple: function(acc, root, p) {
-        acc.identifiers.push(es.Identifier(p.identifier.data));
-        acc.expressions.push(root);
+        if (p.identifier.data !== "_") {
+            acc.identifiers.push(es.Identifier(p.identifier.data));
+            acc.expressions.push(root);
+        }
         return acc;
     },
     MatchPatternLiteral: function(acc, root, p) {
