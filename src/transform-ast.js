@@ -44,8 +44,8 @@ function declareAssign(id, expr) {
 }
 
 function freeze(esNode) {
-    var freeze = is.Identifier("$freeze");
-    return es.CallExpression(freeze, [esNode]);
+    var id = is.Identifier("$freeze");
+    return es.CallExpression(id, [esNode]);
 }
 
 function jsonify(x) {
