@@ -97,10 +97,6 @@ function throwHelper(esNode) {
     return es.CallExpression(fn, []);
 }
 
-function isUnusedIdentifier(s) {
-    return s.charAt(0) === "_";
-}
-
 function cleanIdentifier(s) {
     if (isJsReservedWord(s)) {
         return s + "_";
@@ -232,8 +228,6 @@ var handlers = {
                 var name = x.identifier.data;
                 if (name === "_") {
                     return "$" + n;
-                } else if (name.charAt(0) === "_") {
-                    return "$" + n + name.slice(0);
                 } else {
                     return name;
                 }
@@ -319,7 +313,7 @@ var handlers = {
         // deadzone checking.
         var declarations = node.bindings
             .filter(function(b) {
-                return !isUnusedIdentifier(b.identifier.data);
+                return b.identifier.data !== "_";
             })
             .map(function(b) {
                 var id = transformAst(b.identifier);
@@ -331,7 +325,7 @@ var handlers = {
         // Rebind variables to their correct values.
         var initializations = node.bindings.map(function(b) {
             var value = transformAst(b.value);
-            if (isUnusedIdentifier(b.identifier.data)) {
+            if (b.identifier.data === "_") {
                 return es.ExpressionStatement(value);
             } else {
                 var id = transformAst(b.identifier);

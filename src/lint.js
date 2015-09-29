@@ -13,7 +13,7 @@ function lint(ast) {
 }
 
 function isIdentifierOkayToNotUse(id) {
-    return id.charAt(0) !== '_';
+    return id !== '_';
 }
 
 function isIdentifierUsage(node, parent) {
