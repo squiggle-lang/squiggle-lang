@@ -46,7 +46,7 @@ function esIn(a, b) {
 
 function esSlice(xs, i) {
     var slice = es.Identifier("$slice");
-    return es.CallExpression(slice, [i, xs]);
+    return es.CallExpression(slice, [xs, i]);
 }
 
 function esProp(obj, prop) {

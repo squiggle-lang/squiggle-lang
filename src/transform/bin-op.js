@@ -30,11 +30,10 @@ function BinOp(transform, node) {
     // `and` and `or` cannot be implemented as functions due to short circuiting
     // `behavior, so they work differently.
     if (d === 'and' || d === 'or') {
-        return es.LogicalExpression(
-            boolTable[d],
-            transform(bool(node.left)),
-            transform(bool(node.right))
-        );
+        var op = boolTable[d];
+        var left = transform(bool(node.left));
+        var right = transform(bool(node.right));
+        return es.LogicalExpression(op, left, right);
     } else {
         var name = "$" + table[node.operator.data];
         var f = ast.Identifier(name);

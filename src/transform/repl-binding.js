@@ -2,11 +2,11 @@ var fileWrapper = require("../file-wrapper");
 var es = require("../es");
 
 function globalComputedEq(name, x) {
-    var literallyThis = es.Literal("this");
-    var f = es.Literal(false);
-    var e = es.Identifier("eval");
-    var indirectEval = es.LogicalExpression("||", f, e);
-    var global = es.CallExpression(indirectEval, [literallyThis]);
+    var this_ = es.Literal("this");
+    var false_ = es.Literal(false);
+    var eval_ = es.Identifier("eval");
+    var indirectEval = es.LogicalExpression("||", false_, eval_);
+    var global = es.CallExpression(indirectEval, [this_]);
     var memberExpr = es.MemberExpression(true, global, es.Literal(name));
     var assign = es.AssignmentExpression('=', memberExpr, x);
     return es.ExpressionStatement(assign);

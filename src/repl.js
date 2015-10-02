@@ -43,11 +43,11 @@ function loadPredef() {
 }
 
 function prettySyntaxError(result) {
-    console.error(result);
+    var i = result.index + 1;
     var expectations = uniq(result.expected).join(", ");
     return error(
-        "syntax error at character " + (result.index + 1) +
-        ": expected " + result.expected.join(" or ")
+        "syntax error at character " + i +
+        ": expected " + expectations
     );
 }
 
