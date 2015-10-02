@@ -1,5 +1,4 @@
 var P = require("parsimmon");
-var flatten = require("lodash/array/flatten");
 var ast = require("./ast");
 
 function cons(x, xs) {
@@ -79,6 +78,7 @@ var TopExpr = P.lazy(function() {
         Let,
         Try,
         Throw,
+        Require,
         Error_,
         Match,
         BinExpr
@@ -384,6 +384,7 @@ var BinExpr = b1;
 var Try = word("try").then(Expr).map(ast.Try);
 var Throw = word("throw").then(Expr).map(ast.Throw);
 var Error_ = word("error").then(Expr).map(ast.Error);
+var Require = word("require").then(Expr).map(ast.Require);
 
 /// Variable bindings via "let". Probably going to be changed soon.
 

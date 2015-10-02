@@ -124,6 +124,9 @@ function _walk(parents, obj, ast) {
         Try: function(node) {
             recur(node.expr);
         },
+        Require: function(node) {
+            recur(node.expr);
+        },
         Not: function(node) {
             recur(node.expr);
         },

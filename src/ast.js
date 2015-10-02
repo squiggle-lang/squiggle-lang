@@ -4,6 +4,7 @@ var ast = nm({
     Module:      ["expr"],
     Script:      ["expr"],
     Try:         ["expr"],
+    Require:     ["expr"],
     Not:         ["expr"],
     Negate:      ["expr"],
     GetProperty: ["obj", "prop"],

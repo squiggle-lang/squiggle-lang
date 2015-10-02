@@ -1,8 +1,8 @@
-var pkg = require("../package.json");
+var uniq = require("lodash/array/uniq");
 var readline = require("readline");
 var chalk = require("chalk");
 
-var es = require("./es");
+var pkg = require("../package.json");
 var parse = require("./repl-parse");
 var compile = require("./compile");
 var transformAst = require("./transform-ast");
@@ -42,15 +42,12 @@ function loadPredef() {
     globalEval("var exit = quit;");
 }
 
-function prettySyntaxError(e) {
-    console.error(e);
-    var expectations = e
-        .expected
-        .map(function(e) { return e.description; })
-        .join(", ");
+function prettySyntaxError(result) {
+    var i = result.index + 1;
+    var expectations = uniq(result.expected).join(", ");
     return error(
-        "syntax error at character " + (e.index + 1) +
-        ": expected " + e.expected.join(" or ")
+        "syntax error at character " + i +
+        ": expected " + expectations
     );
 }
 
