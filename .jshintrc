@@ -1,3 +1,21 @@
 {
-    "node": true
+    "node": true,
+    "bitwise": true,
+    "curly": true,
+    "eqeqeq": true,
+    "funcscope": true,
+    "futurehostile": true,
+    // TODO: Need to enable this later if possible.
+    // "latedef": "nofunc",
+    "maxcomplexity": 10,
+    "maxdepth": 2,
+    "maxparams": 3,
+    "maxstatements": 25,
+    "noarg": true,
+    "nocomma": true,
+    "nonbsp": true,
+    "notypeof": true,
+    "undef": true,
+    "unused": "vars",
+    "freeze": true
 }

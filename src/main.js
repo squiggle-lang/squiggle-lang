@@ -7,7 +7,6 @@ var WRITE_TO_STDOUT = {_: "WRITE_TO_STDOUT"};
 
 var pkg = require("../package.json");
 var fs = require("fs");
-var path = require("path");
 var chalk = require("chalk");
 var uniq = require("lodash/array/uniq");
 var nomnom = require("nomnom")

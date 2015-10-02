@@ -1,5 +1,4 @@
 var flatten = require("lodash/array/flatten");
-var includes = require("lodash/collection/includes");
 var predefAst = require("./predef-ast");
 var traverse = require("./traverse");
 var OverlayMap = require("./overlay-map");

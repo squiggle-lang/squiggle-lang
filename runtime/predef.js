@@ -195,13 +195,13 @@ var join = function(items, separator) {
     }
     return [].join.call(items, separator);
 };
-var foldLeft = function(xs, f, z) {
+var foldLeft = function(xs, z, f) {
     if (arguments.length !== 3) {
         throw new $Error('wrong number of arguments to foldLeft');
     }
     var y = z;
     for (var i = 0, n = xs.length; i < n; i++) {
-        y = f(z, xs[i]);
+        y = f(y, xs[i]);
     }
     return y;
 };
@@ -243,13 +243,13 @@ var reduce = function(xs, f) {
     if (arguments.length !== 2) {
         throw new $Error("wrong number of arguments to reduce");
     }
-    return foldLeft(f, head(xs), tail(xs));
+    return foldLeft(head(xs), tail(xs), f);
 };
-var foldRight = function(xs, f, z) {
+var foldRight = function(xs, z, f) {
     if (arguments.length !== 3) {
         throw new $Error("wrong number of arguments to foldRight");
     }
-    return foldLeft(flip(f), z, reverse(xs));
+    return foldLeft(reverse(xs), z, flip(f));
 };
 var reverse = function(xs) {
     if (arguments.length !== 1) {
