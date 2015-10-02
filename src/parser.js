@@ -182,11 +182,11 @@ var MatchPatternObjectPairBasic = P.lazy(function() {
 });
 
 var MatchPatternObjectPairShorthand =
-    Identifier.map(function(i) {
-        return ast.MatchPatternObjectPair(
-            ast.String(i.data),
-            ast.MatchPatternSimple(i)
-        );
+    Identifier
+    .map(function(i) {
+        var str = ast.String(i.data);
+        var expr = ast.IdentifierExpression(i);
+        return ast.MatchPatternObjectPair(str, expr);
     });
 
 var MatchPatternObjectPair = P.alt(
@@ -433,7 +433,9 @@ var ObjectPairNormal =
 var ObjectPairShorthand =
     Identifier
     .map(function(i) {
-        return ast.Pair(ast.String(i.data), i);
+        var str = ast.String(i.data);
+        var expr = ast.IdentifierExpression(i);
+        return ast.Pair(str, expr);
     });
 
 var ObjectPair = P.alt(
