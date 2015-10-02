@@ -6,41 +6,20 @@ A compile-to-JS programming language.
 
 ## How do I install it?
 
-    npm install -g saikobee/squiggle
+    npm install -g wavebeem/squiggle
 
 ## How do I use it?
 
-Put the following in `hello.squiggle`:
+Please follow the [tutorial](http://mockbrian.com/squiggle/tutorial/).
 
-    console.log("Hello, world!")
-
-Then run:
-
-    squiggle hello.squiggle -o hello.js
-    node hello.js
-    
 ## Code of conduct
 
 This project uses the [Contributor Covenant](https://github.com/saikobee/squiggle/blob/master/CODE_OF_CONDUCT.md) as its code of conduct.
 
-## Another programming language?
+## Contributing
 
-Yes.
-
-## Why?
-
-- It's fun
-- CoffeeScript is too complicated
-- Works around annoying JavaScript features
-
-## Goals
-
-- Easy JS interop (no marshalling data structures between languages)
-- Immutability (`Object.freeze`)
-- No variable rebinding (`const`)
-- Function arity checking (`wrong number of arguments`)
-- Exceptions on bad property access (`[][1]`, `{}.foo`, etc.)
-- All files are CommonJS modules
-- Expression oriented
-- Objects can have computed properties
-- Easy syntax
+- Click the "Fork" repository button and locally clone your fork
+- Use a terminal and `cd` into the new directory
+- Install [Node.js](https://nodejs.org/en/)
+- `node src/main.js`
+- Optional: `npm link` so you can just run `squiggle`
