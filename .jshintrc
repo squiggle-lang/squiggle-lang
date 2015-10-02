@@ -5,8 +5,6 @@
     "eqeqeq": true,
     "funcscope": true,
     "futurehostile": true,
-    // TODO: Need to enable this later if possible.
-    // "latedef": "nofunc",
     "maxcomplexity": 10,
     "maxdepth": 2,
     "maxparams": 3,
