@@ -348,10 +348,28 @@ var If =
         word("else").then(Expr)
     ).map(spread(ast.If));
 
+/// Unary operators not (not) and negate (-).
+
+var Not = word("not").then(OtherOpExpr).map(ast.Not);
+var Negate = word("-").then(OtherOpExpr).map(ast.Negate);
+
+var UnaryOps = P.alt(Not, Negate, OtherOpExpr);
+
+var x = y;
+var y = x;
+
+var binOps = [
+    "* /",
+    "+ -",
+    "++ ~",
+    ">= <= < > == !=",
+    "and or",
+];
+
 /// This helper is really dense, but basically it process a list of operators
 /// and expressions, nesting them in a left-associative manner.
 
-function lbo(ops, e) {
+function leftBinOp(e, ops) {
     var aOperators = ops.split(" ");
     var sOperators = aOperators.map(P.string).map(spaced);
     var pOperator = P.alt.apply(null, sOperators).map(ast.Operator);
@@ -363,20 +381,10 @@ function lbo(ops, e) {
     });
 }
 
-/// Unary operators not (not) and negate (-).
-
-var Not = word("not").then(OtherOpExpr).map(ast.Not);
-var Negate = word("-").then(OtherOpExpr).map(ast.Negate);
-
-var UnaryOps = P.alt(Not, Negate, OtherOpExpr);
-
-var b5 = lbo("* /", UnaryOps);
-var b4 = lbo("+ -", b5);
-var b3 = lbo("++ ~", b4);
-var b2 = lbo(">= <= < > == !=", b3);
-var b1 = lbo("and or", b2);
-
-var BinExpr = b1;
+// NOTE: This only works because all operators are left-associative. If there is
+// ever a right-associative operator in here, `reduce` will need to use a
+// different function.
+var BinExpr = binOps.reduce(leftBinOp, UnaryOps);
 
 /// Various single word "unary operators".
 /// These all happen before binary operators are parsed.
