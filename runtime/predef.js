@@ -33,6 +33,9 @@ var $Error = Error;
 var $ReferenceError = ReferenceError;
 var $undef = {_: "SQUIGGLE_TEMPORAL_DEADZONE_VALUE"};
 
+var $has = function $has(obj, key) {
+    return key in obj;
+};
 var $ref = function $ref(x, name) {
     if (x === $undef) {
         throw new $ReferenceError(name + " used before initialization");
@@ -387,4 +390,3 @@ var global = (1, eval)("this");
 
 var update = $update;
 var get = $get;
-var is = $is;
