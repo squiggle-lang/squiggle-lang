@@ -355,9 +355,6 @@ var Negate = word("-").then(OtherOpExpr).map(ast.Negate);
 
 var UnaryOps = P.alt(Not, Negate, OtherOpExpr);
 
-var x = y;
-var y = x;
-
 var binOps = [
     "* /",
     "+ -",
