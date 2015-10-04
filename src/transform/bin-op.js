@@ -13,6 +13,8 @@ var table = {
     "<": "lt",
     ">": "gt",
     "==": "eq",
+    has: "has",
+    is: "is",
     "!=": "neq"
 };
 
