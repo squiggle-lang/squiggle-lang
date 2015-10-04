@@ -6,8 +6,8 @@ function IdentifierExpression(transform, node) {
     var name = es.Literal(node.data.data);
     var ref = es.Identifier("$ref");
     if (ref === "_") {
-        die("squiggle: variable '_' cannot be referenced \
-            as it will never be bound");
+        die("squiggle: variable '_' cannot be referenced "
+            + " as it will never be bound");
     }
     return es.CallExpression(ref, [id, name]);
 }
