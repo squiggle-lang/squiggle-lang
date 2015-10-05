@@ -1,6 +1,4 @@
 var chalk = require("chalk");
-
-var argv = argv;
 var ERROR = chalk.bold.red;
 
 function die() {
