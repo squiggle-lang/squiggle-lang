@@ -21,6 +21,6 @@ This project uses the [Contributor Covenant](https://github.com/saikobee/squiggl
 - Click the "Fork" repository button and locally clone your fork
 - Use a terminal and `cd` into the new directory
 - Install [Node.js](https://nodejs.org/en/)
-- npm install (this will install the dependencies needed)
+- `npm install` (this will install the dependencies needed)
 - `node src/main.js`
 - Optional: `npm link` so you can just run `squiggle`
