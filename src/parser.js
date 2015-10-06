@@ -182,7 +182,7 @@ var MatchPatternObjectPairShorthand =
     Identifier
     .map(function(i) {
         var str = ast.String(i.data);
-        var expr = ast.IdentifierExpression(i);
+        var expr = ast.MatchPatternSimple(i);
         return ast.MatchPatternObjectPair(str, expr);
     });
 
