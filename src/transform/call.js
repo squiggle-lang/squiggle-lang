@@ -5,9 +5,9 @@ function Call(transform, node) {
     if (node.f.type === "GetProperty") {
         var obj = node.f.obj;
         var prop = node.f.prop;
-        var args = node.args;
-        var node = ast.CallMethod(obj, prop, args);
-        return transform(node);
+        var cmArgs = node.args;
+        var cmNode = ast.CallMethod(obj, prop, cmArgs);
+        return transform(cmNode);
     }
     var f = transform(node.f);
     var args = node.args.map(transform);
