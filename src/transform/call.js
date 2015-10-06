@@ -2,7 +2,7 @@ var es = require("../es");
 var ast = require("../ast");
 
 function Call(transform, node) {
-    // Id the function being called comes from a "GetProperty", that means we're
+    // If the function being called comes from a "GetProperty", that means we're
     // looking at a method invocation, like `foo.bar()` rather than just a
     // normal function invocation like `goop()`, so transform this node into a
     // `ast.CallMethod` and let it do the work.
