@@ -87,10 +87,7 @@ var TopExpr = P.lazy(function() {
 
 var OtherOpExpr = P.lazy(function() {
     return P.alt(
-        CallMethod,
-        Call,
-        GetProperty,
-        GetMethod,
+        CallOrGet,
         BottomExpr
     );
 });
@@ -229,14 +226,11 @@ var Match =
         _.then(MatchClause).atLeast(1).skip(_).skip(P.string("end"))
     ).map(spread(ast.Match));
 
-/// Function calls.
+/// Function calls, method calls, property access, and method access are all the
+/// same precedence level. It makes this section a little dense.
 
 var ArgList =
     wrap("(", list0(Separator, Expr), ")");
-
-var Call =
-    P.seq(BottomExpr, _.then(ArgList).atLeast(1))
-    .map(spread(foldLeft(ast.Call)));
 
 /// Dot access to properties is really just syntax sugar for using brackets and
 /// a string literal, so let's treat it that way in the grammar. The compiler
@@ -256,35 +250,34 @@ var BracketProp =
 
 var Property = DotProp.or(BracketProp);
 
-/// Property get and method calls.
-
-var GetProperty =
-    P.seq(
-        BottomExpr,
-        _.then(Property).atLeast(1)
-    )
-    .map(spread(foldLeft(ast.GetProperty)));
-
-var CallMethod =
-    P.seq(
-        BottomExpr,
-        P.seq(
-            _.then(Property),
-            _.then(ArgList)
-        ).atLeast(1)
-    ).map(spread(foldLeft(function(acc, x) {
-        return ast.CallMethod(acc, x[0], x[1]);
-    })));
-
 /// Getting a bound method like `console::log`. Syntax is likely to change on
 /// this to match the experimental ES7-style `::console.log` and
 /// `::console["log"]`.
 
-var GetMethod =
+var BoundMethod = word("::").then(IdentifierAsString)
+
+function almostSpready(maker) {
+    return function(xs) {
+        return function(x) {
+            return maker(x, xs);
+        };
+    };
+}
+
+var CallOrGet =
     P.seq(
         BottomExpr,
-        _.then(word("::").then(IdentifierAsString)).atLeast(1)
-    ).map(spread(foldLeft(ast.GetMethod)));
+        P.alt(
+            ArgList.map(almostSpready(ast.Call)),
+            Property.map(almostSpready(ast.GetProperty)),
+            BoundMethod.map(almostSpready(ast.GetMethod))
+        ).many()
+    )
+    .map(spread(function(expr, others) {
+        return others.reduce(function(acc, x) {
+            return x(acc);
+        }, expr);
+    }));
 
 /// Function literals.
 
