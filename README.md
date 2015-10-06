@@ -23,3 +23,4 @@ This project uses the [Contributor Covenant](https://github.com/saikobee/squiggl
 - Install [Node.js](https://nodejs.org/en/)
 - `node src/main.js`
 - Optional: `npm link` so you can just run `squiggle`
+- Note: Run `./bin/build.rb` if you change `predef.js`
