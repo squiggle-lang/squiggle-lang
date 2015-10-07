@@ -61,19 +61,15 @@ function esNth2(a, i) {
     return es.MemberExpression(true, a, i);
 }
 
-function objGet(obj, k) {
-    return es.MemberExpression(true, obj, es.Literal(k));
-}
-
 function objGet2(obj, k) {
     return es.MemberExpression(true, obj, k);
 }
 
-var matchTmp = es.Identifier("$_");
+// var matchTmp = es.Identifier("$_");
 
-function assignTemp(expr) {
-    return es.AssignmentExpression("=", matchTmp, expr);
-}
+// function assignTemp(expr) {
+//     return es.AssignmentExpression("=", matchTmp, expr);
+// }
 
 var j = JSON.stringify;
 

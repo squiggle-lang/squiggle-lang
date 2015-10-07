@@ -7,7 +7,7 @@
     "futurehostile": true,
     "maxcomplexity": 10,
     "maxdepth": 2,
-    "maxparams": 3,
+    "maxparams": 4,
     "maxstatements": 25,
     "noarg": true,
     "nocomma": true,
