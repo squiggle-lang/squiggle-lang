@@ -3,6 +3,7 @@ var readline = require("readline");
 var chalk = require("chalk");
 
 var pkg = require("../package.json");
+var inspect = require("./inspect");
 var parse = require("./repl-parse");
 var compile = require("./compile");
 var transformAst = require("./transform-ast");
@@ -10,14 +11,18 @@ var prettyPrint = require("./pretty-print");
 var predefAst = require("./predef-ast");
 var fileWrapper = require("./file-wrapper");
 
+var SHOW_ES = false;
 var SHOW_JS = true;
 var SHOW_AST = false;
 
 function transformAndEval(ast) {
     if (SHOW_AST) {
-        console.log(ast);
+        console.log(inspect(ast) + "\n");
     }
     var esAst = transformAst(ast);
+    if (SHOW_ES) {
+        console.log(inspect(esAst) + "\n");
+    }
     var expr = fileWrapper(esAst);
     var js = compile(expr);
     if (SHOW_JS) {

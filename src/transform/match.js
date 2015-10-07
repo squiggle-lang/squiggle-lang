@@ -21,7 +21,7 @@ function matchClause(transform, node) {
 
 function match(transform, pattern, expression) {
     var id = es.Identifier("$match");
-    var expr = wrapExpression(id, pattern, expression);
+    var expr = wrapExpression(transform, id, pattern, expression);
     var ret = es.ReturnStatement(expr);
     var pred = satisfiesPattern(transform, id, pattern);
     var block = es.BlockStatement([ret]);
@@ -57,8 +57,22 @@ function esNth(a, i) {
     return es.MemberExpression(true, a, es.Literal(i));
 }
 
+function esNth2(a, i) {
+    return es.MemberExpression(true, a, i);
+}
+
 function objGet(obj, k) {
     return es.MemberExpression(true, obj, es.Literal(k));
+}
+
+function objGet2(obj, k) {
+    return es.MemberExpression(true, obj, k);
+}
+
+var matchTmp = es.Identifier("$_");
+
+function assignTemp(expr) {
+    return es.AssignmentExpression("=", matchTmp, expr);
 }
 
 var j = JSON.stringify;
@@ -78,7 +92,7 @@ var _satisfiesPattern = {
         return esTrue;
     },
     MatchPatternLiteral: function(transform, root, p) {
-        var lit = es.Literal(p.data.data);
+        var lit = transform(p.data);
         return es.CallExpression(es.Identifier("$is"), [root, lit]);
     },
     MatchPatternParenExpr: function(transform, root, p) {
@@ -121,9 +135,9 @@ var _satisfiesPattern = {
             .reduce(esAnd, isObject);
     },
     MatchPatternObjectPair: function(transform, root, p) {
-        // TODO: Don't assume the key is a string literal.
-        var has = esIn(es.Literal(p.key.data), root);
-        var rootObj = esNth(root, p.key.data);
+        var expr = transform(p.key);
+        var has = esIn(expr, root);
+        var rootObj = esNth2(root, expr);
         return esAnd(has, satisfiesPattern(transform, rootObj, p.value));
     },
 };
@@ -136,63 +150,63 @@ function satisfiesPattern(transform, root, p) {
 }
 
 var __pluckPattern = {
-    MatchPatternSimple: function(acc, root, p) {
+    MatchPatternSimple: function(transform, acc, root, p) {
         if (p.identifier.data !== "_") {
             acc.identifiers.push(es.Identifier(p.identifier.data));
             acc.expressions.push(root);
         }
         return acc;
     },
-    MatchPatternLiteral: function(acc, root, p) {
+    MatchPatternLiteral: function(transform, acc, root, p) {
         // Literals are just for the expression, they don't bind any values.
         return acc;
     },
-    MatchPatternParenExpr: function(acc, root, p) {
+    MatchPatternParenExpr: function(transform, acc, root, p) {
         // We've already checked the values match, nothing to bind.
         return acc;
     },
-    MatchPatternArray: function(acc, root, p) {
+    MatchPatternArray: function(transform, acc, root, p) {
         p.patterns.forEach(function(x, i) {
-            _pluckPattern(acc, esNth(root, i), x);
+            _pluckPattern(transform, acc, esNth(root, i), x);
         });
         return acc;
     },
-    MatchPatternArraySlurpy: function(acc, root, p) {
+    MatchPatternArraySlurpy: function(transform, acc, root, p) {
         p.patterns.forEach(function(x, i) {
-            _pluckPattern(acc, esNth(root, i), x);
+            _pluckPattern(transform, acc, esNth(root, i), x);
         });
         var n = es.Literal(p.patterns.length);
-        _pluckPattern(acc, esSlice(root, n), p.slurp);
+        _pluckPattern(transform, acc, esSlice(root, n), p.slurp);
         return acc;
     },
-    MatchPatternObject: function(acc, root, p) {
+    MatchPatternObject: function(transform, acc, root, p) {
         p.pairs.forEach(function(v) {
-            _pluckPattern(acc, root, v);
+            _pluckPattern(transform, acc, root, v);
         });
         return acc;
     },
-    MatchPatternObjectPair: function(acc, root, p) {
+    MatchPatternObjectPair: function(transform, acc, root, p) {
         // TODO: Don't assume p.key is a string literal.
-        var objRoot = objGet(root, p.key.data);
-        _pluckPattern(acc, objRoot, p.value);
+        var objRoot = objGet2(root, transform(p.key));
+        _pluckPattern(transform, acc, objRoot, p.value);
         return acc;
     },
 };
 
-function _pluckPattern(acc, root, p) {
-    if (p.type in __pluckPattern) {
-        return __pluckPattern[p.type](acc, root, p);
+function _pluckPattern(transform, acc, root, p) {
+    if (p && p.type in __pluckPattern) {
+        return __pluckPattern[p.type](transform, acc, root, p);
     }
     throw new Error("can't pluckPattern of " + j(p));
 }
 
-function pluckPattern(root, p) {
+function pluckPattern(transform, root, p) {
     var obj = {identifiers: [], expressions: []};
-    return _pluckPattern(obj, root, p);
+    return _pluckPattern(transform, obj, root, p);
 }
 
-function wrapExpression(root, p, e) {
-    var obj = pluckPattern(root, p);
+function wrapExpression(transform, root, p, e) {
+    var obj = pluckPattern(transform, root, p);
     var ret = es.ReturnStatement(e);
     var block = es.BlockStatement([ret]);
     var fn = es.FunctionExpression(null, obj.identifiers, block);
