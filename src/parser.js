@@ -1,8 +1,9 @@
 var P = require("parsimmon");
 
 var ast = require("./ast");
-
 var H = require("./parse-helpers");
+var parsimmonSalad = require("./parsimmon-salad");
+
 var cons = H.cons;
 var wrap = H.wrap;
 var spaced = H.spaced;
@@ -15,9 +16,9 @@ var foldLeft = H.foldLeft;
 var ps = {
     /// High level view of expressions. It starts with TopExpr which eventually
     /// delegates down to BinExpr. BinExpr are composed of binary operators with
-    /// ps.OtherOpExpr on either side. ps.OtherOpExpr are the middle tier of things
-    /// that don't really look like operators but kinda are, like function
-    /// application, method calls, etc. Finally, this delegates down to
+    /// ps.OtherOpExpr on either side. ps.OtherOpExpr are the middle tier of
+    /// things that don't really look like operators but kinda are, like
+    /// function application, method calls, etc. Finally, this delegates down to
     /// BottomExpr, which is the basic literals of the language, and ParenExpr
     /// which goes back up to TopExpr.
     TopExpr: function(ps) {
@@ -66,7 +67,6 @@ var ps = {
             ps.Null
         );
     },
-
 
     /// Named literals.
     True: function(ps) {
@@ -152,16 +152,4 @@ var ps = {
 
 };
 
-Object.keys(ps).forEach(function(k) {
-    var f = ps[k];
-    var g = f.bind(null, ps);
-    g.toString = function() {
-        return f.toString();
-    };
-    ps[k] = P.lazy(g);
-});
-
-Object.freeze(ps);
-
-ps.spaced = spaced;
-module.exports = ps;
+module.exports = parsimmonSalad(ps);
