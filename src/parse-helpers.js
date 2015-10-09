@@ -36,10 +36,6 @@ function list0(sep, par) {
 }
 
 function list1(sep, par) {
-    if (!sep.then) {
-        console.error(sep.toString());
-        throw new Error("no sep.then");
-    }
     var more = sep.then(par).many();
     return par.chain(function(r) {
         return more.map(function(rs) {
