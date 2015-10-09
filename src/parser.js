@@ -129,8 +129,6 @@ var ps = {
             .map(ast.IdentifierExpression);
     },
 
-    /// Function calls, method calls, property access, and method access are all
-    /// the same precedence level. It makes this section a little dense.
     ArgList: function(ps) {
         return wrap("(", list0(ps.Separator, ps.Expr), ")");
     },
