@@ -5,10 +5,16 @@ var H = require("../parse-helpers");
 var word = H.word;
 
 module.exports = function(ps) {
-    var Not = word("not").then(ps.OtherOpExpr).map(ast.Not);
-    var Negate = word("-").then(ps.OtherOpExpr).map(ast.Negate);
+    var OtherOpExpr =
+        P.alt(
+            ps.CallOrGet,
+            ps.BasicLiteral
+        );
 
-    var UnaryOps = P.alt(Not, Negate, ps.OtherOpExpr);
+    var Not = word("not").then(OtherOpExpr).map(ast.Not);
+    var Negate = word("-").then(OtherOpExpr).map(ast.Negate);
+
+    var UnaryOps = P.alt(Not, Negate, OtherOpExpr);
 
     return UnaryOps;
 };

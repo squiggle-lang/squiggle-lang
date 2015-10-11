@@ -14,14 +14,7 @@ var list1 = H.list1;
 var foldLeft = H.foldLeft;
 
 var ps = {
-    /// High level view of expressions. It starts with TopExpr which eventually
-    /// delegates down to BinExpr. BinExpr are composed of binary operators with
-    /// ps.OtherOpExpr on either side. ps.OtherOpExpr are the middle tier of
-    /// things that don't really look like operators but kinda are, like
-    /// function application, method calls, etc. Finally, this delegates down to
-    /// BottomExpr, which is the basic literals of the language, and ParenExpr
-    /// which goes back up to TopExpr.
-    TopExpr: function(ps) {
+    Expr: function(ps) {
         return P.alt(
             ps.Block,
             ps.If,
@@ -31,18 +24,13 @@ var ps = {
             ps.Require,
             ps.Error_,
             ps.Match,
-            ps.BinExpr
+            ps.BinExpr,
+            ps.Literal
         );
     },
-    OtherOpExpr: function(ps) {
+    Literal: function(ps) {
         return P.alt(
-            ps.CallOrGet,
-            ps.BottomExpr
-        );
-    },
-    BottomExpr: function(ps) {
-        return P.alt(
-            ps.Literal,
+            ps.BasicLiteral,
             ps.Array_,
             ps.Object_,
             ps.Function_,
@@ -50,36 +38,16 @@ var ps = {
             ps.ParenExpr
         ).desc("literal");
     },
-    Expr: function(ps) {
-        return ps.TopExpr.or(ps.BottomExpr);
-    },
     ParenExpr: function(ps) {
         return wrap("(", ps.Expr, ")");
     },
 
-    Literal: function(ps) {
+    BasicLiteral: function(ps) {
         return P.alt(
             ps.Number_,
             ps.String_,
-            ps.True,
-            ps.False,
-            ps.Undefined,
-            ps.Null
+            ps.NamedLiteral
         );
-    },
-
-    /// Named literals.
-    True: function(ps) {
-        return P.string("true").result(ast.True())
-    },
-    False: function(ps) {
-        return P.string("false").result(ast.False())
-    },
-    Null: function(ps) {
-        return P.string("null").result(ast.Null())
-    },
-    Undefined: function(ps) {
-        return P.string("undefined").result(ast.Undefined())
     },
 
     _: require("./parse/whitespace"),
@@ -99,17 +67,8 @@ var ps = {
     Array_: require("./parse/array"),
     IdentifierAsString: require("./parse/identifier-as-string"),
     ObjectPairKey: require("./parse/object-pair-key"),
-
-    /// Top level file entry point.
-    Script: function(ps) {
-        return spaced(ps.Expr)
-            .map(ast.Script);
-    },
-    Module: function(ps) {
-        return spaced(word("export").then(ps.Expr))
-            .map(ast.Module)
-            .or(ps.Script);
-    },
+    Module: require("./parse/module"),
+    NamedLiteral: require("./parse/named-literal"),
 
     /// It's always ok to have whitespace on either side of commas and
     /// semicolons. Also, this may eventually have more complicated rules,
@@ -127,10 +86,6 @@ var ps = {
     IdentExpr: function(ps) {
         return ps.Identifier
             .map(ast.IdentifierExpression);
-    },
-
-    ArgList: function(ps) {
-        return wrap("(", list0(ps.Separator, ps.Expr), ")");
     },
 
     /// Various single word "unary operators".

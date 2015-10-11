@@ -9,24 +9,10 @@ var word = H.word;
 var spread = H.spread;
 var list0 = H.list0;
 
-// Needed parsers:
-// Expr
-// False
-// Identifier
-// Null
-// Number_
-// ObjectPairKey
-// ParenExpr
-// Separator
-// String_
-// True
-// Undefined
-
+/// Pattern matching section is kinda huge because it mirrors much of the rest
+/// of the language, but produces different AST nodes, and is slightly
+/// different.
 module.exports = function(ps) {
-    /// Pattern matching section is kinda huge because it mirrors much of the rest
-    /// of the language, but produces different AST nodes, and is slightly
-    /// different.
-
     var MatchPattern = P.lazy(function() {
         return P.alt(
             MatchPatternArray,
@@ -40,27 +26,23 @@ module.exports = function(ps) {
     var MatchPatternSimple =
         ps.Identifier.map(ast.MatchPatternSimple);
 
-    var MatchPatternParenExpr = P.lazy(function() {
-        return ps.ParenExpr.map(ast.MatchPatternParenExpr);
-    });
+    var MatchPatternParenExpr =
+        ps.ParenExpr.map(ast.MatchPatternParenExpr);
 
-    var MatchPatternLiteral = P.lazy(function() {
-        return P.alt(
+    var MatchPatternLiteral =
+        P.alt(
             ps.Number_,
             ps.String_,
-            ps.True,
-            ps.False,
-            ps.Undefined,
-            ps.Null
-        ).map(ast.MatchPatternLiteral);
-    });
+            ps.NamedLiteral
+        )
+        .map(ast.MatchPatternLiteral);
 
-    var MatchPatternObjectPairBasic = P.lazy(function() {
-        return P.seq(
+    var MatchPatternObjectPairBasic =
+        P.seq(
             ps.ObjectPairKey.skip(_),
             word(":").then(MatchPattern)
-        ).map(spread(ast.MatchPatternObjectPair));
-    });
+        )
+        .map(spread(ast.MatchPatternObjectPair));
 
     var MatchPatternObjectPairShorthand =
         ps.Identifier
@@ -70,10 +52,11 @@ module.exports = function(ps) {
             return ast.MatchPatternObjectPair(str, expr);
         });
 
-    var MatchPatternObjectPair = P.alt(
-        MatchPatternObjectPairBasic,
-        MatchPatternObjectPairShorthand
-    );
+    var MatchPatternObjectPair =
+        P.alt(
+            MatchPatternObjectPairBasic,
+            MatchPatternObjectPairShorthand
+        );
 
     var MatchPatternObject =
         wrap("{", list0(ps.Separator, MatchPatternObjectPair), "}")
