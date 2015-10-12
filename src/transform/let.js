@@ -12,7 +12,7 @@ function Let(transform, node) {
     });
     var namesFound = Object.create(null);
     names.forEach(function(name) {
-        if (name in namesFound) {
+        if (name !== "_" && name in namesFound) {
             die("squiggle: cannot rebind " + name);
         } else {
             namesFound[name] = true;

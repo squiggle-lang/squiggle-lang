@@ -1,7 +1,4 @@
-var mapValues = require("lodash/object/mapValues");
 var isObject = require("lodash/lang/isObject");
-
-var es = require("./es");
 
 var jsonify = JSON.stringify;
 
