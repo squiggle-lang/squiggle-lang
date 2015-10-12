@@ -9,11 +9,11 @@ var wrap = H.wrap;
 var spread = H.spread;
 
 module.exports = function(ps) {
-    var Function_ =
-        P.seq(
-            word("fn").then(ps.Identifier.or(P.of(null))),
-            _.then(wrap("(", ps.Parameters, ")")),
-            _.then(ps.Expr)
-        ).map(spread(ast.Function));
-    return Function_;
+    var OptionalName = ps.Identifier.or(P.of(null));
+    return P.seq(
+        word("fn").then(OptionalName).skip(_),
+        wrap("(", ps.Parameters, ")").skip(_),
+        ps.Expr
+    )
+    .map(spread(ast.Function));
 };

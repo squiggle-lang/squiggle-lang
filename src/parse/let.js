@@ -30,11 +30,9 @@ module.exports = function(ps) {
 
     var Bindings = list1(_, Binding);
 
-    var Let =
-        P.seq(
-            Bindings,
-            _.then(word("in")).then(ps.Expr)
-        ).map(spread(ast.Let));
-
-    return Let;
+    return P.seq(
+        Bindings,
+        _.then(word("in")).then(ps.Expr)
+    )
+    .map(spread(ast.Let));
 };

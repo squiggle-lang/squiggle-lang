@@ -74,7 +74,8 @@ module.exports = function(ps) {
                 word("...").then(MatchPattern)
             ),
             "]"
-        ).map(spread(ast.MatchPatternArraySlurpy));
+        )
+        .map(spread(ast.MatchPatternArraySlurpy));
 
     var MatchPatternArray = P.alt(
         MatchPatternArrayStrict,
@@ -89,8 +90,8 @@ module.exports = function(ps) {
 
     var Match =
         P.seq(
-            word("match").then(ps.Expr),
-            _.then(MatchClause).atLeast(1).skip(_).skip(P.string("end"))
+            word("match").then(ps.Expr).skip(_),
+            MatchClause.atLeast(1).skip(_).skip(P.string("end"))
         ).map(spread(ast.Match));
 
     return Match;

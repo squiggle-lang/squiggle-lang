@@ -9,13 +9,13 @@ var spread = H.spread;
 var spaced = H.spaced;
 
 module.exports = function(ps) {
-    var ObjectPairNormal =
+    var Normal =
         P.seq(
             ps.ObjectPairKey,
             spaced(P.string(":")).then(ps.Expr)
         ).map(spread(ast.Pair));
 
-    var ObjectPairShorthand =
+    var Shorthand =
         ps.Identifier
         .map(function(i) {
             var str = ast.String(i.data);
@@ -23,14 +23,8 @@ module.exports = function(ps) {
             return ast.Pair(str, expr);
         });
 
-    var ObjectPair = P.alt(
-        ObjectPairNormal,
-        ObjectPairShorthand
-    );
+    var Pair = P.alt(Normal, Shorthand);
+    var Pairs = list0(ps.Separator, Pair);
 
-    var Object_ =
-        wrap("{", list0(ps.Separator, ObjectPair), "}")
-        .map(ast.Object);
-
-    return Object_;
+    return wrap("{", Pairs, "}").map(ast.Object);
 };
