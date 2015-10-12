@@ -31,8 +31,8 @@ module.exports = function(ps) {
 
     var MatchPatternLiteral =
         P.alt(
-            ps.Number_,
-            ps.String_,
+            ps.Number,
+            ps.String,
             ps.NamedLiteral
         )
         .map(ast.MatchPatternLiteral);

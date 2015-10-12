@@ -1,12 +1,11 @@
 var P = require("parsimmon");
 
 module.exports = function(ps) {
-    var ObjectPairKey =
+    var BasicLiteral =
         P.alt(
-            ps.IdentifierAsString,
+            ps.Number,
             ps.String,
-            ps.ParenExpr
+            ps.NamedLiteral
         );
-
-    return ObjectPairKey;
+    return BasicLiteral;
 };
