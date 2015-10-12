@@ -11,4 +11,4 @@ module.exports = function(ps) {
             ps.ParenExpr
         ).desc("literal");
     return Literal;
-}
+};

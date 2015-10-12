@@ -1,5 +1,3 @@
-var P = require("parsimmon");
-
 var parsimmonSalad = require("./parsimmon-salad");
 
 var ps = parsimmonSalad({

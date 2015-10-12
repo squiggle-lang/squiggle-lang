@@ -12,4 +12,4 @@ module.exports = function(ps) {
             ps.Literal
         );
     return Expr;
-}
+};

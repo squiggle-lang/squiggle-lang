@@ -44,14 +44,6 @@ function list1(sep, par) {
     });
 }
 
-function foldLeft(f) {
-    return function(z, xs) {
-        return xs.reduce(function(acc, x) {
-            return f(acc, x);
-        }, z);
-    };
-}
-
 module.exports = {
     cons: cons,
     wrap: wrap,
@@ -60,5 +52,4 @@ module.exports = {
     spread: spread,
     list0: list0,
     list1: list1,
-    foldLeft: foldLeft
 };
