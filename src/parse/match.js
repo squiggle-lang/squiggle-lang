@@ -91,7 +91,7 @@ module.exports = function(ps) {
     var Match =
         P.seq(
             word("match").then(ps.Expr).skip(_),
-            MatchClause.atLeast(1).skip(_).skip(P.string("end"))
+            MatchClause.skip(_).atLeast(1).skip(P.string("end"))
         ).map(spread(ast.Match));
 
     return Match;
