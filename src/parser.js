@@ -10,7 +10,6 @@ var ps = parsimmonSalad({
     Parameters: require("./parse/parameters"),
     Function: require("./parse/function"),
     BasicLiteral: require("./parse/basic-literal"),
-    UnaryOps: require("./parse/unary-ops"),
     BinExpr: require("./parse/bin-expr"),
     Let: require("./parse/let"),
     CallOrGet: require("./parse/call-or-get"),
