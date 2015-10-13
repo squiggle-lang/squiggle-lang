@@ -17,6 +17,13 @@ function wrap(left, middle, right) {
         .skip(P.string(right));
 }
 
+function join(separator, array) {
+    if (arguments.length === 1) {
+        return join.bind(null, separator);
+    }
+    return array.join(separator);
+}
+
 function spaced(par) {
     return _.then(par).skip(_);
 }
@@ -52,4 +59,5 @@ module.exports = {
     spread: spread,
     list0: list0,
     list1: list1,
+    join: join
 };
