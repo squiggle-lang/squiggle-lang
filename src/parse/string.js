@@ -24,7 +24,7 @@ var HexNumber =
 // TODO: Polyfill String.fromCodePoint so this works in older enviornments.
 var UnicodeEscape =
     wrap("\\u{", HexNumber, "}")
-    .map(String.fromCodePoint)
+    .map(String.fromCodePoint);
 
 var StringInner =
     P.alt(SimpleEscape, UnicodeEscape, Char)
