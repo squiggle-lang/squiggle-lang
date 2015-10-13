@@ -14,5 +14,7 @@
     "if",
     "else",
     "enum",
+    "NaN",
+    "Infinity",
     "arguments"
 ]

@@ -32,7 +32,7 @@ var Exponential =
         Integer
     )
     .desc("exponential")
-    .map(join(""))
+    .map(join(""));
 
 var Float =
     P.seq(
@@ -42,8 +42,11 @@ var Float =
     )
     .map(join(""));
 
+var NaN_ = P.string("NaN").desc("NaN");
+var Infinity_ = P.string("Infinity").desc("Infinity");
+
 var Number_ =
-    Float
+    P.alt(Float, NaN_, Infinity_)
     .desc("number")
     .map(stripUnderscores)
     .map(global.Number)
