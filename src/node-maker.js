@@ -9,7 +9,8 @@ function f(type, props) {
         props.forEach(function(p, i) {
             obj[p] = args[i];
         });
-        return Object.freeze(obj);
+        return obj;
+        // return Object.freeze(obj);
     };
 }
 

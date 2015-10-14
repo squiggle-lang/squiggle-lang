@@ -51,6 +51,36 @@ function list1(sep, par) {
     });
 }
 
+function indexedSequence(ctor, parser) {
+    return P.seq(P.index, parser, P.index)
+        .map(function(xs) {
+            var index = {
+                start: xs[0],
+                end: xs[2]
+            };
+            var values = xs[1];
+            return [index].concat(values);
+        })
+        .map(spread(ctor));
+}
+
+var iseq = indexedSequence;
+
+function indexedSingle(ctor, parser) {
+    return indexedSequence(ctor, P.seq(parser));
+}
+
+var ione = indexedSingle;
+
+function combineIndices(index1, index2) {
+    return {
+        start: index1.start,
+        end: index2.end
+    };
+}
+
+var indc = combineIndices;
+
 module.exports = {
     cons: cons,
     wrap: wrap,
@@ -59,5 +89,11 @@ module.exports = {
     spread: spread,
     list0: list0,
     list1: list1,
+    indexedSequence: indexedSequence,
+    indexedSingle: indexedSingle,
+    combineIndices: combineIndices,
+    ione: ione,
+    iseq: iseq,
+    indc: indc,
     join: join
 };

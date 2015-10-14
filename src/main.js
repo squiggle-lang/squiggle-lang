@@ -46,6 +46,7 @@ var stringToLines = require("./string-to-lines");
 var indexToPosition = require("./index-to-position");
 var parse = require("./file-parse");
 var transformAst = require("./transform-ast");
+var normalizeCode = require("./normalize-code");
 var compile = require("./compile");
 var lint = require("./lint");
 var repl = require("./repl");
@@ -60,7 +61,7 @@ function die(message) {
 }
 
 function compileTo(src, dest) {
-    var txt = fs.readFileSync(src, "utf-8");
+    var txt = normalizeCode(fs.readFileSync(src, "utf-8"));
     var ast;
     var result = parse(txt);
     if (result.status) {

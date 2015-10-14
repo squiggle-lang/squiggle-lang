@@ -3,13 +3,11 @@ var H = require("../parse-helpers");
 
 var spaced = H.spaced;
 var word = H.word;
+var ione = H.ione;
 
 module.exports = function(ps) {
-    var Script = ps.Expr.map(ast.Script);
-    var Module = word("export")
-        .then(ps.Expr)
-        .map(ast.Module)
-        .or(Script);
-    return spaced(Module);
+    var Script = ione(ast.Script, ps.Expr);
+    var Module = ione(ast.Module, word("export").then(ps.Expr));
+    return spaced(Module.or(Script));
 };
 

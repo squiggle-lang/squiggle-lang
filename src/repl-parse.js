@@ -13,10 +13,15 @@ function command(str) {
     return P.string(":").then(P.string(str));
 }
 
+// ReplHelp:       [],
+// ReplQuit:       [],
+// ReplBinding:    ["binding"],
+// ReplExpression: ["expression"],
+
 var ReplStart = spaced(P.alt(
     // command("set").then(_).then(Binding).map(ast.ReplBinding),
-    command("help").result(ast.ReplHelp()),
-    command("quit").result(ast.ReplQuit()),
+    // command("help").result(ast.ReplHelp()),
+    // command("quit").result(ast.ReplQuit()),
     Expr
 ));
 

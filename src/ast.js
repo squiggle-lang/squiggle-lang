@@ -1,6 +1,8 @@
+var mapValues = require("lodash/object/mapValues");
+
 var nm = require('./node-maker');
 
-var ast = nm({
+var almostAst = {
     Module:      ["expr"],
     Script:      ["expr"],
     Try:         ["expr"],
@@ -43,11 +45,12 @@ var ast = nm({
     MatchPatternArraySlurpy: ["patterns", "slurp"],
     MatchPatternObject: ["pairs"],
     MatchPatternObjectPair: ["key", "value"],
+};
 
-    ReplHelp:       [],
-    ReplQuit:       [],
-    ReplBinding:    ["binding"],
-    ReplExpression: ["expression"],
-});
+function addLoc(array, k) {
+    return ["index"].concat(array);
+}
+
+var ast = nm(mapValues(almostAst, addLoc));
 
 module.exports = ast;
