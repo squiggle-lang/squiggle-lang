@@ -1,9 +1,7 @@
 var es = require("../es");
 
-var nothing = es.Identifier("undefined");
-
 function Undefined(transform, node) {
-    return nothing;
+    return es.Identifier(node.loc, "undefined");
 }
 
 module.exports = Undefined;

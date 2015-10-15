@@ -73,7 +73,7 @@ function objGet2(obj, k) {
 
 var j = JSON.stringify;
 
-var esTrue = es.Literal(true);
+var esTrue = es.Literal(null, true);
 
 function notEsTrue(x) {
     return !isEsTrue(x);

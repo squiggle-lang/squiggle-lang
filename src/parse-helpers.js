@@ -72,6 +72,12 @@ function indexedSingle(ctor, parser) {
 
 var ione = indexedSingle;
 
+function indexedNothing(ctor, parser) {
+    return indexedSequence(ctor, parser.result([]));
+}
+
+var inone = indexedNothing;
+
 function combineIndices(index1, index2) {
     return {
         start: index1.start,
@@ -92,8 +98,10 @@ module.exports = {
     indexedSequence: indexedSequence,
     indexedSingle: indexedSingle,
     combineIndices: combineIndices,
+    indexedNothing: indexedNothing,
     ione: ione,
     iseq: iseq,
+    inone: inone,
     indc: indc,
     join: join
 };

@@ -1,6 +1,8 @@
+var mapValues = require("lodash/object/mapValues");
+
 var nm = require('./node-maker');
 
-var es = nm({
+var almostEs = {
     Program: ['body'],
     Literal: ['value'],
     Identifier: ['name'],
@@ -25,6 +27,12 @@ var es = nm({
     CatchClause: ['param', 'body'],
     ThrowStatement: ['argument'],
     NewExpression: ['callee', 'arguments'],
-});
+};
+
+function addLoc(array) {
+    return ["loc"].concat(array);
+}
+
+var es = nm("es", mapValues(almostEs, addLoc));
 
 module.exports = es;

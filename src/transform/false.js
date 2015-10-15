@@ -1,9 +1,7 @@
 var es = require("../es");
 
-var nope = es.Literal(false);
-
 function False(transform, node) {
-    return nope;
+    return es.Literal(node.loc, false);
 }
 
 module.exports = False;

@@ -51,6 +51,6 @@ function addLoc(array, k) {
     return ["index"].concat(array);
 }
 
-var ast = nm(mapValues(almostAst, addLoc));
+var ast = nm("ast", mapValues(almostAst, addLoc));
 
 module.exports = ast;

@@ -9,7 +9,7 @@ function cleanIdentifier(s) {
 }
 
 function Identifier(transform, node) {
-    return es.Identifier(cleanIdentifier(node.data));
+    return es.Identifier(node.loc, cleanIdentifier(node.data));
 }
 
 module.exports = Identifier;
