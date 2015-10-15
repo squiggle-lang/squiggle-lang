@@ -1,6 +1,5 @@
 var P = require("parsimmon");
 
-var ast = require("./ast");
 var parser = require("./parser");
 
 var H = require("./parse-helpers");
@@ -9,9 +8,9 @@ var spaced = H.spaced;
 var Expr = parser.Expr;
 // var Binding = parser.Binding;
 
-function command(str) {
-    return P.string(":").then(P.string(str));
-}
+// function command(str) {
+//     return P.string(":").then(P.string(str));
+// }
 
 // ReplHelp:       [],
 // ReplQuit:       [],

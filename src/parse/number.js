@@ -5,7 +5,6 @@ var H = require("../parse-helpers");
 
 var join = H.join;
 var ione = H.ione;
-var iseq = H.iseq;
 
 function stripUnderscores(s) {
     return s.replace(/_/g, "");

@@ -5,7 +5,7 @@ function f(prefix, type, props) {
         var n = args.length;
         var m = props.length;
         if (n !== m) {
-            var name = [prefix, type].join(".")
+            var name = [prefix, type].join(".");
             throw new Error(
                 "got " + n + " arguments, " +
                 "expected " + m + " arguments for " + name +

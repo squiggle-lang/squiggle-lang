@@ -1,7 +1,5 @@
 var escodegen = require("escodegen");
 var esmangle = require("esmangle");
-var flow = require("lodash/function/flow");
-var identity = require("lodash/utility/identity");
 
 var addLocMaker = require("./file-index-to-position-mapper");
 var transformAst = require("./transform-ast");
@@ -18,7 +16,7 @@ function ensureNewline(x) {
     return x + "\n";
 }
 
-function generateCodeAndSourceMap(node) {
+function generateCodeAndSourceMap(node, code) {
     return escodegen.generate(node, {
         sourceMap: true,
         sourceMapWithCode: true,
@@ -33,7 +31,7 @@ function addSourceMapUrl(code, url) {
 // TODO: Make it possible to compile REPL code as well.
 function compile(squiggleCode, filename) {
     if (arguments.length === 1) {
-        filename = "__UNNAMED_FILE__.SQUIGGLE"
+        filename = "__UNNAMED_FILE__.SQUIGGLE";
     }
     // TODO: Allow specifying another name for the source map?
     var sourceMapFilename = filename + ".map";
@@ -49,11 +47,7 @@ function compile(squiggleCode, filename) {
     var optimizedAst = SHOULD_OPTIMIZE ?
         esmangle.optimize(esAst) :
         esAst;
-    var stuff = escodegen.generate(optimizedAst, {
-        sourceMap: filename,
-        sourceMapWithCode: true,
-        sourceContent: squiggleCode
-    });
+    var stuff = generateCodeAndSourceMap(optimizedAst, squiggleCode);
     var code = addSourceMapUrl(ensureNewline(stuff.code), sourceMapFilename);
     var sourceMap = stuff.map.toString();
     // console.error("sqgl ast: ", squiggleAst);
@@ -65,7 +59,7 @@ function compile(squiggleCode, filename) {
         warnings: warnings,
         sourceMap: sourceMap,
         code: code
-    }
+    };
 }
 
 module.exports = compile;

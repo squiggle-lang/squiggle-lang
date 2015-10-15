@@ -17,7 +17,7 @@ function fileIndexToPositionMapper(code, filename) {
     var endPosition = {
         line: positions[m].line,
         column: positions[m].column + 1
-    }
+    };
     return function updateIndexToLoc(node) {
         if (node.index) {
             node.loc = {
