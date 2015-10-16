@@ -1,3 +1,5 @@
+// TODO: Delete this file.
+
 var es = require("../es");
 
 function mapLastSpecial(f, g, xs) {
@@ -10,6 +12,7 @@ function mapLastSpecial(f, g, xs) {
 }
 
 function Block(transform, node) {
+    throw new Error("DON'T USE ME.");
     var exprs = node
         .expressions
         .map(transform);

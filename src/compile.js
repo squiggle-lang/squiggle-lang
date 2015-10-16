@@ -4,6 +4,7 @@ var esmangle = require("esmangle");
 var addLocMaker = require("./file-index-to-position-mapper");
 var transformAst = require("./transform-ast");
 var traverse = require("./traverse");
+var inspect = require("./inspect");
 var parse = require("./file-parse");
 var lint = require("./lint");
 
@@ -16,9 +17,9 @@ function ensureNewline(x) {
     return x + "\n";
 }
 
-function generateCodeAndSourceMap(node, code) {
+function generateCodeAndSourceMap(node, name, code) {
     return escodegen.generate(node, {
-        sourceMap: true,
+        sourceMap: name,
         sourceMapWithCode: true,
         sourceContent: code
     });
@@ -29,25 +30,24 @@ function addSourceMapUrl(code, url) {
 }
 
 // TODO: Make it possible to compile REPL code as well.
-function compile(squiggleCode, filename) {
-    if (arguments.length === 1) {
-        filename = "__UNNAMED_FILE__.SQUIGGLE";
+function compile(squiggleCode, sqglFilename, jsFilename, sourceMapFilename) {
+    if (arguments.length !== compile.length) {
+        throw new Error("incorrect argument count to compile");
     }
-    // TODO: Allow specifying another name for the source map?
-    var sourceMapFilename = filename + ".map";
     var result = parse(squiggleCode);
     if (!result.status) {
         return {parsed: false, result: result};
     }
     var squiggleAst = result.value;
-    var addLocToNode = addLocMaker(squiggleCode, filename);
+    var addLocToNode = addLocMaker(squiggleCode, sqglFilename);
     traverse.walk({enter: addLocToNode}, squiggleAst);
+    // console.log(inspect(squiggleAst));
     var warnings = lint(squiggleAst);
     var esAst = transformAst(squiggleAst);
     var optimizedAst = SHOULD_OPTIMIZE ?
         esmangle.optimize(esAst) :
         esAst;
-    var stuff = generateCodeAndSourceMap(optimizedAst, squiggleCode);
+    var stuff = generateCodeAndSourceMap(optimizedAst, sqglFilename, squiggleCode);
     var code = addSourceMapUrl(ensureNewline(stuff.code), sourceMapFilename);
     var sourceMap = stuff.map.toString();
     // console.error("sqgl ast: ", squiggleAst);

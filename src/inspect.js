@@ -3,8 +3,8 @@ var tty = require("tty");
 
 var opts = {
     depth: null,
-    colors: tty.isatty(process.stdin),
-    // colors: true,
+    // colors: tty.isatty(process.stdin)
+    colors: true
 };
 
 function inspect(x) {

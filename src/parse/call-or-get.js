@@ -6,14 +6,23 @@ var H = require("../parse-helpers");
 var list0 = H.list0;
 var wrap = H.wrap;
 var word = H.word;
-var spread = H.spread;
+var iseq = H.iseq;
+var ione = H.ione;
+var indc = H.indc;
 
 function almostSpready(maker) {
-    return function(xs) {
+    return function(index, xs) {
         return function(x) {
-            return maker(x, xs);
+            var index = indc(x.index, xs.index);
+            return maker(index, x, xs);
         };
     };
+}
+
+function combine(index, expr, others) {
+    return others.reduce(function(acc, x) {
+        return x(acc);
+    }, expr);
 }
 
 module.exports = function(ps) {
@@ -26,19 +35,13 @@ module.exports = function(ps) {
     /// if I end up implementing that.
     var BoundMethod = word("::").then(ps.IdentifierAsString);
     var ArgList = wrap("(", list0(ps.Separator, ps.Expr), ")");
-    var CallOrGet =
+    return iseq(combine,
         P.seq(
             ps.Literal,
             P.alt(
-                ArgList.map(almostSpready(ast.Call)),
-                Property.map(almostSpready(ast.GetProperty)),
-                BoundMethod.map(almostSpready(ast.GetMethod))
+                ione(almostSpready(ast.Call), ArgList),
+                ione(almostSpready(ast.GetProperty), Property),
+                ione(almostSpready(ast.GetMethod), BoundMethod)
             ).many()
-        )
-        .map(spread(function(expr, others) {
-            return others.reduce(function(acc, x) {
-                return x(acc);
-            }, expr);
-        }));
-    return CallOrGet;
+        ));
 };

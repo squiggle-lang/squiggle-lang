@@ -10,12 +10,12 @@ function Call(transform, node) {
         var obj = node.f.obj;
         var prop = node.f.prop;
         var cmArgs = node.args;
-        var cmNode = ast.CallMethod(obj, prop, cmArgs);
+        var cmNode = ast.CallMethod(node.f.loc, obj, prop, cmArgs);
         return transform(cmNode);
     }
     var f = transform(node.f);
     var args = node.args.map(transform);
-    return es.CallExpression(f, args);
+    return es.CallExpression(node.f.loc, f, args);
 }
 
 module.exports = Call;

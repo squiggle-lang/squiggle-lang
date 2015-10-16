@@ -9,8 +9,8 @@ function pairToArray(pair) {
 function Object_(transform, node) {
     var pairs = node.data.map(pairToArray);
     var args = flatten(pairs).map(transform);
-    var id = es.Identifier('$object');
-    return es.CallExpression(id, args);
+    var id = es.Identifier(null, '$object');
+    return es.CallExpression(node.loc, id, args);
 }
 
 module.exports = Object_;

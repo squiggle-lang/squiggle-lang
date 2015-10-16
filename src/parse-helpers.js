@@ -80,8 +80,8 @@ var inone = indexedNothing;
 
 function combineIndices(index1, index2) {
     return {
-        start: index1.start,
-        end: index2.end
+        start: (index1 || index2).start,
+        end: (index2 || index1).end
     };
 }
 

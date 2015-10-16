@@ -3,8 +3,6 @@
 
 var UTF8 = "utf-8";
 
-var WRITE_TO_STDOUT = {_: "WRITE_TO_STDOUT"};
-
 var pkg = require("../package.json");
 var fs = require("fs");
 var chalk = require("chalk");
@@ -61,12 +59,19 @@ function die(message) {
 }
 
 function compileTo(src, dest) {
+    var jsOut = dest;
+    // TODO: Allow configurable sourcemap output location.
+    var mapOut = dest + ".map";
     var txt = normalizeCode(fs.readFileSync(src, "utf-8"));
-    var ast;
-    var result = parse(txt);
-    if (result.status) {
-        ast = result.value;
+    var stuff = compile(txt, src, jsOut, mapOut);
+    if (stuff.parsed) {
+        stuff.warnings.forEach(function(m) {
+            error('squiggle: lint: ' + m);
+        });
+        fs.writeFileSync(jsOut, stuff.code, UTF8);
+        fs.writeFileSync(mapOut, stuff.sourceMap, UTF8);
     } else {
+        var result = stuff.result;
         var expectations = uniq(result.expected).join(", ");
         var pos = indexToPosition(txt, result.index);
         var lines = stringToLines(txt);
@@ -77,23 +82,10 @@ function compileTo(src, dest) {
             " expected one of " + expectations + "\n\n" + point
         );
     }
-    var warnings = lint(ast);
-    warnings.forEach(function(m) {
-        error('squiggle: lint: ' + m);
-    });
-    var es = transformAst(ast);
-    var code = compile(es);
-    if (dest === WRITE_TO_STDOUT) {
-        console.log(code);
-    } else {
-        fs.writeFileSync(dest, code, UTF8);
-    }
 }
 
 if (argv.interactive) {
     repl.start();
-} else if (argv._.length === 1) {
-    compileTo(argv._[0], WRITE_TO_STDOUT);
 } else if (argv._.length === 2) {
     compileTo(argv._[0], argv._[1]);
 } else {
