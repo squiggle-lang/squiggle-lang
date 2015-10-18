@@ -25,7 +25,7 @@ function Function_(transform, node) {
     var n = params.length;
     var context = node.parameters.context;
     var bindContext = context ?
-        [declareAssign(transform(context), es.ThisExpression())] :
+        [declareAssign(transform(context), es.ThisExpression(null))] :
         [];
     var slurpy = node.parameters.slurpy;
     var getSlurpy =

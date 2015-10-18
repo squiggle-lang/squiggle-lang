@@ -9,7 +9,6 @@ var word = H.word;
 var wrap = H.wrap;
 var iseq = H.iseq;
 var list1 = H.list1;
-var spread = H.spread;
 
 function makeDefBinding(index, name, params, body) {
     var idx = indc(name, body);

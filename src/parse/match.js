@@ -8,7 +8,6 @@ var wrap = H.wrap;
 var word = H.word;
 var ione = H.ione;
 var iseq = H.iseq;
-var spread = H.spread;
 var list0 = H.list0;
 
 /// Pattern matching section is kinda huge because it mirrors much of the rest

@@ -92,7 +92,8 @@ var _satisfiesPattern = {
     },
     MatchPatternParenExpr: function(transform, root, p) {
         var expr = transform(p.expr);
-        return es.CallExpression(es.Identifier("$eq"), [root, expr]);
+        return es.CallExpression(
+            null, es.Identifier(null, "$eq"), [root, expr]);
     },
     MatchPatternArray: function(transform, root, p) {
         var ps = p.patterns;

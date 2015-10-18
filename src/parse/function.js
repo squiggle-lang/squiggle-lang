@@ -7,7 +7,6 @@ var H = require("../parse-helpers");
 var iseq = H.iseq;
 var word = H.word;
 var wrap = H.wrap;
-var spread = H.spread;
 
 module.exports = function(ps) {
     var OptionalName = ps.Identifier.or(P.of(null));

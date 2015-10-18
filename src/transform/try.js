@@ -3,36 +3,38 @@ var esprima = require("esprima");
 var es = require("../es");
 
 function frozenArray(xs) {
-    var fn = es.Identifier("$array");
-    return es.CallExpression(fn, xs);
+    var fn = es.Identifier(null, "$array");
+    return es.CallExpression(null, fn, xs);
 }
 
-function Let(transform, node) {
+function Try(transform, node) {
     var expr = transform(node.expr);
     var ok = frozenArray([
-        es.Literal("ok"),
+        es.Literal(null, "ok"),
         expr,
     ]);
     var fail = frozenArray([
-        es.Literal("fail"),
-        es.Identifier("$error")
+        es.Literal(null, "fail"),
+        es.Identifier(null, "$error")
     ]);
     var catch_ = es.CatchClause(
-        es.Identifier("$error"),
-        es.BlockStatement([
-            es.ReturnStatement(fail)
+        null,
+        es.Identifier(null, "$error"),
+        es.BlockStatement(null, [
+            es.ReturnStatement(null, fail)
         ])
     );
-    var block = es.BlockStatement([
-        es.ReturnStatement(ok)
+    var block = es.BlockStatement(null, [
+        es.ReturnStatement(null, ok)
     ]);
     var internalError = esprima.parse(
         "throw new $Error('squiggle: internal error');"
     ).body;
-    var try_ = es.TryStatement(block, catch_);
+    var try_ = es.TryStatement(null, block, catch_);
     var body = [try_].concat(internalError);
-    var fn = es.FunctionExpression(null, [], es.BlockStatement(body));
-    return es.CallExpression(fn, []);
+    var block = es.BlockStatement(null, body);
+    var fn = es.FunctionExpression(null, null, [], block);
+    return es.CallExpression(node.loc, fn, []);
 }
 
-module.exports = Let;
+module.exports = Try;

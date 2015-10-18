@@ -6,7 +6,6 @@ var H = require("../parse-helpers");
 
 var iseq = H.iseq;
 var word = H.word;
-var spread = H.spread;
 
 module.exports = function(ps) {
     return iseq(ast.If,

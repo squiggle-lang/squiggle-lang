@@ -4,7 +4,6 @@ var esmangle = require("esmangle");
 var addLocMaker = require("./file-index-to-position-mapper");
 var transformAst = require("./transform-ast");
 var traverse = require("./traverse");
-var inspect = require("./inspect");
 var parse = require("./file-parse");
 var lint = require("./lint");
 
@@ -41,19 +40,15 @@ function compile(squiggleCode, sqglFilename, jsFilename, sourceMapFilename) {
     var squiggleAst = result.value;
     var addLocToNode = addLocMaker(squiggleCode, sqglFilename);
     traverse.walk({enter: addLocToNode}, squiggleAst);
-    // console.log(inspect(squiggleAst));
     var warnings = lint(squiggleAst);
     var esAst = transformAst(squiggleAst);
     var optimizedAst = SHOULD_OPTIMIZE ?
         esmangle.optimize(esAst) :
         esAst;
-    var stuff = generateCodeAndSourceMap(optimizedAst, sqglFilename, squiggleCode);
+    var stuff = generateCodeAndSourceMap(
+        optimizedAst, sqglFilename, squiggleCode);
     var code = addSourceMapUrl(ensureNewline(stuff.code), sourceMapFilename);
     var sourceMap = stuff.map.toString();
-    // console.error("sqgl ast: ", squiggleAst);
-    // console.error("warnings: ", warnings);
-    // console.error("js:", code);
-    // console.error("map: ", sourceMap);
     return {
         parsed: true,
         warnings: warnings,

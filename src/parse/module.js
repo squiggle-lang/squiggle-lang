@@ -3,7 +3,6 @@ var H = require("../parse-helpers");
 
 var spaced = H.spaced;
 var word = H.word;
-var ione = H.ione;
 
 module.exports = function(ps) {
     // var Script = ione(ast.Script, ps.Expr);

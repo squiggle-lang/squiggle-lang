@@ -40,15 +40,13 @@ module.exports = function(ps) {
         lbo("++ ~"),
         lbo(">= <= > < == != has is"),
         function(pp) {
-            return word("not").then(pp)
-                .map(ast.Not)
-                .or(pp);
+            return ione(ast.Not, word("not").then(pp)).or(pp);
         },
         lbo("and"),
         lbo("or")
     ];
     var OtherOpExpr = P.alt(ps.CallOrGet, ps.Literal);
-    var Negate = word("-").then(OtherOpExpr).map(ast.Negate);
+    var Negate = ione(ast.Negate, word("-").then(OtherOpExpr));
     var End = Negate.or(OtherOpExpr);
     return stuff.reduce(combine, End);
 };

@@ -7,7 +7,6 @@ var wrap = H.wrap;
 var ione = H.ione;
 var iseq = H.iseq;
 var list0 = H.list0;
-var spread = H.spread;
 var spaced = H.spaced;
 
 module.exports = function(ps) {

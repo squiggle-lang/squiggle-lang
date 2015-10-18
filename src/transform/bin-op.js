@@ -24,7 +24,7 @@ var boolTable = {
 };
 
 function bool(x) {
-    return ast.Call(ast.Identifier("$bool"), [x]);
+    return ast.Call(null, ast.Identifier(null, "$bool"), [x]);
 }
 
 function BinOp(transform, node) {
@@ -35,7 +35,7 @@ function BinOp(transform, node) {
         var op = boolTable[d];
         var left = transform(bool(node.left));
         var right = transform(bool(node.right));
-        return es.LogicalExpression(op, left, right);
+        return es.LogicalExpression(node.operator.loc, op, left, right);
     } else {
         var name = "$" + table[node.operator.data];
         var f = ast.Identifier(node.operator.index, name);

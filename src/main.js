@@ -42,11 +42,8 @@ var argv = nomnom.parse();
 var arrow = require("./arrow");
 var stringToLines = require("./string-to-lines");
 var indexToPosition = require("./index-to-position");
-var parse = require("./file-parse");
-var transformAst = require("./transform-ast");
 var normalizeCode = require("./normalize-code");
 var compile = require("./compile");
-var lint = require("./lint");
 var repl = require("./repl");
 
 function error(message) {

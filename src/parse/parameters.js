@@ -8,7 +8,6 @@ var ione = H.ione;
 var iseq = H.iseq;
 var list0 = H.list0;
 var cons = H.cons;
-var spread = H.spread;
 
 module.exports = function(ps) {
     var Parameter =
