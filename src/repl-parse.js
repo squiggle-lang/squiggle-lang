@@ -25,7 +25,8 @@ var ReplStart = spaced(P.alt(
 ));
 
 function replParse(text) {
-    return ReplStart.parse(text);
+    // return ReplStart.parse(text);
+    return Expr.parse(text);
 }
 
 module.exports = replParse;
