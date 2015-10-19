@@ -4,17 +4,10 @@ var chalk = require("chalk");
 
 var pkg = require("../package.json");
 var inspect = require("./inspect");
-var parse = require("./repl-parse");
 var compile = require("./compile");
-var transformAst = require("./transform-ast");
-var prettyPrint = require("./pretty-print");
-var predefAst = require("./predef-ast");
-var fileWrapper = require("./file-wrapper");
 var predef = require("../build/predef");
 
-var SHOW_ES = false;
 var SHOW_JS = true;
-var SHOW_AST = false;
 
 // TODO: Run the compiled code in a completely separate node context, so that
 // REPL interactions can't interact with REPL implementation details.
@@ -41,6 +34,22 @@ function prettySyntaxError(result) {
     );
 }
 
+function runTheirCode(code) {
+    var res = compile(
+        code,
+        "<repl>.squiggle",
+        "<repl>.js",
+        "<repl>.js.map");
+    if (res.parsed) {
+        if (SHOW_JS) {
+            console.log(chalk.cyan(res.code));
+        }
+        console.log(inspect(globalEval(res.code)));
+    } else {
+        console.log(prettySyntaxError(res));
+    }
+}
+
 function processLine(rl, text) {
     if (text.trim() === "") {
         rl.prompt();
@@ -58,22 +67,7 @@ function processLine(rl, text) {
     }
 
     try {
-        var res = compile(
-            text,
-            "<repl>.squiggle",
-            "<repl>.js",
-            "<repl>.js.map");
-        if (res.parsed) {
-            if (SHOW_JS) {
-                console.log(chalk.cyan(res.code));
-            }
-            globalEval(res.code)
-        } else {
-            console.log(prettySyntaxError(res));
-            console.log();
-            rl.prompt();
-            return;
-        }
+        runTheirCode(text);
     } catch (e) {
         console.log(error(e.stack));
         console.log();

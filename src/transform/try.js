@@ -24,16 +24,16 @@ function Try(transform, node) {
             es.ReturnStatement(null, fail)
         ])
     );
-    var block = es.BlockStatement(null, [
+    var retBlock = es.BlockStatement(null, [
         es.ReturnStatement(null, ok)
     ]);
     var internalError = esprima.parse(
         "throw new $Error('squiggle: internal error');"
     ).body;
-    var try_ = es.TryStatement(null, block, catch_);
+    var try_ = es.TryStatement(null, retBlock, catch_);
     var body = [try_].concat(internalError);
-    var block = es.BlockStatement(null, body);
-    var fn = es.FunctionExpression(null, null, [], block);
+    var mainBlock = es.BlockStatement(null, body);
+    var fn = es.FunctionExpression(null, null, [], mainBlock);
     return es.CallExpression(node.loc, fn, []);
 }
 
