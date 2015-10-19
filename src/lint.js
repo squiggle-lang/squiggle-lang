@@ -3,8 +3,6 @@ var predefAst = require("./predef-ast");
 var traverse = require("./traverse");
 var OverlayMap = require("./overlay-map");
 
-// TODO: Complain about *using* variables starting with underscores.
-
 function lint(ast) {
     return flatten([
         findUnusedOrUndeclaredBindings(ast)
@@ -94,7 +92,7 @@ function findUnusedOrUndeclaredBindings(ast) {
             // values, not their names.
             //
             // Example:
-            // let (x = 1, f = ~(z) 2) in y
+            // let x = 1 def f(z) = 2 in y
             //
             // `x` and `z` are being used for their names, and `y` is being
             // used for its value.
