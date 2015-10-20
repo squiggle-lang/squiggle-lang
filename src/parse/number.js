@@ -4,6 +4,7 @@ var ast = require("../ast");
 var H = require("../parse-helpers");
 
 var join = H.join;
+var ione = H.ione;
 
 function stripUnderscores(s) {
     return s.replace(/_/g, "");
@@ -46,11 +47,13 @@ var NaN_ = P.string("NaN").desc("NaN");
 var Infinity_ = P.string("Infinity").desc("Infinity");
 
 var Number_ =
-    P.alt(Float, NaN_, Infinity_)
-    .desc("number")
-    .map(stripUnderscores)
-    .map(global.Number)
-    .map(ast.Number);
+    ione(
+        ast.Number,
+        P.alt(Float, NaN_, Infinity_)
+            .desc("number")
+            .map(stripUnderscores)
+            .map(global.Number)
+    );
 
 module.exports = function(ps) {
     return Number_;

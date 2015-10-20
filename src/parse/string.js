@@ -5,6 +5,7 @@ var H = require("../parse-helpers");
 
 var join = H.join;
 var wrap = H.wrap;
+var ione = H.ione;
 
 var Char = P.regex(/[^"\n\\]+/);
 
@@ -32,9 +33,8 @@ var StringInner =
     .map(join(""));
 
 var String_ =
-    wrap('"', StringInner, '"')
-    .desc("string")
-    .map(ast.String);
+    ione(ast.String,
+        wrap('"', StringInner, '"').desc("string"));
 
 module.exports = function(ps) {
     return String_;

@@ -1,11 +1,12 @@
 var P = require("parsimmon");
 
 var ast = require("../ast");
+var inone = require("../parse-helpers").inone;
 
 module.exports = function(ps) {
-    var True = P.string("true").result(ast.True());
-    var False = P.string("false").result(ast.False());
-    var Null = P.string("null").result(ast.Null());
-    var Undefined = P.string("undefined").result(ast.Undefined());
+    var True = inone(ast.True, P.string("true"));
+    var False = inone(ast.False, P.string("false"));
+    var Null = inone(ast.Null, P.string("null"));
+    var Undefined = inone(ast.Undefined, P.string("undefined"));
     return P.alt(True, False, Null, Undefined);
 };

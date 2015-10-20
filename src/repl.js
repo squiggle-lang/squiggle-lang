@@ -4,32 +4,11 @@ var chalk = require("chalk");
 
 var pkg = require("../package.json");
 var inspect = require("./inspect");
-var parse = require("./repl-parse");
 var compile = require("./compile");
-var transformAst = require("./transform-ast");
-var prettyPrint = require("./pretty-print");
-var predefAst = require("./predef-ast");
-var fileWrapper = require("./file-wrapper");
+var arrow = require("./arrow");
+var predef = require("../build/predef");
 
-var SHOW_ES = false;
-var SHOW_JS = true;
-var SHOW_AST = false;
-
-function transformAndEval(ast) {
-    if (SHOW_AST) {
-        console.log(inspect(ast) + "\n");
-    }
-    var esAst = transformAst(ast);
-    if (SHOW_ES) {
-        console.log(inspect(esAst) + "\n");
-    }
-    var expr = fileWrapper(esAst);
-    var js = compile(expr);
-    if (SHOW_JS) {
-        console.log(chalk.cyan(js));
-    }
-    return globalEval(js);
-}
+var SHOW_JS = false;
 
 // TODO: Run the compiled code in a completely separate node context, so that
 // REPL interactions can't interact with REPL implementation details.
@@ -39,7 +18,7 @@ function transformAndEval(ast) {
 var globalEval = false || eval;
 
 function loadPredef() {
-    globalEval(compile(predefAst));
+    globalEval(predef);
     globalEval("var help = 'You may have meant to type :help';");
     globalEval("var quit = 'You may have meant to type :quit';");
     globalEval("var h = help;");
@@ -47,13 +26,32 @@ function loadPredef() {
     globalEval("var exit = quit;");
 }
 
-function prettySyntaxError(result) {
+function prettySyntaxError(code, result) {
     var i = result.index + 1;
     var expectations = uniq(result.expected).join(", ");
+    // TODO: Work for multiline code, if the REPL ever allows that...
+    var pointy = chalk.reset.bold(code) +
+        "\n" + chalk.bold.yellow(arrow(result.index));
     return error(
         "syntax error at character " + i +
-        ": expected " + expectations
+        ": expected " + expectations + "\n\n" + pointy
     );
+}
+
+function runTheirCode(code) {
+    var res = compile(
+        code,
+        "<repl>.squiggle",
+        "<repl>.js",
+        "<repl>.js.map");
+    if (res.parsed) {
+        if (SHOW_JS) {
+            console.log(chalk.cyan(res.code));
+        }
+        console.log(inspect(globalEval(res.code)));
+    } else {
+        console.log(prettySyntaxError(code, res.result));
+    }
 }
 
 function processLine(rl, text) {
@@ -62,39 +60,23 @@ function processLine(rl, text) {
         return;
     }
 
-    var res;
-    var ast;
-    try {
-        res = parse(text);
-        if (res.status) {
-            ast = res.value;
-        } else {
-            console.log(prettySyntaxError(res));
-            console.log();
-            rl.prompt();
-            return;
-        }
-    } catch (e) {
-        console.log(error(e.stack));
-        console.log();
-        rl.prompt();
-        return;
-    }
-
-    if (ast.type === "ReplQuit") {
+    if (text.trim() === ":quit") {
         process.exit();
     }
 
-    if (ast.type === "ReplHelp") {
+    if (text.trim() === ":help") {
         console.log(help());
         rl.prompt();
         return;
     }
 
     try {
-        console.log(prettyPrint(transformAndEval(ast)));
+        runTheirCode(text);
     } catch (e) {
         console.log(error(e.stack));
+        console.log();
+        rl.prompt();
+        return;
     }
 
     console.log();
@@ -129,11 +111,9 @@ function S(n) {
 
 function help() {
     return [
-        keyword(":set ") + meta("x = expr") + S(2) + "Set " + meta("x") +
-            " to the value of " + meta("expr") + " globally.",
-        keyword(":help") + S(10) + "Show this help message.",
-        keyword(":quit") + S(10) + "Quit Squiggle.",
-        meta("expr") + S(11) + "Evaluate " + meta("expr") +
+        keyword(":help") + S(3) + "Show this help message.",
+        keyword(":quit") + S(3) + "Quit Squiggle.",
+        meta("expr") + S(4) + "Evaluate " + meta("expr") +
             " as an expression.",
         "",
         "This is the Squiggle interactive interpreter (REPL).",
@@ -155,7 +135,7 @@ function prompt() {
 }
 
 function interruptMessage() {
-    return chalk.red(" ^C");
+    return chalk.red("^C");
 }
 
 function interruptHandler(rl) {

@@ -4,13 +4,14 @@ var ast = require("../ast");
 
 var H = require("../parse-helpers");
 var word = H.word;
+var ione = H.ione;
+var iseq = H.iseq;
 var list0 = H.list0;
 var cons = H.cons;
-var spread = H.spread;
 
 module.exports = function(ps) {
     var Parameter =
-        ps.Identifier.map(ast.Parameter);
+        ione(ast.Parameter, ps.Identifier);
 
     // Parameters look like this:
     // (@this, a, b, c, ...xs)
@@ -40,9 +41,5 @@ module.exports = function(ps) {
             Params2.map(cons(null))
         );
 
-    var Parameters =
-        Params1
-        .map(spread(ast.Parameters));
-
-    return Parameters;
+    return iseq(ast.Parameters, Params1);
 };
