@@ -51,7 +51,7 @@ function error(message) {
 }
 
 function die(message) {
-    error("squiggle: error: " + message);
+    error("error: " + message);
     process.exit(1);
 }
 
@@ -63,7 +63,12 @@ function compileTo(src, dest) {
     var stuff = compile(txt, src, jsOut, mapOut);
     if (stuff.parsed) {
         stuff.warnings.forEach(function(m) {
-            error('squiggle: lint: ' + m);
+            var msg = [
+                src,
+                m.line,
+                m.column + " " + m.message
+            ].join(":");
+            error('warning: ' + msg);
         });
         fs.writeFileSync(jsOut, stuff.code, UTF8);
         fs.writeFileSync(mapOut, stuff.sourceMap, UTF8);
@@ -72,10 +77,16 @@ function compileTo(src, dest) {
         var expectations = uniq(result.expected).join(", ");
         var pos = indexToPosition(txt, result.index);
         var lines = stringToLines(txt);
+        if (pos.line - 1 >= lines.length) {
+            pos = {
+                line: pos.line - 1,
+                column: lines[pos.line - 2].length
+            };
+        }
         var point = chalk.reset.bold(lines[pos.line - 1]) +
             "\n" + chalk.bold.yellow(arrow(pos.column));
         die(
-            src + " " + pos.line + ":" + pos.column +
+            src + ":" + pos.line + ":" + pos.column +
             " expected one of " + expectations + "\n\n" + point
         );
     }

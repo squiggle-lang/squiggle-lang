@@ -5,9 +5,10 @@ var chalk = require("chalk");
 var pkg = require("../package.json");
 var inspect = require("./inspect");
 var compile = require("./compile");
+var arrow = require("./arrow");
 var predef = require("../build/predef");
 
-var SHOW_JS = true;
+var SHOW_JS = false;
 
 // TODO: Run the compiled code in a completely separate node context, so that
 // REPL interactions can't interact with REPL implementation details.
@@ -25,12 +26,15 @@ function loadPredef() {
     globalEval("var exit = quit;");
 }
 
-function prettySyntaxError(result) {
+function prettySyntaxError(code, result) {
     var i = result.index + 1;
     var expectations = uniq(result.expected).join(", ");
+    // TODO: Work for multiline code, if the REPL ever allows that...
+    var pointy = chalk.reset.bold(code) +
+        "\n" + chalk.bold.yellow(arrow(result.index));
     return error(
         "syntax error at character " + i +
-        ": expected " + expectations
+        ": expected " + expectations + "\n\n" + pointy
     );
 }
 
@@ -46,7 +50,7 @@ function runTheirCode(code) {
         }
         console.log(inspect(globalEval(res.code)));
     } else {
-        console.log(prettySyntaxError(res));
+        console.log(prettySyntaxError(code, res.result));
     }
 }
 
