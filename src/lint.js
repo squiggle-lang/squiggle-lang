@@ -35,6 +35,8 @@ function isValidIdentifier(id) {
     );
 }
 
+// TODO: Once we stop exporting public functions from the predef, we can get rid
+// of this silly logic to find ambmiently declared identifiers.
 var predefIdentifiers = predefAst
     .body
     .filter(isIdentifierDeclaration)
@@ -85,7 +87,7 @@ function findUnusedOrUndeclaredBindings(ast) {
                 node.parameters.context || [],
                 node.parameters.positional,
                 node.parameters.slurpy || []
-            ]).forEach(function(binding) {
+            ]).forEach(function(b) {
                 var start = b.identifier.loc.start;
                 scopes.setBest(b.identifier.data, {
                     line: start.line,
@@ -112,14 +114,15 @@ function findUnusedOrUndeclaredBindings(ast) {
             // `x` and `z` are being used for their names, and `y` is being
             // used for its value.
             var k = node.data;
-            if (!implicitlyDeclared(k) && !scopes.hasKey(k)) {
+            if (scopes.hasKey(k)) {
+                scopes.get(k).used = true;
+            }
+            else if (!implicitlyDeclared(k)) {
                 messages.push({
                     line: node.loc.start.line,
                     column: node.loc.start.column,
                     message: "undeclared variable " + k
                 });
-            } else {
-                scopes.get(k).used = true;
             }
         }
     }
