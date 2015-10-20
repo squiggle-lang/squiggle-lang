@@ -116,8 +116,7 @@ function findUnusedOrUndeclaredBindings(ast) {
             var k = node.data;
             if (scopes.hasKey(k)) {
                 scopes.get(k).used = true;
-            }
-            else if (!implicitlyDeclared(k)) {
+            } else if (!implicitlyDeclared(k)) {
                 messages.push({
                     line: node.loc.start.line,
                     column: node.loc.start.column,
