@@ -111,11 +111,9 @@ function S(n) {
 
 function help() {
     return [
-        // keyword(":set ") + meta("x = expr") + S(2) + "Set " + meta("x") +
-        //     " to the value of " + meta("expr") + " globally.",
-        keyword(":help") + S(10) + "Show this help message.",
-        keyword(":quit") + S(10) + "Quit Squiggle.",
-        meta("expr") + S(11) + "Evaluate " + meta("expr") +
+        keyword(":help") + S(3) + "Show this help message.",
+        keyword(":quit") + S(3) + "Quit Squiggle.",
+        meta("expr") + S(4) + "Evaluate " + meta("expr") +
             " as an expression.",
         "",
         "This is the Squiggle interactive interpreter (REPL).",
