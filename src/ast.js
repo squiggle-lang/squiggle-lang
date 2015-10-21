@@ -12,6 +12,8 @@ var almostAst = {
     GetProperty: ["obj", "prop"],
     GetMethod:   ["obj", "prop"],
     CallMethod:  ["obj", "prop", "args"],
+    Await:       ["binding", "promise", "expression"],
+    AwaitExpr:   ["expression"],
     Identifier:  ["data"],
     Block:       ["expressions"],
     Call:        ["f", "args"],

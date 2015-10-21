@@ -5,6 +5,7 @@ module.exports = function(ps) {
         ps.If,
         ps.Let,
         ps.TopUnaryExpr,
+        ps.Await,
         ps.Match,
         ps.BinExpr,
         ps.Literal

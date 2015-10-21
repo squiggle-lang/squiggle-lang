@@ -23,6 +23,7 @@ var ps = parsimmonSalad({
     NamedLiteral: require("./parse/named-literal"),
     TopUnaryExpr: require("./parse/top-unary-expr"),
     Separator: require("./parse/separator"),
+    Await: require("./parse/await"),
     IdentExpr: require("./parse/ident-expr"),
     ParenExpr: require("./parse/paren-expr")
 });
