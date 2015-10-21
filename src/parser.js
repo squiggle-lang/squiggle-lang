@@ -15,7 +15,6 @@ var ps = parsimmonSalad({
     CallOrGet: require("./parse/call-or-get"),
     Identifier: require("./parse/identifier"),
     Match: require("./parse/match"),
-    Block: require("./parse/block"),
     Object: require("./parse/object"),
     Array: require("./parse/array"),
     IdentifierAsString: require("./parse/identifier-as-string"),

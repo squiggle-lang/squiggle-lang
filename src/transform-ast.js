@@ -11,7 +11,6 @@ var handlers = {
     Negate: require("./transform/negate"),
     ReplBinding: require("./transform/repl-expression"),
     ReplExpression: require("./transform/repl-expression"),
-    Block: require("./transform/block"),
     GetProperty: require("./transform/get-property"),
     BinOp: require("./transform/bin-op"),
     Identifier: require("./transform/identifier"),
