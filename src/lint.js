@@ -1,5 +1,4 @@
 var flatten = require("lodash/array/flatten");
-var predefAst = require("./predef-ast");
 var traverse = require("./traverse");
 var OverlayMap = require("./overlay-map");
 
@@ -18,52 +17,6 @@ function isIdentifierUsage(node, parent) {
         node.type === 'Identifier' &&
         parent.type === 'IdentifierExpression'
     );
-}
-
-function isIdentifierDeclaration(node) {
-    return node.type === 'VariableDeclaration';
-}
-
-function getDeclarationName(node) {
-    return node.declarations[0].id.name;
-}
-
-function isValidIdentifier(id) {
-    return (
-        id.indexOf('$') !== 0 &&
-        id.indexOf('sqgl$$') !== 0
-    );
-}
-
-// TODO: Once we stop exporting public functions from the predef, we can get rid
-// of this silly logic to find ambmiently declared identifiers.
-var predefIdentifiers = predefAst
-    .body
-    .filter(isIdentifierDeclaration)
-    .map(getDeclarationName)
-    .filter(isValidIdentifier);
-
-var nodeIdentifiers = [
-    'require'
-];
-
-var browserIdentifiers = [
-    'console'
-];
-
-var browserifyIdentifiers = flatten([
-    nodeIdentifiers,
-    browserIdentifiers,
-]);
-
-var implicitlyDeclaredIdentifiers = flatten([
-    browserifyIdentifiers,
-    predefIdentifiers,
-]);
-
-// TODO: Add standard library for Squiggle and Node and browsers.
-function implicitlyDeclared(k) {
-    return implicitlyDeclaredIdentifiers.indexOf(k) >= 0;
 }
 
 function findUnusedOrUndeclaredBindings(ast) {
@@ -116,7 +69,7 @@ function findUnusedOrUndeclaredBindings(ast) {
             var k = node.data;
             if (scopes.hasKey(k)) {
                 scopes.get(k).used = true;
-            } else if (!implicitlyDeclared(k)) {
+            } else {
                 messages.push({
                     line: node.loc.start.line,
                     column: node.loc.start.column,

@@ -8,7 +8,7 @@ var compile = require("./compile");
 var arrow = require("./arrow");
 var predef = require("../build/predef");
 
-var SHOW_JS = false;
+var SHOW_JS = true;
 
 // TODO: Run the compiled code in a completely separate node context, so that
 // REPL interactions can't interact with REPL implementation details.
