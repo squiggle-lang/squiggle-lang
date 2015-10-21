@@ -76,15 +76,16 @@ function $get(obj, k) {
     if (obj === null || obj === undefined) {
         throw new $Error('cannot get ' + k + ' of ' + obj);
     }
-    if ($has(obj, k)) {
-        return obj[k];
+    var v = obj[k];
+    if (v !== undefined) {
+        return v;
     }
-    throw new $Error('key ' + k + ' not in ' + toString(obj));
+    throw new $Error('key ' + k + ' is undefined in ' + obj);
 }
 // TODO: Expose this in the language.
 function $set(obj, k, v) {
     if (obj === null || typeof obj !== 'object') {
-        throw new $Error('cannot set ' + k + ' on ' + toString(obj));
+        throw new $Error('cannot set ' + k + ' on ' + obj);
     }
     if ($isFrozen(obj)) {
         throw new $Error('cannot set ' + k + ' on frozen object');
@@ -129,13 +130,13 @@ function $object() {
 }
 function $bool(x) {
     if (typeof x !== 'boolean') {
-        throw new $Error('not a boolean: ' + toString(x));
+        throw new $Error('not a boolean: ' + x);
     }
     return x;
 }
 function $number(x) {
     if (typeof x !== 'number') {
-        throw new $Error('not a number: ' + toString(x));
+        throw new $Error('not a number: ' + x);
     }
     return x;
 }
