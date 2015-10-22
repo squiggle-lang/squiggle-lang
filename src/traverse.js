@@ -32,6 +32,14 @@ function _walk(parents, obj, ast) {
             recur(node.parameters);
             recur(node.body);
         },
+        Await: function(node) {
+            recur(node.binding);
+            recur(node.promise);
+            recur(node.expression);
+        },
+        AwaitExpr: function(node) {
+            recur(node.expression);
+        },
         Parameters: function(node) {
             if (node.context) {
                 recur(node.context);
@@ -142,15 +150,13 @@ function _walk(parents, obj, ast) {
         Number: function(node) {},
         String: function(node) {},
     };
-    var shouldSkip = enter(ast, last(parents)) === SKIP;
+    enter(ast, last(parents));
     if (!(ast.type in handlers)) {
         throw new Error('unknown AST node type ' + JSON.stringify(ast));
     }
-    if (!shouldSkip) {
-        parents.push(ast);
-        handlers[ast.type](ast);
-        parents.pop();
-    }
+    parents.push(ast);
+    handlers[ast.type](ast);
+    parents.pop();
     exit(ast, last(parents));
 }
 
@@ -158,9 +164,6 @@ function walk(obj, ast) {
     return _walk([], obj, ast);
 }
 
-var SKIP = "SKIP";
-
 module.exports = {
-    walk: walk,
-    SKIP: SKIP
+    walk: walk
 };

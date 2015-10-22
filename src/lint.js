@@ -24,6 +24,7 @@ function findUnusedOrUndeclaredBindings(ast) {
     var scopes = OverlayMap(null);
     function enter(node, parent) {
         var t = node.type;
+        var start;
         if (t === 'Let') {
             scopes = OverlayMap(scopes);
             node.bindings.forEach(function(b) {
@@ -34,6 +35,14 @@ function findUnusedOrUndeclaredBindings(ast) {
                     used: false
                 });
             });
+        } else if (t === 'AwaitExpr') {
+            scopes = OverlayMap(scopes);
+            start = parent.binding.loc.start;
+            scopes.setBest(parent.binding.data, {
+                line: start.line,
+                column: start.column,
+                used: false
+            });
         } else if (t === 'Function') {
             scopes = OverlayMap(scopes);
             flatten([
@@ -41,7 +50,7 @@ function findUnusedOrUndeclaredBindings(ast) {
                 node.parameters.positional,
                 node.parameters.slurpy || []
             ]).forEach(function(b) {
-                var start = b.identifier.loc.start;
+                start = b.identifier.loc.start;
                 scopes.setBest(b.identifier.data, {
                     line: start.line,
                     column: start.column,
@@ -51,7 +60,7 @@ function findUnusedOrUndeclaredBindings(ast) {
         } else if (t === 'MatchClause') {
             scopes = OverlayMap(scopes);
         } else if (t === 'MatchPatternSimple') {
-            var start = node.identifier.loc.start;
+            start = node.identifier.loc.start;
             scopes.setBest(node.identifier.data, {
                 line: start.line,
                 column: start.column,
@@ -80,7 +89,13 @@ function findUnusedOrUndeclaredBindings(ast) {
     }
     function exit(node, parent) {
         var t = node.type;
-        if (t === 'Let' || t === 'Function' || t === 'MatchClause') {
+        var ok = (
+            t === 'Let' ||
+            t === 'Function' ||
+            t === 'MatchClause' ||
+            t === 'AwaitExpr'
+        );
+        if (ok) {
             // Pop the scope stack and investigate for unused variables.
             scopes.ownKeys().forEach(function(k) {
                 if (isIdentifierOkayToNotUse(k) && !scopes.get(k).used) {

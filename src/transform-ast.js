@@ -3,6 +3,8 @@ var isObject = require("lodash/lang/isObject");
 var jsonify = JSON.stringify;
 
 var handlers = {
+    Await: require("./transform/await"),
+    AwaitExpr: require("./transform/await-expr"),
     Module: require("./transform/module"),
     Script: require("./transform/script"),
     GetMethod: require("./transform/get-method"),
