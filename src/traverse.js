@@ -141,6 +141,7 @@ function _walk(parents, obj, ast) {
         Negate: function(node) {
             recur(node.expr);
         },
+        Global: function(node) {},
         True: function(node) {},
         False: function(node) {},
         Null: function(node) {},

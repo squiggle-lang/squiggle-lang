@@ -31,6 +31,7 @@ var almostAst = {
     Number:      ["data"],
     String:      ["data"],
     True:        [],
+    Global:      [],
     False:       [],
     Null:        [],
     Undefined:   [],

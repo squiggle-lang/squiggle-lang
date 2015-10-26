@@ -29,6 +29,7 @@ var handlers = {
     Array: require("./transform/array"),
     Object: require("./transform/object"),
     Match: require("./transform/match"),
+    Global: require("./transform/global"),
     True: require("./transform/true"),
     False: require("./transform/false"),
     Null: require("./transform/null"),
