@@ -14,6 +14,7 @@ var ps = parsimmonSalad({
     Let: require("./parse/let"),
     CallOrGet: require("./parse/call-or-get"),
     Identifier: require("./parse/identifier"),
+    Name: require("./parse/name"),
     Match: require("./parse/match"),
     Object: require("./parse/object"),
     Array: require("./parse/array"),

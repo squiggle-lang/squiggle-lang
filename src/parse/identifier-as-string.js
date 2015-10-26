@@ -1,8 +1,7 @@
 var ast = require("../ast");
 
+var ione = require("../parse-helpers").ione;
+
 module.exports = function(ps) {
-    return ps.Identifier
-        .map(function(node) {
-            return ast.String(node.index, node.data);
-        });
+    return ione(ast.String, ps.Name);
 };
