@@ -32,9 +32,11 @@ var StringInner =
     .many()
     .map(join(""));
 
+var DQuote = P.string('"');
+
 var String_ =
     ione(ast.String,
-        wrap('"', StringInner, '"').desc("string"));
+        DQuote.then(StringInner).skip(DQuote).desc("string"));
 
 module.exports = function(ps) {
     return String_;
