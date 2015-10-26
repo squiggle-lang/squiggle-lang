@@ -40,8 +40,10 @@ function esGe(a, b) {
     return es.BinaryExpression(null, ">=", a, b);
 }
 
-function esIn(a, b) {
-    return es.BinaryExpression(null, "in", a, b);
+function esHas(a, b) {
+    var prop = es.MemberExpression(null, true, a, b);
+    var undef = es.Identifier(null, "undefined");
+    return es.BinaryExpression(null, "!==", prop, undef);
 }
 
 function esSlice(xs, i) {
@@ -132,7 +134,7 @@ var _satisfiesPattern = {
     },
     MatchPatternObjectPair: function(transform, root, p) {
         var expr = transform(p.key);
-        var has = esIn(expr, root);
+        var has = esHas(root, expr);
         var rootObj = esNth2(root, expr);
         return esAnd(has, satisfiesPattern(transform, rootObj, p.value));
     },
