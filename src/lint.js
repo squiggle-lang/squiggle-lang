@@ -1,9 +1,6 @@
 var flatten = require("lodash/array/flatten");
-var predefAst = require("./predef-ast");
 var traverse = require("./traverse");
 var OverlayMap = require("./overlay-map");
-
-// TODO: Complain about *using* variables starting with underscores.
 
 function lint(ast) {
     return flatten([
@@ -22,59 +19,29 @@ function isIdentifierUsage(node, parent) {
     );
 }
 
-function isIdentifierDeclaration(node) {
-    return node.type === 'VariableDeclaration';
-}
-
-function getDeclarationName(node) {
-    return node.declarations[0].id.name;
-}
-
-function isValidIdentifier(id) {
-    return (
-        id.indexOf('$') !== 0 &&
-        id.indexOf('sqgl$$') !== 0
-    );
-}
-
-var predefIdentifiers = predefAst
-    .body
-    .filter(isIdentifierDeclaration)
-    .map(getDeclarationName)
-    .filter(isValidIdentifier);
-
-var nodeIdentifiers = [
-    'require'
-];
-
-var browserIdentifiers = [
-    'console'
-];
-
-var browserifyIdentifiers = flatten([
-    nodeIdentifiers,
-    browserIdentifiers,
-]);
-
-var implicitlyDeclaredIdentifiers = flatten([
-    browserifyIdentifiers,
-    predefIdentifiers,
-]);
-
-// TODO: Add standard library for Squiggle and Node and browsers.
-function implicitlyDeclared(k) {
-    return implicitlyDeclaredIdentifiers.indexOf(k) >= 0;
-}
-
 function findUnusedOrUndeclaredBindings(ast) {
     var messages = [];
     var scopes = OverlayMap(null);
     function enter(node, parent) {
         var t = node.type;
+        var start;
         if (t === 'Let') {
             scopes = OverlayMap(scopes);
             node.bindings.forEach(function(b) {
-                scopes.setBest(b.identifier.data, false);
+                var start = b.identifier.loc.start;
+                scopes.setBest(b.identifier.data, {
+                    line: start.line,
+                    column: start.column,
+                    used: false
+                });
+            });
+        } else if (t === 'AwaitExpr') {
+            scopes = OverlayMap(scopes);
+            start = parent.binding.loc.start;
+            scopes.setBest(parent.binding.data, {
+                line: start.line,
+                column: start.column,
+                used: false
             });
         } else if (t === 'Function') {
             scopes = OverlayMap(scopes);
@@ -82,36 +49,62 @@ function findUnusedOrUndeclaredBindings(ast) {
                 node.parameters.context || [],
                 node.parameters.positional,
                 node.parameters.slurpy || []
-            ]).forEach(function(binding) {
-                scopes.setBest(binding.identifier.data, false);
+            ]).forEach(function(b) {
+                start = b.identifier.loc.start;
+                scopes.setBest(b.identifier.data, {
+                    line: start.line,
+                    column: start.column,
+                    used: false
+                });
             });
         } else if (t === 'MatchClause') {
             scopes = OverlayMap(scopes);
         } else if (t === 'MatchPatternSimple') {
-            scopes.setBest(node.identifier.data, false);
+            start = node.identifier.loc.start;
+            scopes.setBest(node.identifier.data, {
+                line: start.line,
+                column: start.column,
+                used: false
+            });
         } else if (isIdentifierUsage(node, parent)) {
             // Only look at identifiers that are being used for their
             // values, not their names.
             //
             // Example:
-            // let (x = 1, f = ~(z) 2) in y
+            // let x = 1 def f(z) = 2 in y
             //
             // `x` and `z` are being used for their names, and `y` is being
             // used for its value.
             var k = node.data;
-            if (!implicitlyDeclared(k) && !scopes.hasKey(k)) {
-                messages.push("undeclared variable " + k);
+            if (scopes.hasKey(k)) {
+                scopes.get(k).used = true;
+            } else {
+                messages.push({
+                    line: node.loc.start.line,
+                    column: node.loc.start.column,
+                    message: "undeclared variable " + k
+                });
             }
-            scopes.setBest(k, true);
         }
     }
     function exit(node, parent) {
         var t = node.type;
-        if (t === 'Let' || t === 'Function' || t === 'MatchClause') {
+        var ok = (
+            t === 'Let' ||
+            t === 'Function' ||
+            t === 'MatchClause' ||
+            t === 'AwaitExpr'
+        );
+        if (ok) {
             // Pop the scope stack and investigate for unused variables.
             scopes.ownKeys().forEach(function(k) {
-                if (isIdentifierOkayToNotUse(k) && !scopes.get(k)) {
-                    messages.push("unused variable " + k);
+                if (isIdentifierOkayToNotUse(k) && !scopes.get(k).used) {
+                    var id = scopes.get(k);
+                    messages.push({
+                        line: id.line,
+                        column: id.column,
+                        message: "unused variable " + k
+                    });
                 }
             });
             scopes = scopes.parent;

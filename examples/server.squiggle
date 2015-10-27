@@ -48,7 +48,7 @@ def handler(req, res) =
         res.end(dispatch(method, url))
     end
 
-in do
-    http.createServer(handler).listen(port, address);
-    console.log("Server running at http://127.0.0.1:1337/");
-end
+let _ = http.createServer(handler).listen(port, address)
+let _ = console.log("Server running at http://127.0.0.1:1337/")
+
+in undefined

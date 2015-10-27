@@ -1,11 +1,10 @@
-var mapValues = require("lodash/object/mapValues");
 var isObject = require("lodash/lang/isObject");
-
-var es = require("./es");
 
 var jsonify = JSON.stringify;
 
 var handlers = {
+    Await: require("./transform/await"),
+    AwaitExpr: require("./transform/await-expr"),
     Module: require("./transform/module"),
     Script: require("./transform/script"),
     GetMethod: require("./transform/get-method"),
@@ -14,7 +13,6 @@ var handlers = {
     Negate: require("./transform/negate"),
     ReplBinding: require("./transform/repl-expression"),
     ReplExpression: require("./transform/repl-expression"),
-    Block: require("./transform/block"),
     GetProperty: require("./transform/get-property"),
     BinOp: require("./transform/bin-op"),
     Identifier: require("./transform/identifier"),
@@ -31,6 +29,7 @@ var handlers = {
     Array: require("./transform/array"),
     Object: require("./transform/object"),
     Match: require("./transform/match"),
+    Global: require("./transform/global"),
     True: require("./transform/true"),
     False: require("./transform/false"),
     Null: require("./transform/null"),

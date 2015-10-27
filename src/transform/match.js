@@ -8,10 +8,10 @@ function Match(transform, node) {
     var matchError = esprima.parse(
         "throw new $Error('pattern match failure');"
     ).body;
-    var block = es.BlockStatement(body.concat(matchError));
-    var id = es.Identifier("$match");
-    var fn = es.FunctionExpression(null, [id], block);
-    return es.CallExpression(fn, [e]);
+    var block = es.BlockStatement(null, body.concat(matchError));
+    var id = es.Identifier(null, "$match");
+    var fn = es.FunctionExpression(null, null, [id], block);
+    return es.CallExpression(node.loc, fn, [e]);
 }
 
 function matchClause(transform, node) {
@@ -20,49 +20,51 @@ function matchClause(transform, node) {
 }
 
 function match(transform, pattern, expression) {
-    var id = es.Identifier("$match");
+    var id = es.Identifier(null, "$match");
     var expr = wrapExpression(transform, id, pattern, expression);
-    var ret = es.ReturnStatement(expr);
+    var ret = es.ReturnStatement(expression.loc, expr);
     var pred = satisfiesPattern(transform, id, pattern);
-    var block = es.BlockStatement([ret]);
-    return es.IfStatement(pred, block, null);
+    var block = es.BlockStatement(null, [ret]);
+    return es.IfStatement(null, pred, block, null);
 }
 
 function esAnd(a, b) {
-    return es.LogicalExpression("&&", a, b);
+    return es.LogicalExpression(null, "&&", a, b);
 }
 
 function esEq(a, b) {
-    return es.BinaryExpression("===", a, b);
+    return es.BinaryExpression(null, "===", a, b);
 }
 
 function esGe(a, b) {
-    return es.BinaryExpression(">=", a, b);
+    return es.BinaryExpression(null, ">=", a, b);
 }
 
-function esIn(a, b) {
-    return es.BinaryExpression("in", a, b);
+function esHas(a, b) {
+    var prop = es.MemberExpression(null, true, a, b);
+    var undef = es.Identifier(null, "undefined");
+    return es.BinaryExpression(null, "!==", prop, undef);
 }
 
 function esSlice(xs, i) {
-    var slice = es.Identifier("$slice");
-    return es.CallExpression(slice, [xs, i]);
+    var slice = es.Identifier(null, "$slice");
+    return es.CallExpression(null, slice, [xs, i]);
 }
 
 function esProp(obj, prop) {
-    return es.MemberExpression(false, obj, es.Identifier(prop));
+    return es.MemberExpression(null, false, obj, es.Identifier(null, prop));
 }
 
 function esNth(a, i) {
-    return es.MemberExpression(true, a, es.Literal(i));
+    return es.MemberExpression(null, true, a, es.Literal(null, i));
 }
 
 function esNth2(a, i) {
-    return es.MemberExpression(true, a, i);
+    return es.MemberExpression(null, true, a, i);
 }
 
 function objGet2(obj, k) {
-    return es.MemberExpression(true, obj, k);
+    return es.MemberExpression(null, true, obj, k);
 }
 
 // var matchTmp = es.Identifier("$_");
@@ -72,8 +74,6 @@ function objGet2(obj, k) {
 // }
 
 var j = JSON.stringify;
-
-var esTrue = es.Literal(true);
 
 function notEsTrue(x) {
     return !isEsTrue(x);
@@ -85,20 +85,22 @@ function isEsTrue(x) {
 
 var _satisfiesPattern = {
     MatchPatternSimple: function(transform, root, p) {
-        return esTrue;
+        return es.Literal(p.loc, true);
     },
     MatchPatternLiteral: function(transform, root, p) {
         var lit = transform(p.data);
-        return es.CallExpression(es.Identifier("$is"), [root, lit]);
+        return es.CallExpression(
+            p.loc, es.Identifier(null, "$is"), [root, lit]);
     },
     MatchPatternParenExpr: function(transform, root, p) {
         var expr = transform(p.expr);
-        return es.CallExpression(es.Identifier("$eq"), [root, expr]);
+        return es.CallExpression(
+            null, es.Identifier(null, "$eq"), [root, expr]);
     },
     MatchPatternArray: function(transform, root, p) {
         var ps = p.patterns;
         var n = ps.length;
-        var lengthEq = esEq(esProp(root, "length"), es.Literal(n));
+        var lengthEq = esEq(esProp(root, "length"), es.Literal(null, n));
         return ps
             .map(function(x, i) {
                 return satisfiesPattern(transform, esNth(root, i), x);
@@ -120,8 +122,8 @@ var _satisfiesPattern = {
         return esAnd(a, b);
     },
     MatchPatternObject: function(transform, root, p) {
-        var id = es.Identifier("$isObject");
-        var isObject = es.CallExpression(id, [root]);
+        var id = es.Identifier(null, "$isObject");
+        var isObject = es.CallExpression(null, id, [root]);
         return p
             .pairs
             .map(function(x) {
@@ -132,7 +134,7 @@ var _satisfiesPattern = {
     },
     MatchPatternObjectPair: function(transform, root, p) {
         var expr = transform(p.key);
-        var has = esIn(expr, root);
+        var has = esHas(root, expr);
         var rootObj = esNth2(root, expr);
         return esAnd(has, satisfiesPattern(transform, rootObj, p.value));
     },
@@ -148,7 +150,7 @@ function satisfiesPattern(transform, root, p) {
 var __pluckPattern = {
     MatchPatternSimple: function(transform, acc, root, p) {
         if (p.identifier.data !== "_") {
-            acc.identifiers.push(es.Identifier(p.identifier.data));
+            acc.identifiers.push(transform(p.identifier));
             acc.expressions.push(root);
         }
         return acc;
@@ -203,10 +205,10 @@ function pluckPattern(transform, root, p) {
 
 function wrapExpression(transform, root, p, e) {
     var obj = pluckPattern(transform, root, p);
-    var ret = es.ReturnStatement(e);
-    var block = es.BlockStatement([ret]);
-    var fn = es.FunctionExpression(null, obj.identifiers, block);
-    return es.CallExpression(fn, obj.expressions);
+    var ret = es.ReturnStatement(e.loc, e);
+    var block = es.BlockStatement(null, [ret]);
+    var fn = es.FunctionExpression(null, null, obj.identifiers, block);
+    return es.CallExpression(null, fn, obj.expressions);
 }
 
 module.exports = Match;

@@ -1,9 +1,7 @@
 var es = require("../es");
 
-var nil = es.Literal(null);
-
 function Null(transform, node) {
-    return nil;
+    return es.Literal(node.loc, null);
 }
 
 module.exports = Null;

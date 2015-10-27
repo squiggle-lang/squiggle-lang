@@ -2,7 +2,6 @@
 set -e
 
 PATH="$(npm bin):$PATH"
-files=(src/**/*.js)
 
-jscs "${files[@]}"
-jshint "${files[@]}"
+jscs src
+jshint src

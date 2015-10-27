@@ -1,7 +1,11 @@
 var escodegen = require("escodegen");
 var esmangle = require("esmangle");
-var flow = require("lodash/function/flow");
-var identity = require("lodash/utility/identity");
+
+var addLocMaker = require("./file-index-to-position-mapper");
+var transformAst = require("./transform-ast");
+var traverse = require("./traverse");
+var parse = require("./file-parse");
+var lint = require("./lint");
 
 var SHOULD_OPTIMIZE = false;
 
@@ -12,10 +16,45 @@ function ensureNewline(x) {
     return x + "\n";
 }
 
-var compile = flow(
-    SHOULD_OPTIMIZE ? esmangle.optimize : identity,
-    escodegen.generate,
-    ensureNewline
-);
+function generateCodeAndSourceMap(node, name, code) {
+    return escodegen.generate(node, {
+        sourceMap: name,
+        sourceMapWithCode: true,
+        sourceContent: code
+    });
+}
+
+function addSourceMapUrl(code, url) {
+    return code + "\n//# sourceMappingURL=" + url + "\n";
+}
+
+// TODO: Make it possible to compile REPL code as well.
+function compile(squiggleCode, sqglFilename, jsFilename, sourceMapFilename) {
+    if (arguments.length !== compile.length) {
+        throw new Error("incorrect argument count to compile");
+    }
+    var result = parse(squiggleCode);
+    if (!result.status) {
+        return {parsed: false, result: result};
+    }
+    var squiggleAst = result.value;
+    var addLocToNode = addLocMaker(squiggleCode, sqglFilename);
+    traverse.walk({enter: addLocToNode}, squiggleAst);
+    var warnings = lint(squiggleAst);
+    var esAst = transformAst(squiggleAst);
+    var optimizedAst = SHOULD_OPTIMIZE ?
+        esmangle.optimize(esAst) :
+        esAst;
+    var stuff = generateCodeAndSourceMap(
+        optimizedAst, sqglFilename, squiggleCode);
+    var code = addSourceMapUrl(ensureNewline(stuff.code), sourceMapFilename);
+    var sourceMap = stuff.map.toString();
+    return {
+        parsed: true,
+        warnings: warnings,
+        sourceMap: sourceMap,
+        code: code
+    };
+}
 
 module.exports = compile;

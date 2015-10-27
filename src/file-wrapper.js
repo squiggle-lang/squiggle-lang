@@ -1,13 +1,15 @@
 var es = require("./es");
 
 function fileWrapper(body) {
-    var useStrict = es.ExpressionStatement(es.Literal('use strict'));
+    var useStrict = es.ExpressionStatement(null,
+        es.Literal(null, 'use strict'));
     var newBody = [useStrict].concat(body);
-    var fn = es.FunctionExpression(null, [], es.BlockStatement(newBody));
+    var fn = es.FunctionExpression(null,
+        null, [], es.BlockStatement(null, newBody));
     var i = newBody.length - 1;
-    newBody[i] = es.ReturnStatement(newBody[i]);
-    var st = es.ExpressionStatement(es.CallExpression(fn, []));
-    return es.Program([st]);
+    newBody[i] = es.ReturnStatement(null, newBody[i]);
+    var st = es.ExpressionStatement(null, es.CallExpression(null, fn, []));
+    return es.Program(null, [st]);
 }
 
 module.exports = fileWrapper;
