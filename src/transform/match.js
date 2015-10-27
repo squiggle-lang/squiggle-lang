@@ -6,7 +6,7 @@ function Match(transform, node) {
     var e = transform(node.expression);
     var body = node.clauses.map(matchClause.bind(null, transform));
     var matchError = esprima.parse(
-        "throw new $Error('pattern match failure');"
+        "throw new Error('pattern match failure');"
     ).body;
     var block = es.BlockStatement(null, body.concat(matchError));
     var id = es.Identifier(null, "$match");

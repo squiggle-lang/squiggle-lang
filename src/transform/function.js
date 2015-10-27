@@ -41,7 +41,7 @@ function Function_(transform, node) {
     var op = slurpy ? "<" : "!==";
     var arityCheck = esprima.parse(
         "if (arguments.length " + op + " " + n + ") { " +
-        "throw new $Error(" +
+        "throw new Error(" +
             "'expected " + n + " argument(s), " +
             "got ' + arguments.length" +
             "); " +

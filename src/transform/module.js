@@ -1,4 +1,4 @@
-var PREDEF = require("../predef-ast");
+var helpersFor = require("../helpers-for");
 var fileWrapper = require("../file-wrapper");
 var es = require("../es");
 
@@ -15,8 +15,9 @@ function moduleExportsEq(loc, x) {
 
 function Module(transform, node) {
     var value = transform(node.expr);
+    var predef = helpersFor(value);
     var expr = moduleExportsEq(node.loc, value);
-    var body = PREDEF.body.concat([expr]);
+    var body = predef.concat([expr]);
     return fileWrapper(body);
 }
 

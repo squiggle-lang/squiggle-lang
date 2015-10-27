@@ -28,7 +28,7 @@ function Try(transform, node) {
         es.ReturnStatement(null, ok)
     ]);
     var internalError = esprima.parse(
-        "throw new $Error('squiggle: internal error');"
+        "throw new Error('squiggle: internal error');"
     ).body;
     var try_ = es.TryStatement(null, retBlock, catch_);
     var body = [try_].concat(internalError);

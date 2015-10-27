@@ -1,9 +1,10 @@
-var PREDEF = require("../predef-ast");
+var helpersFor = require("../helpers-for");
 var fileWrapper = require("../file-wrapper");
 
 function Script(transform, node) {
     var value = transform(node.expr);
-    var body = PREDEF.body.concat([value]);
+    var predef = helpersFor(value);
+    var body = predef.concat([value]);
     return fileWrapper(body);
 }
 

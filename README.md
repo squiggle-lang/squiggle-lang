@@ -14,7 +14,7 @@ Please follow the [tutorial](http://mockbrian.com/squiggle/tutorial/).
 
 ## Code of conduct
 
-This project uses the [Contributor Covenant](https://github.com/saikobee/squiggle/blob/master/CODE_OF_CONDUCT.md) as its code of conduct.
+This project uses the [Contributor Covenant](https://github.com/wavebeem/squiggle/blob/master/CODE_OF_CONDUCT.md) as its code of conduct.
 
 ## Contributing
 
@@ -24,4 +24,3 @@ This project uses the [Contributor Covenant](https://github.com/saikobee/squiggl
 - `npm install` (this will install the dependencies needed)
 - `node src/main.js`
 - Optional: `npm link` so you can just run `squiggle`
-- Note: Run `./bin/build.rb` if you change `predef.js`
