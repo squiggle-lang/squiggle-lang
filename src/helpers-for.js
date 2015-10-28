@@ -8,6 +8,10 @@ function sortUnique(xs) {
     return L(xs).slice().sort().uniq().value();
 }
 
+// This is needed because I'm using $match and $error as temporary variables
+// inside compiled output, but also using $foo as the pattern for the helper
+// named $foo. I'm thinking I should change these variable names in the future
+// so they don't look like they conflict.
 function needsDeps(name) {
     return name.charAt(0) === "$" &&
         name !== "$match" &&
@@ -31,9 +35,7 @@ function indirectDeps(deps) {
     } else {
         return L(deps)
             .map(function(d) {
-                var ds = needsDeps(d) ?
-                    indirectDeps(predef[d].dependencies) :
-                    [];
+                var ds = indirectDeps(predef[d].dependencies);
                 return [d].concat(ds);
             })
             .flatten()
