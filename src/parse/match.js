@@ -88,12 +88,12 @@ module.exports = function(ps) {
         iseq(ast.MatchClause,
             P.seq(
                 word("case").then(MatchPattern),
-                _.then(word("=>")).then(ps.Expr)
+                _.then(word("=>")).then(ps.BinExpr)
             ));
 
     return iseq(ast.Match,
         P.seq(
-            word("match").then(ps.Expr).skip(_),
-            MatchClause.skip(_).atLeast(1).skip(P.string("end"))
+            word("match").then(ps.BinExpr),
+            _.then(MatchClause).atLeast(1)
         ));
 };

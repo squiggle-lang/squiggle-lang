@@ -7,7 +7,6 @@ module.exports = function(ps) {
         ps.TopUnaryExpr,
         ps.Await,
         ps.Match,
-        ps.BinExpr,
-        ps.Literal
+        ps.BinExpr
     );
 };
