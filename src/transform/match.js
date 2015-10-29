@@ -110,7 +110,7 @@ var _satisfiesPattern = {
     },
     MatchPatternArraySlurpy: function(transform, root, p) {
         var ps = p.patterns;
-        var n = es.Literal(ps.length);
+        var n = es.Literal(null, ps.length);
         var atLeastLength = esGe(esProp(root, "length"), n);
         var a = ps
             .map(function(x, i) {
@@ -173,7 +173,7 @@ var __pluckPattern = {
         p.patterns.forEach(function(x, i) {
             _pluckPattern(transform, acc, esNth(root, i), x);
         });
-        var n = es.Literal(p.patterns.length);
+        var n = es.Literal(null, p.patterns.length);
         _pluckPattern(transform, acc, esSlice(root, n), p.slurp);
         return acc;
     },
