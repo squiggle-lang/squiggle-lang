@@ -1,22 +1,23 @@
-let Number = global.Number
-let NaN = global.NaN
-let document = global.document
-let byId = document::getElementById
+let {Object: {assign}, Number, document} = global
+let SEL = document::querySelector
 
 def toNumber(x) =
     let y = Number(x)
-    in if is(y, NaN)
-    then 0
-    else y
+    in if y is NaN
+        then 0
+        else y
 
 def listen(element, name, func) =
     element.addEventListener(name, func, false)
 
 let elements = {
-    a: byId("number-1"),
-    b: byId("number-2"),
-    c: byId("sum")
+    a: SEL("#number-1"),
+    b: SEL("#number-2"),
+    c: SEL("#sum")
 }
+
+def showSum(a, b) =
+    assign(elements.c, {textContent: a + b})
 
 def update() =
     let a = toNumber(elements.a.value)
@@ -26,11 +27,8 @@ def update() =
 def updateHandler(_) =
     update()
 
-def showSum(a, b) =
-    set("textContent", a + b, elements.c)
+let _ = listen(elements.a, "input", updateHandler)
+let _ = listen(elements.b, "input", updateHandler)
+let _ = update()
 
-in do
-    listen(elements.a, "input", updateHandler);
-    listen(elements.b, "input", updateHandler);
-    update();
-end
+in undefined

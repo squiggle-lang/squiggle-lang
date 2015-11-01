@@ -100,26 +100,26 @@ function _walk(parents, obj, ast) {
             recur(node.pattern);
             recur(node.expression);
         },
-        MatchPatternSimple: function(node) {
+        PatternSimple: function(node) {
             recur(node.identifier);
         },
-        MatchPatternParenExpr: function(node) {
+        PatternParenExpr: function(node) {
             recur(node.expr);
         },
-        MatchPatternLiteral: function(node) {
+        PatternLiteral: function(node) {
             recur(node.data);
         },
-        MatchPatternArray: function(node) {
+        PatternArray: function(node) {
             node.patterns.forEach(recur);
         },
-        MatchPatternArraySlurpy: function(node) {
+        PatternArraySlurpy: function(node) {
             node.patterns.forEach(recur);
             recur(node.slurp);
         },
-        MatchPatternObject: function(node) {
+        PatternObject: function(node) {
             node.pairs.forEach(recur);
         },
-        MatchPatternObjectPair: function(node) {
+        PatternObjectPair: function(node) {
             recur(node.key);
             recur(node.value);
         },

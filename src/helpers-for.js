@@ -14,7 +14,9 @@ function sortUnique(xs) {
 // so they don't look like they conflict.
 function needsDeps(name) {
     return name.charAt(0) === "$" &&
+        !(/\$[0-9]+/.test(name)) &&
         name !== "$match" &&
+        name !== "$tmp" &&
         name !== "$error";
 }
 

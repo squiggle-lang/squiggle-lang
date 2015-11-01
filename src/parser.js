@@ -18,6 +18,8 @@ var ps = parsimmonSalad({
     Match: require("./parse/match"),
     Object: require("./parse/object"),
     Array: require("./parse/array"),
+    MatchPattern: require("./parse/match-pattern"),
+    LetPattern: require("./parse/let-pattern"),
     IdentifierAsString: require("./parse/identifier-as-string"),
     ObjectPairKey: require("./parse/object-pair-key"),
     Module: require("./parse/module"),
