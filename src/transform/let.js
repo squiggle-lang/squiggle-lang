@@ -2,8 +2,6 @@ var esprima = require("esprima");
 var flatten = require("lodash/array/flatten");
 var L = require("lodash");
 
-var inspect = require("../inspect");
-var die = require("../die");
 var es = require("../es");
 var ph = require("./pattern-helpers");
 
@@ -19,7 +17,6 @@ function esDeclare(loc, id, expr) {
 
 function Let(transform, node) {
     var undef = es.Identifier(null, "$undef");
-    var undefined_ = es.Identifier(null, "undefined_");
     var tmp = es.Identifier(null, "$tmp");
     var throwUp =
         esprima.parse("throw new Error('destructuring failure');").body;
@@ -69,7 +66,7 @@ function Let(transform, node) {
         .value();
     // TODO: Check for duplicates in allIdents.
     var declarations = L.map(allIdents, function(id) {
-        return esDeclare(null, id, undef)
+        return esDeclare(null, id, undef);
     });
     var initializations = L(allBindings)
         .map("initialization")

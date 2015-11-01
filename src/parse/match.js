@@ -4,11 +4,8 @@ var H = require("../parse-helpers");
 var _ = require("./whitespace")(null);
 var ast = require("../ast");
 
-var wrap = H.wrap;
 var word = H.word;
-var ione = H.ione;
 var iseq = H.iseq;
-var list0 = H.list0;
 
 /// Pattern matching section is kinda huge because it mirrors much of the rest
 /// of the language, but produces different AST nodes, and is slightly
