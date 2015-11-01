@@ -1,14 +1,14 @@
-let http = require("http")
+let http = require "http"
+let {Number, String, console} = global
+
 let port = 1337
 let address = "127.0.0.1"
-let Number = global.Number
-let String = global.String
+let url = "http://" ++ address ++ ":" ++ String(port) ++ "/"
 
 def factorial(n) =
     match n
     case 0 => 1
     case n => n * factorial(n - 1)
-    end
 
 def factorial2(n) =
     if n <= 1
@@ -31,7 +31,6 @@ def dispatchGet(url) =
     case ["factorial", x] => handlerFactorial(x)
     case ["echo", x] => x
     case _ => "I don't know what you want to GET"
-    end
 
 def dispatch(method, url) =
     match method
@@ -40,15 +39,13 @@ def dispatch(method, url) =
     case "DELETE" => "Not interested in DELETE-ing!"
     case "OPTIONS" => "What OPTIONS are you looking for?"
     case _ => "ERROR"
-    end
 
 def handler(req, res) =
-    match req
-    case {method, url} =>
-        res.end(dispatch(method, url))
-    end
+    let {method, url} = req
+    in res.end(dispatch(method, url) ++ "\n")
+
 
 let _ = http.createServer(handler).listen(port, address)
-let _ = console.log("Server running at http://127.0.0.1:1337/")
+let _ = console.log("Server running at " ++ url)
 
 in undefined

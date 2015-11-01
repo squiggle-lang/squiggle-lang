@@ -1,5 +1,6 @@
 export
 let fs = require "fs"
+let {console, Date} = global
 let _ = 1
 let foo = fn foo(x) x
 def bar(x, y) = x + y
@@ -15,10 +16,10 @@ let _ =
     match global
     case {parseInt, Number: num, "parseFloat": pf} =>
         [parseInt, num, pf]
-    case _ => 3
-    end
+    case _ =>
+        3
 let _ = fn() throw global.Error("nope")
 let _ = fn() error "oops"
 let _ = try (error "no way")
 let _ = [fs, foo, bar]
-in console.log(global.Date())
+in console.log(Date())

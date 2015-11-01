@@ -25,16 +25,8 @@ function findUnusedOrUndeclaredBindings(ast) {
     function enter(node, parent) {
         var t = node.type;
         var start;
-        if (t === 'Let') {
+        if (t === 'Let' || t === 'MatchClause') {
             scopes = OverlayMap(scopes);
-            node.bindings.forEach(function(b) {
-                var start = b.identifier.loc.start;
-                scopes.setBest(b.identifier.data, {
-                    line: start.line,
-                    column: start.column,
-                    used: false
-                });
-            });
         } else if (t === 'AwaitExpr') {
             scopes = OverlayMap(scopes);
             start = parent.binding.loc.start;
@@ -57,9 +49,7 @@ function findUnusedOrUndeclaredBindings(ast) {
                     used: false
                 });
             });
-        } else if (t === 'MatchClause') {
-            scopes = OverlayMap(scopes);
-        } else if (t === 'MatchPatternSimple') {
+        } else if (t === 'PatternSimple') {
             start = node.identifier.loc.start;
             scopes.setBest(node.identifier.data, {
                 line: start.line,

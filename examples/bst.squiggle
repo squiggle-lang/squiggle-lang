@@ -1,3 +1,10 @@
+let {console} = global
+
+def foldRight(xs, z, f) =
+    def g(acc, x, _, _) = f(x, acc)
+    let [...ys] = xs
+    in ys.reverse().reduce(g, z)
+
 def Node(x, l, r) = {
     type: "Node",
     data: x,
@@ -22,10 +29,10 @@ def bstAdd(n, d) =
 
 def inOrder(node) =
     match node
-    case {type: "Tip"} => []
+    case {type: "Tip"} =>
+        []
     case {type: "Node", left, right, data} =>
         inOrder(left) ++ [data] ++ inOrder(right)
-    end
 
 def treeFolder(x, node) =
     bstAdd(node, x)

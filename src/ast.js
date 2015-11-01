@@ -41,13 +41,13 @@ var almostAst = {
 
     Match: ["expression", "clauses"],
     MatchClause: ["pattern", "expression"],
-    MatchPatternSimple: ["identifier"],
-    MatchPatternParenExpr: ["expr"],
-    MatchPatternLiteral: ["data"],
-    MatchPatternArray: ["patterns"],
-    MatchPatternArraySlurpy: ["patterns", "slurp"],
-    MatchPatternObject: ["pairs"],
-    MatchPatternObjectPair: ["key", "value"],
+    PatternSimple: ["identifier"],
+    PatternParenExpr: ["expr"],
+    PatternLiteral: ["data"],
+    PatternArray: ["patterns"],
+    PatternArraySlurpy: ["patterns", "slurp"],
+    PatternObject: ["pairs"],
+    PatternObjectPair: ["key", "value"],
 };
 
 function addLoc(array, k) {
