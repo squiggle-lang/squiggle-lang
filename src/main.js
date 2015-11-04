@@ -57,10 +57,9 @@ function die(message) {
 
 function compileTo(src, dest) {
     var jsOut = dest;
-    // TODO: Allow configurable sourcemap output location.
-    var mapOut = dest + ".map";
+    // TODO: Allow disabling embedded sourcemaps.
     var txt = normalizeCode(fs.readFileSync(src, "utf-8"));
-    var stuff = compile(txt, src, jsOut, mapOut);
+    var stuff = compile(txt, src, {embedSourceMaps: true});
     if (stuff.parsed) {
         stuff.warnings.forEach(function(m) {
             var msg = [
@@ -71,7 +70,6 @@ function compileTo(src, dest) {
             error('warning: ' + msg);
         });
         fs.writeFileSync(jsOut, stuff.code, UTF8);
-        fs.writeFileSync(mapOut, stuff.sourceMap, UTF8);
     } else {
         var result = stuff.result;
         var expectations = uniq(result.expected).join(", ");

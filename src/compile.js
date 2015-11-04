@@ -1,3 +1,4 @@
+var convertSourceMap = require("convert-source-map");
 var escodegen = require("escodegen");
 var esmangle = require("esmangle");
 
@@ -24,21 +25,25 @@ function generateCodeAndSourceMap(node, name, code) {
     });
 }
 
-function addSourceMapUrl(code, url) {
-    return code + "\n//# sourceMappingURL=" + url + "\n";
+function addSourceMapUrl(code, sourceMap) {
+    var comment = convertSourceMap.fromJSON(sourceMap).toComment();
+    return code + comment + "\n";
 }
 
 // TODO: Make it possible to compile REPL code as well.
-function compile(squiggleCode, sqglFilename, jsFilename, sourceMapFilename) {
+function compile(code, filename, options) {
+    // TODO: Merge options if there are ever more.
+    options = options || {embedSourceMaps: true};
     if (arguments.length !== compile.length) {
         throw new Error("incorrect argument count to compile");
     }
-    var result = parse(squiggleCode);
+    var sourceMapFilename = filename + ".map";
+    var result = parse(code);
     if (!result.status) {
         return {parsed: false, result: result};
     }
     var squiggleAst = result.value;
-    var addLocToNode = addLocMaker(squiggleCode, sqglFilename);
+    var addLocToNode = addLocMaker(code, filename);
     traverse.walk({enter: addLocToNode}, squiggleAst);
     var warnings = lint(squiggleAst);
     var esAst = transformAst(squiggleAst);
@@ -46,14 +51,17 @@ function compile(squiggleCode, sqglFilename, jsFilename, sourceMapFilename) {
         esmangle.optimize(esAst) :
         esAst;
     var stuff = generateCodeAndSourceMap(
-        optimizedAst, sqglFilename, squiggleCode);
-    var code = addSourceMapUrl(ensureNewline(stuff.code), sourceMapFilename);
+        optimizedAst, filename, code);
+    var js = ensureNewline(stuff.code)
     var sourceMap = stuff.map.toString();
+    if (options.embedSourceMaps) {
+        js = addSourceMapUrl(js, sourceMap);
+    }
     return {
         parsed: true,
         warnings: warnings,
         sourceMap: sourceMap,
-        code: code
+        code: js
     };
 }
 
