@@ -1,5 +1,7 @@
 # squiggle
 
+[![Build Status](https://travis-ci.org/wavebeem/squiggle.svg?branch=issues%2F35-Adds_destructuring_assignment)](https://travis-ci.org/wavebeem/squiggle)
+
 ## What is it?
 
 A compile-to-JS programming language.
