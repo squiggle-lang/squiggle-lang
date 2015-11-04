@@ -1,9 +1,14 @@
 {
   "name": "squiggle-lang",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "An experimental programming language",
   "bin": "src/main.js",
   "main": "src/api.js",
+  "keywords": [
+    "language",
+    "compiler",
+    "squiggle"
+  ],
   "scripts": {
     "test": "bash ./bin/travis.sh"
   },
