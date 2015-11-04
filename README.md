@@ -6,11 +6,11 @@ A compile-to-JS programming language.
 
 ## How do I install it?
 
-    npm install -g wavebeem/squiggle
+    npm install -g squiggle-lang
 
 ## How do I use it?
 
-Please follow the [tutorial](http://mockbrian.com/squiggle/tutorial/).
+Please follow the [tutorial](http://squiggle-lang.org/tutorial/).
 
 ## Code of conduct
 
