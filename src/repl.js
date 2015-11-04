@@ -39,9 +39,8 @@ function prettySyntaxError(code, result) {
 function runTheirCode(code) {
     var res = compile(
         code,
-        "<repl>.squiggle",
-        "<repl>.js",
-        "<repl>.js.map");
+        "<repl.sqg>",
+        {embedSourceMaps: false});
     if (res.parsed) {
         if (SHOW_JS) {
             console.log(chalk.cyan(res.code));
