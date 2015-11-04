@@ -37,7 +37,6 @@ function compile(code, filename, options) {
     if (arguments.length !== compile.length) {
         throw new Error("incorrect argument count to compile");
     }
-    var sourceMapFilename = filename + ".map";
     var result = parse(code);
     if (!result.status) {
         return {parsed: false, result: result};
@@ -52,7 +51,7 @@ function compile(code, filename, options) {
         esAst;
     var stuff = generateCodeAndSourceMap(
         optimizedAst, filename, code);
-    var js = ensureNewline(stuff.code)
+    var js = ensureNewline(stuff.code);
     var sourceMap = stuff.map.toString();
     if (options.embedSourceMaps) {
         js = addSourceMapUrl(js, sourceMap);
