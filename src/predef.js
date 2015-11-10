@@ -101,7 +101,19 @@ module.exports = {
     },
     has: {
         dependencies: [],
-        code: 'function $has(obj, key) { return obj[key] !== undefined; }'
+        code: [
+            'function $has(obj, key) {',
+            '    if (typeof key !== "string" &&',
+            '        typeof key !== "number") {',
+            '       throw new Error("key must be a string or a number. " +',
+            '                       "Key is a " + typeof key);',
+            '    }',
+            '    if (typeof key === "number" && !(key % 1 === 0)) {',
+            '        throw new Error("Numerical keys cannot be floats");',
+            '    }',
+            '    return obj[key] !== undefined;',
+            '}'
+        ].join("\n")
     },
     is: {
         dependencies: [],
