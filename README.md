@@ -18,6 +18,11 @@ Please follow the [tutorial](http://squiggle-lang.org/tutorial/).
 
 This project uses the [Contributor Covenant](https://github.com/wavebeem/squiggle/blob/master/CODE_OF_CONDUCT.md) as its code of conduct.
 
+## License
+
+[MIT](https://github.com/wavebeem/squiggle/blob/master/LICENSE)
+
+
 ## Contributing
 
 - Click the "Fork" repository button and locally clone your fork
