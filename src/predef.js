@@ -107,7 +107,8 @@ module.exports = {
             '        typeof key === "number" && key % 1 === 0) {',
             '        return obj[key] !== undefined;',
             '    }',
-            '    throw new Error("Key must be a string or integer, got " + typeof key);',
+            '    throw new Error("Key must be a string or integer" +',
+            '                    ", got " + typeof key);',
             '}'
         ].join("\n")
     },
