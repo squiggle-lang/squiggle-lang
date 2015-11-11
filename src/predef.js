@@ -101,7 +101,16 @@ module.exports = {
     },
     has: {
         dependencies: [],
-        code: 'function $has(obj, key) { return obj[key] !== undefined; }'
+        code: [
+            'function $has(obj, key) {',
+            '    if (typeof key === "string" ||',
+            '        typeof key === "number" && key % 1 === 0) {',
+            '        return obj[key] !== undefined;',
+            '    }',
+            '    throw new Error("Key must be a string or integer" +',
+            '                    ", got " + typeof key);',
+            '}'
+        ].join("\n")
     },
     is: {
         dependencies: [],
