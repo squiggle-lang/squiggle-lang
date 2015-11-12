@@ -17,9 +17,23 @@ function esDeclare(loc, id, expr) {
 
 function bindingToDeclAndInit(transform, b) {
     if (b.identifier.type === "PatternSimple") {
-        return simpleBindingToDeclAndInit(transform, b);
+        console.error(b);
+        if (b.identifier.identifier.data === "_") {
+            return unboundLetDeclAndInit(transform, b.value);
+        } else {
+            return simpleBindingToDeclAndInit(transform, b);
+        }
+    } else {
+        return complexBindingToDeclAndInit(transform, b);
     }
-    return complexBindingToDeclAndInit(transform, b);
+}
+
+function unboundLetDeclAndInit(transform, expr) {
+    var stmt = es.ExpressionStatement(expr.loc, transform(expr));
+    return {
+        identifier: null,
+        initialization: stmt
+    };
 }
 
 function simpleBindingToDeclAndInit(transform, b) {
@@ -83,6 +97,7 @@ function Let(transform, node) {
         L.map(node.bindings, bindingToDeclAndInit.bind(null, transform));
     var allIdents = L(allBindings)
         .map("identifier")
+        .compact()
         .flatten()
         .value();
     // TODO: Check for duplicates in allIdents.
