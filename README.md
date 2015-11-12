@@ -14,6 +14,10 @@ A compile-to-JS programming language.
 
 Please follow the [tutorial](http://squiggle-lang.org/tutorial/).
 
+## Which browsers/environments are supported?
+
+Squiggle's JS output should run in any ES5 environment. It requires strict mode, `Object.getPrototypeOf`, `Object.create`, and `Object.freeze`, which all cannot be shimmed correctly. See [the ES5 compatibility chart](http://kangax.github.io/compat-table/es5/). Essentially, it means IE10+, Safari 6+, and Node v0.10+ should all be supported.
+
 ## Code of conduct
 
 This project uses the [Contributor Covenant](https://github.com/wavebeem/squiggle/blob/master/CODE_OF_CONDUCT.md) as its code of conduct.
@@ -21,7 +25,6 @@ This project uses the [Contributor Covenant](https://github.com/wavebeem/squiggl
 ## License
 
 [MIT](https://github.com/wavebeem/squiggle/blob/master/LICENSE)
-
 
 ## Contributing
 
