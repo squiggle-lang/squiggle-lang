@@ -17,7 +17,6 @@ function esDeclare(loc, id, expr) {
 
 function bindingToDeclAndInit(transform, b) {
     if (b.identifier.type === "PatternSimple") {
-        console.error(b);
         if (b.identifier.identifier.data === "_") {
             return unboundLetDeclAndInit(transform, b.value);
         } else {
