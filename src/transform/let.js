@@ -15,51 +15,72 @@ function esDeclare(loc, id, expr) {
     ]);
 }
 
-function Let(transform, node) {
-    var undef = es.Identifier(null, "$undef");
-    var tmp = es.Identifier(null, "$tmp");
+function bindingToDeclAndInit(transform, b) {
+    if (b.identifier.type === "PatternSimple") {
+        return simpleBindingToDeclAndInit(transform, b);
+    }
+    return complexBindingToDeclAndInit(transform, b);
+}
+
+function simpleBindingToDeclAndInit(transform, b) {
+    var ident = transform(b.identifier.identifier);
+    var expr = transform(b.value);
+    var assignExpr = es.AssignmentExpression(null, "=", ident, expr);
+    var assignStmt = es.ExpressionStatement(null, assignExpr);
+    return {
+        identifier: ident,
+        initialization: assignStmt
+    };
+}
+
+function complexBindingToDeclAndInit(transform, b) {
     var throwUp =
         esprima.parse("throw new Error('destructuring failure');").body;
+    var value = transform(b.value);
+    var root = tmp;
+    var pattern = b.identifier;
+    var looksGood =
+        ph.satisfiesPattern(transform, root, pattern);
+    var theCheck =
+        es.IfStatement(
+            null,
+            esNot(looksGood),
+            es.BlockStatement(null, throwUp),
+            null
+        );
+    var assignTmp = es.ExpressionStatement(
+        null,
+        es.AssignmentExpression(
+            null,
+            "=",
+            tmp,
+            value
+        )
+    );
+    var matchy = [
+        assignTmp,
+        theCheck
+    ];
+    var pluck = ph.pluckPattern(transform, root, pattern);
+    var pairs = L.zip(pluck.identifiers, pluck.expressions);
+    var assignments = pairs.map(function(x) {
+        var id = x[0];
+        var expr = x[1];
+        var assign = es.AssignmentExpression(id.loc, "=", id, expr);
+        return es.ExpressionStatement(id.loc, assign);
+    });
+    return {
+        identifier: L.map(pairs, 0),
+        initialization: matchy.concat(assignments)
+    };
+}
+
+var undef = es.Identifier(null, "$undef");
+var tmp = es.Identifier(null, "$tmp");
+
+function Let(transform, node) {
     var allBindings =
-        L.map(node.bindings, function(b) {
-            var value = transform(b.value);
-            var root = tmp;
-            var pattern = b.identifier;
-            var looksGood =
-                ph.satisfiesPattern(transform, root, pattern);
-            var theCheck =
-                es.IfStatement(
-                    null,
-                    esNot(looksGood),
-                    es.BlockStatement(null, throwUp),
-                    null
-                );
-            var assignTmp = es.ExpressionStatement(
-                null,
-                es.AssignmentExpression(
-                    null,
-                    "=",
-                    tmp,
-                    value
-                )
-            );
-            var matchy = [
-                assignTmp,
-                theCheck
-            ];
-            var pluck = ph.pluckPattern(transform, root, pattern);
-            var pairs = L.zip(pluck.identifiers, pluck.expressions);
-            var assignments = pairs.map(function(x) {
-                var id = x[0];
-                var expr = x[1];
-                var assign = es.AssignmentExpression(id.loc, "=", id, expr);
-                return es.ExpressionStatement(id.loc, assign);
-            });
-            return {
-                identifier: L.map(pairs, 0),
-                initialization: matchy.concat(assignments)
-            };
-        });
+        L.map(node.bindings, bindingToDeclAndInit.bind(null, transform));
     var allIdents = L(allBindings)
         .map("identifier")
         .flatten()
