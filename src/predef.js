@@ -98,7 +98,7 @@ module.exports = {
         code: [
             'function $has(obj, key) {',
             '    if (obj === null || obj === undefined) {',
-            '        return false;',
+            '        throw new Error(obj + " cannot have keys");',
             '    }',
             '    if (typeof key === "string" ||',
             '        typeof key === "number" && key % 1 === 0) {',
