@@ -72,17 +72,11 @@ module.exports = {
         ].join("\n")
     },
     get: {
-        dependencies: [],
+        dependencies: ['has'],
         code: [
-            'function $get(obj, k) {',
-            '    if (obj === null || obj === undefined) {',
-            '        throw new Error("cannot get " + k + " of " + obj);',
-            '    }',
-            '    var v = obj[k];',
-            '    if (v !== undefined) {',
-            '        return v;',
-            '    }',
-            '    throw new Error("key " + k + " is undefined in " + obj);',
+            'function $get(obj, key) {',
+            '    if ($has(obj, key)) { return obj[key]; }',
+            '    throw new Error(obj + " does not have key " + key);',
             '}'
         ].join("\n")
     },
@@ -103,6 +97,9 @@ module.exports = {
         dependencies: [],
         code: [
             'function $has(obj, key) {',
+            '    if (obj === null || obj === undefined) {',
+            '        return false;',
+            '    }',
             '    if (typeof key === "string" ||',
             '        typeof key === "number" && key % 1 === 0) {',
             '        return obj[key] !== undefined;',
