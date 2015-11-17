@@ -5,6 +5,7 @@ var UTF8 = "utf-8";
 
 var pkg = require("../package.json");
 var fs = require("fs");
+var vm = require("vm");
 var chalk = require("chalk");
 var uniq = require("lodash/array/uniq");
 var nomnom = require("nomnom")
@@ -71,7 +72,8 @@ function compileTo(src, dest) {
         if (dest !== undefined) {
             fs.writeFileSync(dest, stuff.code, UTF8);
         } else {
-            eval(stuff.code);
+            var script = new vm.Script(stuff.code);
+            script.runInThisContext();
         }
     } else {
         var result = stuff.result;
