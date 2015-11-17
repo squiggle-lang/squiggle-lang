@@ -18,7 +18,7 @@ var nomnom = require("nomnom")
     .option("output", {
         position: 1,
         metavar: "FILE",
-        help: "Write JavaScript to this file",
+        help: "Write JavaScript to this file, if omitted then run the input",
         type: "string"
     })
     .option("interactive", {
@@ -56,7 +56,6 @@ function die(message) {
 }
 
 function compileTo(src, dest) {
-    var jsOut = dest;
     // TODO: Allow disabling embedded sourcemaps.
     var txt = normalizeCode(fs.readFileSync(src, "utf-8"));
     var stuff = compile(txt, src, {embedSourceMaps: true});
@@ -69,7 +68,11 @@ function compileTo(src, dest) {
             ].join(":");
             error('warning: ' + msg);
         });
-        fs.writeFileSync(jsOut, stuff.code, UTF8);
+        if (dest !== undefined) {
+            fs.writeFileSync(dest, stuff.code, UTF8);
+        } else {
+            eval(stuff.code);
+        }
     } else {
         var result = stuff.result;
         var expectations = uniq(result.expected).join(", ");
@@ -92,6 +95,8 @@ function compileTo(src, dest) {
 
 if (argv.interactive) {
     repl.start();
+} else if (argv._.length === 1) {
+    compileTo(argv._[0], undefined);
 } else if (argv._.length === 2) {
     compileTo(argv._[0], argv._[1]);
 } else {
