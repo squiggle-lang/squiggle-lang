@@ -13,14 +13,15 @@ var nomnom = require("nomnom")
     .option("input", {
         position: 0,
         metavar: "FILE",
-        help: "Compile this Squiggle file",
+        help: "Execute this Squiggle file",
         type: "string"
     })
     .option("output", {
-        position: 1,
         metavar: "FILE",
-        help: "Write JavaScript to this file, if omitted then run the input",
-        type: "string"
+        abbr: "o",
+        help: "Write JavaScript to this file",
+        type: "string",
+        flag: true
     })
     .option("interactive", {
         abbr: "i",
