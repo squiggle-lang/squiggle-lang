@@ -23,6 +23,7 @@
     "esprima": "^2.3.0",
     "estraverse": "^4.1.1",
     "lodash": "^3.9.3",
+    "node-hook": "^0.2.0",
     "nomnom": "^1.8.1",
     "parsimmon": "^0.7.0"
   },
