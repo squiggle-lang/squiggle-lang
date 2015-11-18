@@ -5,21 +5,25 @@ var UTF8 = "utf-8";
 
 var pkg = require("../package.json");
 var fs = require("fs");
+var vm = require("vm");
 var chalk = require("chalk");
+var hook = require("node-hook");
+var path = require("path");
 var uniq = require("lodash/array/uniq");
 var nomnom = require("nomnom")
     .script("squiggle")
     .option("input", {
         position: 0,
         metavar: "FILE",
-        help: "Compile this Squiggle file",
+        help: "Execute this Squiggle file",
         type: "string"
     })
     .option("output", {
-        position: 1,
         metavar: "FILE",
+        abbr: "o",
         help: "Write JavaScript to this file",
-        type: "string"
+        type: "string",
+        flag: true
     })
     .option("interactive", {
         abbr: "i",
@@ -55,8 +59,7 @@ function die(message) {
     process.exit(1);
 }
 
-function compileTo(src, dest) {
-    var jsOut = dest;
+function compileSource(src) {
     // TODO: Allow disabling embedded sourcemaps.
     var txt = normalizeCode(fs.readFileSync(src, "utf-8"));
     var stuff = compile(txt, src, {embedSourceMaps: true});
@@ -69,7 +72,7 @@ function compileTo(src, dest) {
             ].join(":");
             error('warning: ' + msg);
         });
-        fs.writeFileSync(jsOut, stuff.code, UTF8);
+        return stuff.code;
     } else {
         var result = stuff.result;
         var expectations = uniq(result.expected).join(", ");
@@ -90,8 +93,39 @@ function compileTo(src, dest) {
     }
 }
 
+function compileAndRun(src) {
+    var js = compileSource(src);
+    var script = new vm.Script(js);
+    var root = global;
+    root.require = function(id) {
+        try {
+            return require(path.resolve(id));
+        } catch (Error) {
+            return require(id);
+        }
+    };
+    root.__filename = path.normalize(path.join(process.cwd(), src));
+    root.__dirname = path.dirname(root.__filename) + "/";
+
+    hook.hook(".sqg", function(src, filename) {
+        return compileSource(filename);
+    });
+
+    var ctx = vm.createContext(root);
+    script.runInContext(ctx);
+
+    hook.unhook(".sqg");
+}
+
+function compileTo(src, dest) {
+    var js = compileSource(src);
+    fs.writeFileSync(dest, js, UTF8);
+}
+
 if (argv.interactive) {
     repl.start();
+} else if (argv._.length === 1) {
+    compileAndRun(argv._[0]);
 } else if (argv._.length === 2) {
     compileTo(argv._[0], argv._[1]);
 } else {
