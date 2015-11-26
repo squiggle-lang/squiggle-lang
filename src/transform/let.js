@@ -54,13 +54,6 @@ function complexBindingToDeclAndInit(transform, b) {
     var pattern = b.identifier;
     var looksGood =
         ph.satisfiesPattern(transform, root, pattern);
-    var theCheck =
-        es.IfStatement(
-            null,
-            esNot(looksGood),
-            es.BlockStatement(null, throwUp),
-            null
-        );
     var assignTmp = es.ExpressionStatement(
         null,
         es.AssignmentExpression(
@@ -70,10 +63,6 @@ function complexBindingToDeclAndInit(transform, b) {
             value
         )
     );
-    var matchy = [
-        assignTmp,
-        theCheck
-    ];
     var pluck = ph.pluckPattern(transform, root, pattern);
     var pairs = L.zip(pluck.identifiers, pluck.expressions);
     var assignments = pairs.map(function(x) {
@@ -82,9 +71,16 @@ function complexBindingToDeclAndInit(transform, b) {
         var assign = es.AssignmentExpression(id.loc, "=", id, expr);
         return es.ExpressionStatement(id.loc, assign);
     });
+    var theCheck =
+        es.IfStatement(
+            null,
+            looksGood,
+            es.BlockStatement(null, assignments),
+            es.BlockStatement(null, throwUp)
+        );
     return {
         identifier: L.map(pairs, 0),
-        initialization: matchy.concat(assignments)
+        initialization: [assignTmp, theCheck]
     };
 }
 
