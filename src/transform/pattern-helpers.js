@@ -1,3 +1,5 @@
+var flatten = require("lodash/array/flatten");
+
 var es = require("../es");
 
 function pluckPattern(transform, root, p) {
@@ -6,10 +8,18 @@ function pluckPattern(transform, root, p) {
 }
 
 function satisfiesPattern(transform, root, p) {
+    var conditions = satisfiesPattern2(transform, root, p);
+    if (conditions.length === 0) {
+        return es.Literal(null, true);
+    }
+    return conditions.reduce(esAnd);
+}
+
+function satisfiesPattern2(transform, root, p) {
     if (p && p.type in _satisfiesPattern) {
         return _satisfiesPattern[p.type](transform, root, p);
     }
-    throw new Error("can't satisfiesPattern of " + j(p));
+    throw new Error("can't satisfiesPattern2 of " + j(p));
 }
 
 function esAnd(a, b) {
@@ -69,58 +79,62 @@ function isEsTrue(x) {
 
 var _satisfiesPattern = {
     PatternSimple: function(transform, root, p) {
-        return es.Literal(p.loc, true);
+        return [];
     },
     PatternLiteral: function(transform, root, p) {
         var lit = transform(p.data);
-        return es.CallExpression(
-            p.loc, es.Identifier(null, "$is"), [root, lit]);
+        var is = es.Identifier(null, "$is");
+        var call = es.CallExpression(p.loc, is, [root, lit]);
+        return [call];
     },
     PatternParenExpr: function(transform, root, p) {
         var expr = transform(p.expr);
-        return es.CallExpression(
-            null, es.Identifier(null, "$eq"), [root, expr]);
+        var eq = es.Identifier(null, "$eq");
+        var call = es.CallExpression(null, eq, [root, expr]);
+        return [call];
     },
     PatternArray: function(transform, root, p) {
         var ps = p.patterns;
         var n = ps.length;
-        var lengthEq = esEq(esProp(root, "length"), es.Literal(null, n));
-        return ps
-            .map(function(x, i) {
-                return satisfiesPattern(transform, esNth(root, i), x);
-            })
-            .filter(notEsTrue)
-            .reduce(esAnd, esAnd(root, lengthEq));
+        var checkLength = esEq(esProp(root, "length"), es.Literal(null, n));
+        var checkNormal =
+            ps.map(function(x, i) {
+                return satisfiesPattern2(transform, esNth(root, i), x);
+            });
+        return flatten([checkLength, flatten(checkNormal)]);
     },
     PatternArraySlurpy: function(transform, root, p) {
         var ps = p.patterns;
         var n = es.Literal(null, ps.length);
         var atLeastLength = esGe(esProp(root, "length"), n);
-        var a = ps
-            .map(function(x, i) {
-                return satisfiesPattern(transform, esNth(root, i), x);
-            })
-            .filter(notEsTrue)
-            .reduce(esAnd, esAnd(root, atLeastLength));
-        var b = satisfiesPattern(transform, esSlice(root, n), p.slurp);
-        return esAnd(a, b);
+        var checkLength = esAnd(root, atLeastLength);
+        var checkNormal =
+            ps.map(function(x, i) {
+                return satisfiesPattern2(transform, esNth(root, i), x);
+            });
+        var checkSlurpy =
+            satisfiesPattern2(transform, esSlice(root, n), p.slurp);
+        return flatten([
+            checkLength,
+            flatten(checkNormal),
+            checkSlurpy
+        ]);
     },
     PatternObject: function(transform, root, p) {
         var id = es.Identifier(null, "$isObjectish");
         var isObjectish = es.CallExpression(null, id, [root]);
-        return p
-            .pairs
-            .map(function(x) {
-                return satisfiesPattern(transform, root, x);
-            })
-            .filter(notEsTrue)
-            .reduce(esAnd, isObjectish);
+        var checkPairs =
+            p.pairs.map(function(x) {
+                return satisfiesPattern2(transform, root, x);
+            });
+        return flatten([isObjectish, flatten(checkPairs)]);
     },
     PatternObjectPair: function(transform, root, p) {
         var expr = transform(p.key);
         var has = esHas(root, expr);
         var rootObj = esNth2(root, expr);
-        return esAnd(has, satisfiesPattern(transform, rootObj, p.value));
+        var checkValue = satisfiesPattern2(transform, rootObj, p.value);
+        return flatten([has, checkValue]);
     },
 };
 
