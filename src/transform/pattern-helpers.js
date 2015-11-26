@@ -61,21 +61,7 @@ function objGet2(obj, k) {
     return es.MemberExpression(null, true, obj, k);
 }
 
-// var matchTmp = es.Identifier("$_");
-
-// function assignTemp(expr) {
-//     return es.AssignmentExpression("=", matchTmp, expr);
-// }
-
 var j = JSON.stringify;
-
-function notEsTrue(x) {
-    return !isEsTrue(x);
-}
-
-function isEsTrue(x) {
-    return x.type === "Literal" && x.value === true;
-}
 
 var _satisfiesPattern = {
     PatternSimple: function(transform, root, p) {
