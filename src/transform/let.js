@@ -5,10 +5,6 @@ var L = require("lodash");
 var es = require("../es");
 var ph = require("./pattern-helpers");
 
-function esNot(x) {
-    return es.UnaryExpression(null, true, "!", x);
-}
-
 function esDeclare(loc, id, expr) {
     return es.VariableDeclaration(loc, "var", [
         es.VariableDeclarator(null, id, expr)
