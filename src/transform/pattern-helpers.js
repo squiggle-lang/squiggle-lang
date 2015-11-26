@@ -30,6 +30,10 @@ function esEq(a, b) {
     return es.BinaryExpression(null, "===", a, b);
 }
 
+function notNullish(a) {
+    return es.BinaryExpression(null, "!=", a, es.Literal(null, null));
+}
+
 function esGe(a, b) {
     return es.BinaryExpression(null, ">=", a, b);
 }
@@ -93,7 +97,7 @@ var _satisfiesPattern = {
         var ps = p.patterns;
         var n = es.Literal(null, ps.length);
         var atLeastLength = esGe(esProp(root, "length"), n);
-        var checkLength = esAnd(root, atLeastLength);
+        var checkLength = esAnd(notNullish(root), atLeastLength);
         var checkNormal =
             ps.map(function(x, i) {
                 return satisfiesPattern2(transform, esNth(root, i), x);
@@ -107,13 +111,11 @@ var _satisfiesPattern = {
         ]);
     },
     PatternObject: function(transform, root, p) {
-        var id = es.Identifier(null, "$isObjectish");
-        var isObjectish = es.CallExpression(null, id, [root]);
         var checkPairs =
             p.pairs.map(function(x) {
                 return satisfiesPattern2(transform, root, x);
             });
-        return flatten([isObjectish, flatten(checkPairs)]);
+        return flatten([notNullish(root), flatten(checkPairs)]);
     },
     PatternObjectPair: function(transform, root, p) {
         var expr = transform(p.key);

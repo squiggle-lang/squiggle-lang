@@ -125,14 +125,6 @@ module.exports = {
         dependencies: [],
         code: 'function $isObject(x) { return x && typeof x === "object"; }'
     },
-    isObjectish: {
-        dependencies: [],
-        code: [
-            'function $isObjectish(x) {',
-            '   return x !== undefined && x !== null;',
-            '}'
-        ].join("\n")
-    },
     lt: {
         // TODO: Make it work on strings too
         dependencies: ['number'],
