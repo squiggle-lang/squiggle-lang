@@ -2,8 +2,7 @@ let {console} = global
 
 def foldRight(xs, z, f) =
     def g(acc, x, _, _) = f(x, acc)
-    let [...ys] = xs
-    in ys.reverse().reduce(g, z)
+    in xs.slice().reverse().reduce(g, z)
 
 def Node(x, l, r) = {
     type: "Node",
