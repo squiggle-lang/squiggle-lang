@@ -5,10 +5,12 @@ var esmangle = require("esmangle");
 var addLocMaker = require("./file-index-to-position-mapper");
 var transformAst = require("./transform-ast");
 var traverse = require("./traverse");
+var optimize = require("./optimize");
 var parse = require("./file-parse");
 var lint = require("./lint");
 
-var SHOULD_OPTIMIZE = false;
+var SHOULD_MANGLE = false;
+var SHOULD_OPTIMIZE = true;
 
 function ensureNewline(x) {
     if (x.charAt(x.length - 1) === "\n") {
@@ -46,9 +48,12 @@ function compile(code, filename, options) {
     traverse.walk({enter: addLocToNode}, squiggleAst);
     var warnings = lint(squiggleAst);
     var esAst = transformAst(squiggleAst);
-    var optimizedAst = SHOULD_OPTIMIZE ?
+    var mangledAst = SHOULD_MANGLE ?
         esmangle.optimize(esAst) :
         esAst;
+    var optimizedAst = SHOULD_OPTIMIZE ?
+        optimize(mangledAst) :
+        mangledAst;
     var stuff = generateCodeAndSourceMap(
         optimizedAst, filename, code);
     var js = ensureNewline(stuff.code);
