@@ -1,6 +1,7 @@
 # squiggle
 
-[![Build Status](https://travis-ci.org/wavebeem/squiggle.svg?branch=issues%2F35-Adds_destructuring_assignment)](https://travis-ci.org/wavebeem/squiggle)
+[![Build Status](https://travis-ci.org/wavebeem/squiggle.svg)](https://travis-ci.org/wavebeem/squiggle)
+[![npm version](https://badge.fury.io/js/squiggle-lang.svg)](https://badge.fury.io/js/squiggle-lang)
 
 ## What is it?
 
