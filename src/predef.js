@@ -26,13 +26,21 @@ module.exports = {
         dependencies: [],
         code: [
             'function $concat(a, b) {' +
-            '    if (typeof a === "string" && typeof b === "string") {' +
-            '        return a + b;' +
-            '    }' +
             '    if (Array.isArray(a) && Array.isArray(b)) {' +
             '        return a.concat(b);' +
             '    }' +
             '    throw new Error("incorrect argument types for ++");' +
+            '}'
+        ].join("\n")
+    },
+    strcat: {
+        dependencies: ['isObject'],
+        code: [
+            'function $strcat(a, b) {' +
+            '    if ($isObject(a) || $isObject(b)) {' +
+            '        throw new Error("incorrect argument types for ..");' +
+            '    }' +
+            '    return "" + a + b;' +
             '}'
         ].join("\n")
     },

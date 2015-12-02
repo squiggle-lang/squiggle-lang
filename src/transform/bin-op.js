@@ -7,6 +7,7 @@ var table = {
     "+": "add",
     "-": "subtract",
     "++": "concat",
+    "..": "strcat",
     "~": "update",
     ">=": "gte",
     "<=": "lte",

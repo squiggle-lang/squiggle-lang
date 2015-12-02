@@ -37,7 +37,7 @@ module.exports = function(ps) {
     var stuff = [
         lbo("* /"),
         lbo("+ -"),
-        lbo("++ ~"),
+        lbo("++ ~ .."),
         lbo(">= <= > < == != has is"),
         function(pp) {
             return ione(ast.Not, word("not").then(pp)).or(pp);
