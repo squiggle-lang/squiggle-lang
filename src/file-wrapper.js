@@ -6,7 +6,7 @@ function fileWrapper(body) {
     var useStrict = es.ExpressionStatement(null,
         es.Literal(null, 'use strict'));
     var strictCheck = esprima.parse(
-        "if ((function() { 'use strict'; return this }())) {\n" +
+        "if (this) {\n" +
         "   throw new Error('strict mode not supported');\n" +
         "}"
     ).body;
