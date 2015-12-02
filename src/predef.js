@@ -49,33 +49,29 @@ module.exports = {
         code: 'function $divide(a, b) { return $number(a) / $number(b); }'
     },
     eq: {
-        dependencies: ['isObject'],
+        dependencies: ['isValueType'],
         code: [
             'function $eq(a, b) {',
-            '    if (a === b) {',
-            '        return true;',
-            '    } else if (Array.isArray(a) && Array.isArray(b)) {',
-            '        var n = a.length;',
-            '        var m = b.length;',
-            '        if (n !== m) {',
-            '            return false;',
-            '        } else {',
-            '            for (var i = 0; i < n; i++) {',
-            '                if (!$eq(a[i], b[i])) {',
-            '                    return false;',
-            '                }',
-            '            }',
-            '            return true;',
-            '        }',
-            '    } else if ($isObject(a) && $isObject(b)) {',
-            '        // TODO: Remove duplicates.',
-            '        var ks = Object.keys(a).concat(Object.keys(b)).sort();',
-            '        return ks.every(function(k) {',
-            '            return k in a && k in b && $eq(a[k], b[k]);',
-            '        });',
+            '    if ($isValueType(a) && $isValueType(b)) {',
+            '        return a === b;',
             '    } else {',
-            '        return false;',
+            '        throw new Error(' +
+            '"cannot check equality of ' +
+            'reference types, use operator \'is\' instead");',
             '    }',
+            '}'
+        ].join("\n")
+    },
+    isValueType: {
+        dependencies: [],
+        code: [
+            'function $isValueType(a) {',
+            '   return ' +
+            'a === undefined || ' +
+            'a === null || ' +
+            'typeof a === "boolean" || ' +
+            'typeof a === "string" || ' +
+            'typeof a === "number";',
             '}'
         ].join("\n")
     },
