@@ -1,6 +1,7 @@
 var convertSourceMap = require("convert-source-map");
 var escodegen = require("escodegen");
 var esmangle = require("esmangle");
+var OopsyData = require("oopsy-data");
 
 var addLocMaker = require("./file-index-to-position-mapper");
 var transformAst = require("./transform-ast");
@@ -35,7 +36,10 @@ function addSourceMapUrl(code, sourceMap) {
 // TODO: Make it possible to compile REPL code as well.
 function compile(code, filename, options) {
     // TODO: Merge options if there are ever more.
-    options = options || {embedSourceMaps: true};
+    options = options || {
+        embedSourceMaps: true,
+        color: false
+    };
     if (arguments.length !== compile.length) {
         throw new Error("incorrect argument count to compile");
     }
@@ -47,6 +51,8 @@ function compile(code, filename, options) {
     var addLocToNode = addLocMaker(code, filename);
     traverse.walk({enter: addLocToNode}, squiggleAst);
     var warnings = lint(squiggleAst);
+    var contextualWarnings =
+        OopsyData.fromLocations(code, warnings, {color: options.color});
     var esAst = transformAst(squiggleAst);
     var mangledAst = SHOULD_MANGLE ?
         esmangle.optimize(esAst) :
@@ -63,7 +69,7 @@ function compile(code, filename, options) {
     }
     return {
         parsed: true,
-        warnings: warnings,
+        warnings: contextualWarnings,
         sourceMap: sourceMap,
         code: js
     };

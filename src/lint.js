@@ -72,7 +72,7 @@ function findUnusedOrUndeclaredBindings(ast) {
                 messages.push({
                     line: node.loc.start.line,
                     column: node.loc.start.column,
-                    message: "undeclared variable " + k
+                    data: "undeclared variable " + k
                 });
             }
         }
@@ -93,7 +93,7 @@ function findUnusedOrUndeclaredBindings(ast) {
                     messages.push({
                         line: id.line,
                         column: id.column,
-                        message: "unused variable " + k
+                        data: "unused variable " + k
                     });
                 }
             });
