@@ -6,7 +6,6 @@ var UTF8 = "utf-8";
 var pkg = require("../package.json");
 var fs = require("fs");
 var chalk = require("chalk");
-var uniq = require("lodash/array/uniq");
 var nomnom = require("nomnom")
     .script("squiggle")
     .option("input", {
@@ -50,6 +49,13 @@ function error(message) {
     console.error(chalk.bold.red(message));
 }
 
+function header(message) {
+    var n = message.length;
+    var underline = Array(n + 1).join("=")
+    console.error(chalk.bold.cyan(message));
+    console.error(chalk.bold.cyan(underline));
+}
+
 function die(message) {
     error("error: " + message);
     process.exit(1);
@@ -58,35 +64,33 @@ function die(message) {
 function compileTo(src, dest) {
     var jsOut = dest;
     // TODO: Allow disabling embedded sourcemaps.
+    // TODO: Allow disabling color.
     var txt = normalizeCode(fs.readFileSync(src, "utf-8"));
-    var stuff = compile(txt, src, {embedSourceMaps: true});
+    var opts = {
+        embedSourceMaps: true,
+        color: true
+    }
+    var stuff = compile(txt, src, opts);
     if (stuff.parsed) {
-        stuff.warnings.forEach(function(m) {
-            var msg = [
-                src,
-                m.line,
-                m.column + " " + m.message
-            ].join(":");
-            error('warning: ' + msg);
+        header("Warnings for " + src);
+        console.error();
+        stuff.warnings.forEach(function(m, i, a) {
+            var msg = "Line " + m.line + ": " + m.data;
+            error(msg);
+            console.error(m.context);
+            if (i !== a.length - 1) {
+                console.error();
+            }
         });
         fs.writeFileSync(jsOut, stuff.code, UTF8);
     } else {
-        var result = stuff.result;
-        var expectations = uniq(result.expected).join(", ");
-        var pos = indexToPosition(txt, result.index);
-        var lines = stringToLines(txt);
-        if (pos.line - 1 >= lines.length) {
-            pos = {
-                line: pos.line - 1,
-                column: lines[pos.line - 2].length
-            };
-        }
-        var point = chalk.reset.bold(lines[pos.line - 1]) +
-            "\n" + chalk.bold.yellow(arrow(pos.column));
-        die(
-            src + ":" + pos.line + ":" + pos.column +
-            " expected one of " + expectations + "\n\n" + point
-        );
+        header("Syntax error for " + src);
+        console.error();
+        var oopsy = stuff.result.oopsy;
+        var msg = "Line " + oopsy.line + ": " + oopsy.data;
+        console.error(chalk.bold.red(msg));
+        console.error();
+        console.error(oopsy.context);
     }
 }
 

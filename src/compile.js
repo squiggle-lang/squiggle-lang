@@ -1,6 +1,7 @@
 var convertSourceMap = require("convert-source-map");
 var escodegen = require("escodegen");
 var esmangle = require("esmangle");
+var uniq = require("lodash/array/uniq");
 var OopsyData = require("oopsy-data");
 
 var addLocMaker = require("./file-index-to-position-mapper");
@@ -45,7 +46,18 @@ function compile(code, filename, options) {
     }
     var result = parse(code);
     if (!result.status) {
-        return {parsed: false, result: result};
+        var expectations = uniq(result.expected);
+        var message = "expected one of " + expectations.join(", ");
+        var oopsyInput = {index: result.index, data: message};
+        var oopsies =
+            OopsyData.fromIndices(code, [oopsyInput], {color: options.color});
+        return {
+            parsed: false,
+            result: {
+                expectations: expectations,
+                oopsy: oopsies[0]
+            }
+        };
     }
     var squiggleAst = result.value;
     var addLocToNode = addLocMaker(code, filename);
