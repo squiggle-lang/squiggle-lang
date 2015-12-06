@@ -38,9 +38,6 @@ var nomnom = require("nomnom")
     });
 var argv = nomnom.parse();
 
-var arrow = require("./arrow");
-var stringToLines = require("./string-to-lines");
-var indexToPosition = require("./index-to-position");
 var normalizeCode = require("./normalize-code");
 var compile = require("./compile");
 var repl = require("./repl");
@@ -51,14 +48,9 @@ function error(message) {
 
 function header(message) {
     var n = message.length;
-    var underline = Array(n + 1).join("=")
+    var underline = Array(n + 1).join("=");
     console.error(chalk.bold.cyan(message));
     console.error(chalk.bold.cyan(underline));
-}
-
-function die(message) {
-    error("error: " + message);
-    process.exit(1);
 }
 
 function compileTo(src, dest) {
@@ -69,7 +61,7 @@ function compileTo(src, dest) {
     var opts = {
         embedSourceMaps: true,
         color: true
-    }
+    };
     var stuff = compile(txt, src, opts);
     if (stuff.parsed) {
         header("Warnings for " + src);
