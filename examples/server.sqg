@@ -35,9 +35,8 @@ def parsePath(s)
     s.slice(a, n - b).split("/")
 end;
 
-def dispatchGet(urlx)
-    #let q = url;
-    match parsePath("yup")
+def dispatchGet(url)
+    match parsePath(url)
     case ["factorial", x] then handlerFactorial(x)
     case ["echo", x] then x
     case _ then "I don't know what you want to GET"
