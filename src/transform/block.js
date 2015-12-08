@@ -2,6 +2,7 @@ var flatten = require("lodash/array/flatten");
 
 var es = require("../es");
 var LH = require("./let-helpers");
+var identsForBlock = require("../idents-for-block");
 
 function concat(a, b) {
     return a.concat(b);
@@ -9,17 +10,7 @@ function concat(a, b) {
 
 function Block(transform, node) {
     var tmpDecl = LH.esDeclare(null, LH.tmp, null);
-    var decls = node
-        .statements
-        .filter(function(node) {
-            return node.type === "Let";
-        })
-        .map(function(theLet) {
-            return LH
-                .bindingToDeclAndInit(transform, theLet.binding)
-                .identifiers;
-        })
-        .reduce(concat, [])
+    var decls = identsForBlock(transform, node)
         .map(function(identifier) {
             return LH.esDeclare(null, identifier, LH.undef);
         });

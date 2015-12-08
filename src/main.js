@@ -85,6 +85,7 @@ function compileTo(src, dest) {
         console.error(chalk.bold.red(msg));
         console.error();
         console.error(oopsy.context);
+        process.exit(1);
     }
 }
 

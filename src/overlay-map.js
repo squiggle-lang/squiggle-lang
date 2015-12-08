@@ -67,17 +67,17 @@ function OverlayMap(parent) {
         var innards = Object
             .keys(map)
             .map(function(k) {
-                return k + ": " + map[k];
+                return k + ": " + (map[k].used ? "T" : "F");
             })
             .join(", ");
         var s = "{" + innards + "}";
         if (parent) {
-            return parent.bareToString() + " => " + s;
+            return parent.bareToString() + " > " + s;
         }
         return s;
     };
     api.toString = function() {
-        return "OverlayMap[" + api.bareToString() + "]";
+        return "OM[" + api.bareToString() + "]";
     };
     api.parent = parent;
     return Object.freeze(api);

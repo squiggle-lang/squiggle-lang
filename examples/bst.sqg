@@ -1,41 +1,47 @@
-let {console} = global
+let {console} = global;
 
-def foldRight(xs, z, f) =
-    def g(acc, x, _, _) = f(x, acc)
-    in xs.slice().reverse().reduce(g, z)
+def foldRight(xs, z, f)
+    def g(acc, x, _, _)
+        f(x, acc)
+    end;
+    xs.slice().reverse().reduce(g, z)
+end;
 
-def Node(x, l, r) = {
-    type: "Node",
-    data: x,
-    left: l,
-    right: r
-}
+def Node(data, left, right)
+    {type: "Node", data, left, right}
+end;
 
-let Tip = {type: "Tip"}
+let Tip = {type: "Tip"};
 
-def leaf(x) =
+def leaf(x)
     Node(x, Tip, Tip)
+end;
 
 # This actually doesn't end up looking much better with pattern matching since
 # we need to make the "less-than" check on the data.
-def bstAdd(n, d) =
-    if n == Tip then
+def bstAdd(n, d)
+    if n.type == "Tip" then
         leaf(d)
-    else if d < n.data then
+    elseif d < n.data then
         Node(n.data, bstAdd(n.left, d), n.right)
     else
         Node(n.data, n.left, bstAdd(n.right, d))
+    end
+end;
 
-def inOrder(node) =
+def inOrder(node)
     match node
-    case {type: "Tip"} =>
+    case {type: "Tip"} then
         []
-    case {type: "Node", left, right, data} =>
+    case {type: "Node", left, right, data} then
         inOrder(left) ++ [data] ++ inOrder(right)
+    end
+end;
 
-def treeFolder(x, node) =
-    bstAdd(node, x)
+let root = foldRight(
+    [4, 2, 1, 3, 6, 5, 7],
+    Tip,
+    fn(x, node) bstAdd(node, x)
+);
 
-let root = foldRight([4, 2, 1, 3, 6, 5, 7], Tip, treeFolder)
-
-in console.log(inOrder(root))
+console.log(inOrder(root));

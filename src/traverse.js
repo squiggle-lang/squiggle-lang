@@ -57,9 +57,13 @@ function _walk(parents, obj, ast) {
             recur(node.expression);
         },
         If: function(node) {
-            recur(node.p);
-            recur(node.t);
-            recur(node.f);
+            recur(node.ifBranch);
+            node.elseIfs.forEach(recur);
+            recur(node.elseBranch);
+        },
+        ElseIf: function(node) {
+            recur(node.condition);
+            recur(node.branch);
         },
         Let: function(node) {
             recur(node.binding);
