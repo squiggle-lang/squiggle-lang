@@ -39,7 +39,7 @@ function findUnusedOrUndeclaredBindings(ast) {
                     line: ident.loc.line,
                     column: ident.loc.column,
                     used: false
-                })
+                });
             });
         } else if (t === 'AwaitExpr') {
             scopes = OverlayMap(scopes);

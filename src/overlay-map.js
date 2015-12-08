@@ -1,5 +1,3 @@
-var findLast = require('lodash/collection/findLast');
-
 // TODO: Make some of these methods pseudo-private with underscores or something
 // to keep the intended outside API clear.
 
