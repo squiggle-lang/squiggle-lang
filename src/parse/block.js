@@ -7,9 +7,14 @@ var iseq = H.iseq;
 
 module.exports = function(ps) {
     return iseq(ast.Block,
-        P.seq(
-            ps.Statement.skip(ps.Terminator).many(),
-            ps.Expr
-        )
+        ps.Statement.skip(ps.Terminator).atLeast(1).map(function(statements) {
+            var n = statements.length;
+            var i = n - 1;
+            var last = statements[i];
+            if (last.type !== "ExprStmt") {
+                return P.fail("blocks must end with an expression");
+            }
+            return [statements.slice(0, i), last];
+        })
     );
 };
