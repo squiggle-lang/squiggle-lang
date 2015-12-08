@@ -1,21 +1,21 @@
-let {console} = global;
+let {console} = global
 
 def foldRight(xs, z, f)
     def g(acc, x, _, _)
         f(x, acc)
-    end;
+    end
     xs.slice().reverse().reduce(g, z)
-end;
+end
 
 def Node(data, left, right)
     {type: "Branch", data, left, right}
-end;
+end
 
-let Tip = {type: "Tip"};
+let Tip = {type: "Tip"}
 
 def leaf(x)
     Node(x, Tip, Tip)
-end;
+end
 
 # This actually doesn't end up looking much better with pattern matching since
 # we need to make the "less-than" check on the data.
@@ -31,7 +31,7 @@ def bstAdd(n, d)
     else
         error "not a node"
     end
-end;
+end
 
 def inOrder(node)
     match node
@@ -40,12 +40,12 @@ def inOrder(node)
     case {type: "Branch", left, right, data} then
         inOrder(left) ++ [data] ++ inOrder(right)
     end
-end;
+end
 
 let root = foldRight(
     [4, 2, 1, 3, 6, 5, 7],
     Tip,
     fn(x, node) bstAdd(node, x)
-);
+)
 
-console.log(inOrder(root));
+console.log(inOrder(root))
