@@ -7,14 +7,14 @@ def foldRight(xs, z, f)
     xs.slice().reverse().reduce(g, z)
 end
 
-def Node(data, left, right)
+def Branch(data, left, right)
     {type: "Branch", data, left, right}
 end
 
 let Tip = {type: "Tip"}
 
 def leaf(x)
-    Node(x, Tip, Tip)
+    Branch(x, Tip, Tip)
 end
 
 # This actually doesn't end up looking much better with pattern matching since
@@ -24,9 +24,9 @@ def bstAdd(n, d)
         leaf(d)
     elseif n.type == "Branch" then
         if d < n.data then
-            Node(n.data, bstAdd(n.left, d), n.right)
+            Branch(n.data, bstAdd(n.left, d), n.right)
         else
-            Node(n.data, n.left, bstAdd(n.right, d))
+            Branch(n.data, n.left, bstAdd(n.right, d))
         end
     else
         error "not a node"
