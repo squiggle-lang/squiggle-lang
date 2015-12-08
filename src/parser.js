@@ -3,8 +3,11 @@ var parsimmonSalad = require("./parsimmon-salad");
 var ps = parsimmonSalad({
     _: require("./parse/whitespace"),
     Literal: require("./parse/literal"),
+    Statement: require("./parse/statement"),
     Expr: require("./parse/expr"),
     If: require("./parse/if"),
+    Terminator: require("./parse/terminator"),
+    Block: require("./parse/block"),
     Number: require("./parse/number"),
     String: require("./parse/string"),
     Parameters: require("./parse/parameters"),

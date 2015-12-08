@@ -6,14 +6,17 @@ var es = require("../es");
 var ph = require("./pattern-helpers");
 
 function esDeclare(loc, id, expr) {
+    if (!id) {
+        throw new Error("invalid id");
+    }
     return es.VariableDeclaration(loc, "var", [
-        es.VariableDeclarator(null, id, expr)
+        es.VariableDeclarator(null, id || "POOP", expr)
     ]);
 }
 
 function bindingToDeclAndInit(transform, b) {
-    if (b.identifier.type === "PatternSimple") {
-        if (b.identifier.identifier.data === "_") {
+    if (b.pattern.type === "PatternSimple") {
+        if (b.pattern.identifier.data === "_") {
             return unboundLetDeclAndInit(transform, b.value);
         } else {
             return simpleBindingToDeclAndInit(transform, b);
@@ -26,18 +29,18 @@ function bindingToDeclAndInit(transform, b) {
 function unboundLetDeclAndInit(transform, expr) {
     var stmt = es.ExpressionStatement(expr.loc, transform(expr));
     return {
-        identifier: null,
+        identifiers: [],
         initialization: stmt
     };
 }
 
 function simpleBindingToDeclAndInit(transform, b) {
-    var ident = transform(b.identifier.identifier);
+    var ident = transform(b.pattern.identifier);
     var expr = transform(b.value);
     var assignExpr = es.AssignmentExpression(null, "=", ident, expr);
     var assignStmt = es.ExpressionStatement(null, assignExpr);
     return {
-        identifier: ident,
+        identifiers: [ident],
         initialization: assignStmt
     };
 }
@@ -47,7 +50,7 @@ function complexBindingToDeclAndInit(transform, b) {
         esprima.parse("throw new Error('destructuring failure');").body;
     var value = transform(b.value);
     var root = tmp;
-    var pattern = b.identifier;
+    var pattern = b.pattern;
     var looksGood =
         ph.satisfiesPattern(transform, root, pattern);
     var assignTmp = es.ExpressionStatement(
@@ -75,7 +78,7 @@ function complexBindingToDeclAndInit(transform, b) {
             es.BlockStatement(null, throwUp)
         );
     return {
-        identifier: L.map(pairs, 0),
+        identifiers: L.map(pairs, 0),
         initialization: [assignTmp, theCheck]
     };
 }
@@ -83,33 +86,7 @@ function complexBindingToDeclAndInit(transform, b) {
 var undef = es.Identifier(null, "$undef");
 var tmp = es.Identifier(null, "$tmp");
 
-function Let(transform, node) {
-    var allBindings =
-        L.map(node.bindings, bindingToDeclAndInit.bind(null, transform));
-    var allIdents = L(allBindings)
-        .map("identifier")
-        .compact()
-        .flatten()
-        .value();
-    // TODO: Check for duplicates in allIdents.
-    var declarations = L.map(allIdents, function(id) {
-        return esDeclare(null, id, undef);
-    });
-    var initializations = L(allBindings)
-        .map("initialization")
-        .flatten()
-        .value();
-    var e = transform(node.expr);
-    var returnExpr = es.ReturnStatement(node.expr.loc, e);
-    var body = flatten([
-        esDeclare(null, tmp, null),
-        declarations,
-        initializations,
-        returnExpr
-    ]);
-    var block = es.BlockStatement(null, body);
-    var fn = es.FunctionExpression(null, null, [], block);
-    return es.CallExpression(null, fn, []);
-}
-
-module.exports = Let;
+exports.bindingToDeclAndInit = bindingToDeclAndInit;
+exports.tmp = tmp;
+exports.undef = undef;
+exports.esDeclare = esDeclare;

@@ -1,12 +1,17 @@
 var ast = require("../ast");
 var H = require("../parse-helpers");
+var _ = require("./whitespace")(null);
 
 var spaced = H.spaced;
 var word = H.word;
 
 module.exports = function(ps) {
-    var Script = ps.Expr.map(ast.Script.bind(null, null));
-    var Module = word("export").then(ps.Expr).map(ast.Module.bind(null, null));
+    var makeScript = ast.Script.bind(null, null);
+    var makeModule = ast.Module.bind(null, null);
+    var TopLevelStatement = _.then(ps.Statement).skip(_).skip(ps.Terminator);
+    var TopLevel = TopLevelStatement.many()
+    var Script = TopLevel.map(makeScript);
+    var Module = word("export").then(TopLevel).map(makeModule);
     return spaced(Module.or(Script));
 };
 

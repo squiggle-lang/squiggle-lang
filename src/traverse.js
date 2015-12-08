@@ -9,7 +9,7 @@ function _walk(parents, obj, ast) {
             recur(node.expr);
         },
         Script: function(node) {
-            recur(node.expr);
+            node.statements.forEach(recur);
         },
         GetProperty: function(node) {
             recur(node.obj);
@@ -27,6 +27,9 @@ function _walk(parents, obj, ast) {
         Call: function(node) {
             recur(node.f);
             node.args.forEach(recur);
+        },
+        ExprStmt: function(node) {
+            recur(node.expression);
         },
         Function: function(node) {
             recur(node.parameters);
@@ -50,7 +53,8 @@ function _walk(parents, obj, ast) {
             }
         },
         Block: function(node) {
-            node.expressions.forEach(recur);
+            node.statements.forEach(recur);
+            recur(node.expression);
         },
         If: function(node) {
             recur(node.p);
@@ -58,11 +62,10 @@ function _walk(parents, obj, ast) {
             recur(node.f);
         },
         Let: function(node) {
-            node.bindings.forEach(recur);
-            recur(node.expr);
+            recur(node.binding);
         },
         Binding: function(node) {
-            recur(node.identifier);
+            recur(node.pattern);
             recur(node.value);
         },
         Array: function(node) {

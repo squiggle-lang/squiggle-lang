@@ -11,7 +11,8 @@ module.exports = function(ps) {
     return iseq(ast.If,
         P.seq(
             word("if").then(ps.Expr).skip(_),
-            word("then").then(ps.Expr).skip(_),
-            word("else").then(ps.Expr)
+            word("then").then(ps.Block).skip(_),
+            word("else").then(ps.Block).skip(_)
+                .skip(P.string("end"))
         ));
 };
