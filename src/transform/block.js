@@ -44,7 +44,7 @@ function Block(transform, node) {
             [tmpDecl];
     var everything = flatten([tmp, decls, statements, [retExpr]]);
     var block = es.BlockStatement(null, everything);
-    var fn = es.FunctionExpression(null, null, [], block)
+    var fn = es.FunctionExpression(null, null, [], block);
     return es.CallExpression(null, fn, []);
 }
 

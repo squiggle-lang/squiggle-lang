@@ -1,5 +1,4 @@
 var esprima = require("esprima");
-var flatten = require("lodash/array/flatten");
 var L = require("lodash");
 
 var es = require("../es");

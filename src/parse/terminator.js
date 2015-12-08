@@ -6,4 +6,4 @@ var spaced = H.spaced;
 
 module.exports = function(ps) {
     return spaced(P.string(";"));
-}
+};
