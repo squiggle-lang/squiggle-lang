@@ -8,7 +8,7 @@ def foldRight(xs, z, f)
 end;
 
 def Node(data, left, right)
-    {type: "Node", data, left, right}
+    {type: "Branch", data, left, right}
 end;
 
 let Tip = {type: "Tip"};
@@ -22,10 +22,14 @@ end;
 def bstAdd(n, d)
     if n.type == "Tip" then
         leaf(d)
-    elseif d < n.data then
-        Node(n.data, bstAdd(n.left, d), n.right)
+    elseif n.type == "Branch" then
+        if d < n.data then
+            Node(n.data, bstAdd(n.left, d), n.right)
+        else
+            Node(n.data, n.left, bstAdd(n.right, d))
+        end
     else
-        Node(n.data, n.left, bstAdd(n.right, d))
+        error "not a node"
     end
 end;
 
@@ -33,7 +37,7 @@ def inOrder(node)
     match node
     case {type: "Tip"} then
         []
-    case {type: "Node", left, right, data} then
+    case {type: "Branch", left, right, data} then
         inOrder(left) ++ [data] ++ inOrder(right)
     end
 end;
