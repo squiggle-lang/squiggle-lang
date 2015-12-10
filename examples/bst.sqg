@@ -17,6 +17,9 @@ def leaf(x)
     Branch(x, Tip, Tip)
 end
 
+let x1 = "Welcome to BST-land!"
+console.log(x1)
+
 # This actually doesn't end up looking much better with pattern matching since
 # we need to make the "less-than" check on the data.
 def bstAdd(n, d)

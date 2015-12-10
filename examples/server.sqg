@@ -1,39 +1,39 @@
-let http = require "http";
-let {Number, String, console} = global;
+let http = require "http"
+let {Number, String, console} = global
 
-let port = 1337;
-let address = "127.0.0.1";
-let url = "http://" .. address .. ":" .. port .. "/";
+let port = 1337
+let address = "127.0.0.1"
+let url = "http://" .. address .. ":" .. port .. "/"
 
 def factorial(n)
     match n
     case 0 then 1
     case n then n * factorial(n - 1)
     end
-end;
+end
 
 def factorial2(n)
     if n <= 1
     then 1
     else n * factorial2(n - 1)
     end
-end;
+end
 
 def handlerFactorial(x)
     String(factorial(Number(x)))
-end;
+end
 
 def parsePath(s)
     def mod(s, i)
         Number(s.charAt(i) == "/")
-    end;
+    end
 
-    let n = s.length;
-    let a = mod(s, 0);
-    let b = mod(s, n - 1);
+    let n = s.length
+    let a = mod(s, 0)
+    let b = mod(s, n - 1)
 
     s.slice(a, n - b).split("/")
-end;
+end
 
 def dispatchGet(url)
     match parsePath(url)
@@ -41,7 +41,7 @@ def dispatchGet(url)
     case ["echo", x] then x
     case _ then "I don't know what you want to GET"
     end
-end;
+end
 
 def dispatch(method, url)
     match method
@@ -51,13 +51,13 @@ def dispatch(method, url)
     case "OPTIONS" then "What OPTIONS are you looking for?"
     case _ then "ERROR"
     end
-end;
+end
 
 def handler(req, res)
-    let {method, url} = req;
+    let {method, url} = req
     res.end(dispatch(method, url) .. "\n")
-end;
+end
 
-http.createServer(handler).listen(port, address);
-console.log("Server running at " .. url);
+http.createServer(handler).listen(port, address)
+console.log("Server running at " .. url)
 
