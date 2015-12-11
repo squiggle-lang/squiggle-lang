@@ -36,8 +36,8 @@ function Function_(transform, node) {
     var bindSlurpy = slurpy ?
         [declareAssign(transform(slurpy), getSlurpy)] :
         [];
-    var bodyExpr = transform(node.body);
-    var returnExpr = es.ReturnStatement(null, bodyExpr);
+    var expr = transform(node.body);
+    var ret = es.ReturnStatement(expr.loc, expr);
     var op = slurpy ? "<" : "!==";
     var arityCheck = esprima.parse(
         "if (arguments.length " + op + " " + n + ") { " +
@@ -56,7 +56,7 @@ function Function_(transform, node) {
         arityCheck,
         bindContext,
         bindSlurpy,
-        returnExpr
+        ret
     ]);
     var block = es.BlockStatement(null, body);
     // React is a jerk and wants to mutate function objects a lot. Maybe one

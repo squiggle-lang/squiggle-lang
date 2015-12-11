@@ -1,10 +1,15 @@
+var es = require("../es");
+var ast = require("../ast");
 var helpersFor = require("../helpers-for");
 var fileWrapper = require("../file-wrapper");
 
 function Script(transform, node) {
-    var value = transform(node.expr);
-    var predef = helpersFor(value);
-    var body = predef.concat([value]);
+    var ret = ast.Undefined(null);
+    var block = ast.Block(null, node.statements, ret);
+    var expr = transform(block);
+    var predef = helpersFor(expr);
+    var stmt = es.ExpressionStatement(null, expr);
+    var body = predef.concat(stmt);
     return fileWrapper(body);
 }
 

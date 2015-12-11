@@ -1,5 +1,6 @@
 var P = require("parsimmon");
 
+var _ = require("./whitespace")(null);
 var ast = require("../ast");
 var H = require("../parse-helpers");
 
@@ -26,7 +27,7 @@ function combine(index, expr, others) {
 }
 
 module.exports = function(ps) {
-    var DotProp = word(".").then(ps.IdentifierAsString);
+    var DotProp = _.then(word(".")).then(ps.IdentifierAsString);
     var BracketProp = wrap("[", ps.Expr, "]");
     var Property = DotProp.or(BracketProp);
     /// I think so far I'm feeling ok about `foo::bar` as a syntax. I think to
@@ -35,13 +36,15 @@ module.exports = function(ps) {
     /// if I end up implementing that.
     var BoundMethod = word("::").then(ps.IdentifierAsString);
     var ArgList = wrap("(", list0(ps.Separator, ps.Expr), ")");
+    var CallGetOrBind =
+        P.alt(
+            ione(almostSpready(ast.Call), ArgList),
+            ione(almostSpready(ast.GetProperty), Property),
+            ione(almostSpready(ast.GetMethod), BoundMethod)
+        );
     return iseq(combine,
         P.seq(
             ps.Literal,
-            P.alt(
-                ione(almostSpready(ast.Call), ArgList),
-                ione(almostSpready(ast.GetProperty), Property),
-                ione(almostSpready(ast.GetMethod), BoundMethod)
-            ).many()
+            CallGetOrBind.many()
         ));
 };

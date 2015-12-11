@@ -8,7 +8,7 @@ var indc = H.indc;
 var word = H.word;
 var wrap = H.wrap;
 var iseq = H.iseq;
-var list1 = H.list1;
+var ione = H.ione;
 
 function makeDefBinding(index, name, params, body) {
     var idx = indc(name, body);
@@ -29,15 +29,12 @@ module.exports = function(ps) {
             P.seq(
                 word("def").then(ps.Identifier).skip(_),
                 wrap("(", ps.Parameters, ")").skip(_),
-                word("=").then(ps.Expr)
+                ps.Block.skip(_).skip(P.string("end"))
             ));
 
-    var Binding = LetBinding.or(DefBinding);
-    var Bindings = list1(_, Binding);
-
-    return iseq(ast.Let,
-        P.seq(
-            Bindings,
-            _.then(word("in")).then(ps.Expr)
+    return ione(ast.Let,
+        P.alt(
+            LetBinding,
+            DefBinding
         ));
 };

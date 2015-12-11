@@ -3,49 +3,61 @@ let {Number, String, console} = global
 
 let port = 1337
 let address = "127.0.0.1"
-let url = "http://" ++ address ++ ":" ++ String(port) ++ "/"
+let url = "http://" .. address .. ":" .. port .. "/"
 
-def factorial(n) =
+def factorial(n)
     match n
-    case 0 => 1
-    case n => n * factorial(n - 1)
+    case 0 then 1
+    case n then n * factorial(n - 1)
+    end
+end
 
-def factorial2(n) =
+def factorial2(n)
     if n <= 1
     then 1
     else n * factorial2(n - 1)
+    end
+end
 
-def handlerFactorial(x) =
+def handlerFactorial(x)
     String(factorial(Number(x)))
+end
 
-def parsePath(s) =
-    def mod(s, i) =
+def parsePath(s)
+    def mod(s, i)
         Number(s.charAt(i) == "/")
+    end
+
     let n = s.length
     let a = mod(s, 0)
     let b = mod(s, n - 1)
-    in s.slice(a, n - b).split("/")
 
-def dispatchGet(url) =
+    s.slice(a, n - b).split("/")
+end
+
+def dispatchGet(url)
     match parsePath(url)
-    case ["factorial", x] => handlerFactorial(x)
-    case ["echo", x] => x
-    case _ => "I don't know what you want to GET"
+    case ["factorial", x] then handlerFactorial(x)
+    case ["echo", x] then x
+    case _ then "I don't know what you want to GET"
+    end
+end
 
-def dispatch(method, url) =
+def dispatch(method, url)
     match method
-    case "GET" => dispatchGet(url)
-    case "POST" => "Looks like you POST-ed me!"
-    case "DELETE" => "Not interested in DELETE-ing!"
-    case "OPTIONS" => "What OPTIONS are you looking for?"
-    case _ => "ERROR"
+    case "GET" then dispatchGet(url)
+    case "POST" then "Looks like you POST-ed me!"
+    case "DELETE" then "Not interested in DELETE-ing!"
+    case "OPTIONS" then "What OPTIONS are you looking for?"
+    case _ then "ERROR"
+    end
+end
 
-def handler(req, res) =
+def handler(req, res)
     let {method, url} = req
-    in res.end(dispatch(method, url) ++ "\n")
+    res.end(dispatch(method, url) .. "\n")
+end
 
+http.createServer(handler).listen(port, address)
+console.log("Server running at " .. url)
 
-let _ = http.createServer(handler).listen(port, address)
-let _ = console.log("Server running at " ++ url)
-
-in undefined

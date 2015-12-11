@@ -47,8 +47,9 @@ function compile(code, filename, options) {
     var result = parse(code);
     if (!result.status) {
         var expectations = uniq(result.expected);
-        var message = "expected one of " + expectations.join(", ");
-        var oopsyInput = {index: result.index, data: message};
+        var data = "expected one of " + expectations.join(", ");
+        var index = Math.min(result.index, code.length - 1);
+        var oopsyInput = {index: index, data: data};
         var oopsies =
             OopsyData.fromIndices(code, [oopsyInput], {color: options.color});
         return {

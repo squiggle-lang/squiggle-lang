@@ -1,25 +1,43 @@
-export
 let fs = require "fs"
 let {console, Date} = global
-let _ = 1
+
+1
+
 let foo = fn foo(x) x
-def bar(x, y) = x + y
-let _ = [1 * 2 + 3 / 4 - 5] ++ [{a: 1} ~ {b: 2}]
-let _ = fn() true and false or not true or null or undefined or NaN or Infinity
-let _ = [[], [1, 2], {foo, bar, "baz": "bun"}]
-let _ = fn() console::log.bind(null, 4)().toString["toString"]()
-let _ = 1 >= 2 and 2 < 3 and 3 < 3 and 4 <= 4 and 5 == 5 and 6 != 6
+
+def bar(x, y)
+    x + y
+end
+
+[1 * 2 + 3 / 4 - 5] ++ [{a: 1} ~ {b: 2}]
+
+fn() true and false or not true or null or undefined or NaN or Infinity
+
+[[], [1, 2], {foo, bar, "baz": "bun"}]
+
+fn() console::log.bind(null, 4)().toString["toString"]()
+
+1 >= 2 and 2 < 3 and 3 < 3 and 4 <= 4 and 5 == 5 and 6 != 6
+
 let x = 4
-let _ = -x
-let _ = if true then 1 else 2
-let _ =
-    match global
-    case {parseInt, Number: num, "parseFloat": pf} =>
-        [parseInt, num, pf]
-    case _ =>
-        3
-let _ = fn() throw global.Error("nope")
-let _ = fn() error "oops"
-let _ = try (error "no way")
-let _ = [fs, foo, bar]
-in console.log(Date())
+
+(-x)
+
+if true
+then 1
+else 2
+end
+
+match global
+case {parseInt, Number: num, "parseFloat": pf} then
+    [parseInt, num, pf]
+case _ then
+    3
+end
+
+fn() throw global.Error("nope")
+fn() error "oops"
+try (error "no way")
+[fs, foo, bar]
+
+console.log(Date())

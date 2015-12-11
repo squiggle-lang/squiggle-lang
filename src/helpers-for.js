@@ -51,6 +51,9 @@ function allDepsFor(node) {
 }
 
 function helpersFor(node) {
+    if (typeof node === "string") {
+        throw new Error("NO HELPERS FOR STRING");
+    }
     return L(allDepsFor(node))
         .map(function(d) { return predef[d].code; })
         .map(function(code) { return esprima.parse(code); })

@@ -64,8 +64,10 @@ function compileTo(src, dest) {
     };
     var stuff = compile(txt, src, opts);
     if (stuff.parsed) {
-        header("Warnings for " + src);
-        console.error();
+        if (stuff.warnings.length > 0) {
+            header("Warnings for " + src);
+            console.error();
+        }
         stuff.warnings.forEach(function(m, i, a) {
             var msg = "Line " + m.line + ": " + m.data;
             error(msg);
@@ -83,6 +85,7 @@ function compileTo(src, dest) {
         console.error(chalk.bold.red(msg));
         console.error();
         console.error(oopsy.context);
+        process.exit(1);
     }
 }
 

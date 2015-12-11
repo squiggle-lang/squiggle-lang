@@ -1,4 +1,6 @@
 var flatten = require("lodash/array/flatten");
+
+var identsForBlock = require("./idents-for-block");
 var traverse = require("./traverse");
 var OverlayMap = require("./overlay-map");
 
@@ -19,18 +21,30 @@ function isIdentifierUsage(node, parent) {
     );
 }
 
+function fakeTransform(x) {
+    return x;
+}
+
 function findUnusedOrUndeclaredBindings(ast) {
     var messages = [];
     var scopes = OverlayMap(null);
     function enter(node, parent) {
         var t = node.type;
         var start;
-        if (t === 'Let' || t === 'MatchClause') {
+        if (t === 'Block' || t === 'Script') {
             scopes = OverlayMap(scopes);
+            start = null;
+            identsForBlock(fakeTransform, node).forEach(function(ident) {
+                scopes.set(ident.data, {
+                    line: ident.loc.line,
+                    column: ident.loc.column,
+                    used: false
+                });
+            });
         } else if (t === 'AwaitExpr') {
             scopes = OverlayMap(scopes);
             start = parent.binding.loc.start;
-            scopes.setBest(parent.binding.data, {
+            scopes.set(parent.binding.data, {
                 line: start.line,
                 column: start.column,
                 used: false
@@ -43,7 +57,7 @@ function findUnusedOrUndeclaredBindings(ast) {
                 node.parameters.slurpy || []
             ]).forEach(function(b) {
                 start = b.identifier.loc.start;
-                scopes.setBest(b.identifier.data, {
+                scopes.set(b.identifier.data, {
                     line: start.line,
                     column: start.column,
                     used: false
@@ -51,7 +65,7 @@ function findUnusedOrUndeclaredBindings(ast) {
             });
         } else if (t === 'PatternSimple') {
             start = node.identifier.loc.start;
-            scopes.setBest(node.identifier.data, {
+            scopes.set(node.identifier.data, {
                 line: start.line,
                 column: start.column,
                 used: false
@@ -61,7 +75,11 @@ function findUnusedOrUndeclaredBindings(ast) {
             // values, not their names.
             //
             // Example:
-            // let x = 1 def f(z) = 2 in y
+            // let x = 1
+            // def f(z)
+            //     2
+            // end
+            // y + 3
             //
             // `x` and `z` are being used for their names, and `y` is being
             // used for its value.
@@ -80,9 +98,9 @@ function findUnusedOrUndeclaredBindings(ast) {
     function exit(node, parent) {
         var t = node.type;
         var ok = (
-            t === 'Let' ||
+            t === 'Block' ||
+            t === 'Script' ||
             t === 'Function' ||
-            t === 'MatchClause' ||
             t === 'AwaitExpr'
         );
         if (ok) {

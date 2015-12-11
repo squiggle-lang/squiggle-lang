@@ -1,4 +1,3 @@
-// var inspect = require("../inspect");
 var ast = require("../ast");
 var es = require("../es");
 
@@ -17,16 +16,29 @@ function If(transform, node) {
     return es.CallExpression(null, fn, []);
 }
 
+function blockRet(transform, expr) {
+    return es.BlockStatement(null, [
+        es.ReturnStatement(
+            expr.loc,
+            transform(expr)
+        )
+    ]);
+}
+
 function ifHelper(transform, node) {
-    if (node.type === "If") {
-        var p = transform(bool(node.p));
-        var t = ifHelper(transform, node.t);
-        var f = ifHelper(transform, node.f);
-        return es.IfStatement(node.loc, p, t, f);
-    } else {
-        var return_ = es.ReturnStatement(node.loc, transform(node));
-        return es.BlockStatement(null, [return_]);
-    }
+    var condition = transform(bool(node.condition));
+    var ifBranch = blockRet(transform, node.ifBranch);
+    var finalElseBranch = blockRet(transform, node.elseBranch);
+    var elseBranch =
+        node.elseIfs.reduce(function(branch, elseIf) {
+            return es.IfStatement(
+                elseIf.loc,
+                transform(bool(elseIf.condition)),
+                blockRet(transform, elseIf.branch),
+                branch
+            );
+        }, finalElseBranch);
+    return es.IfStatement(node.loc, condition, ifBranch, elseBranch);
 }
 
 module.exports = If;
