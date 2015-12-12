@@ -1,0 +1,42 @@
+let L = require "lodash"
+let {Number, console} = global
+
+let text = "2 3 4 * 3 - +"
+
+# You have to explicitly ignore arguments
+# with an underscore in Squiggle.
+def tokenize(text)
+    text.split(" ").map(fn(x, _, _) tokenValue(x))
+end
+
+def tokenValue(token)
+    match token
+    case "+" then fn(a, b) a + b
+    case "-" then fn(a, b) a - b
+    case "*" then fn(a, b) a * b
+    case "/" then fn(a, b) a / b
+    case num then Number(num)
+    end
+end
+
+def evaluateWithStack(stack, values)
+    match values
+    case [] then
+        stack[0]
+    case [x, ...xs] then
+        let newStack =
+            if L.isFunction(x) then
+                let [first, second, ...rest] = stack
+                [x(first, second)] ++ rest
+            else
+                [x] ++ stack
+            end
+        evaluateWithStack(newStack, xs)
+    end
+end
+
+def evaluate(text)
+    evaluateWithStack([], tokenize(text))
+end
+
+console.log(evaluate(text))
