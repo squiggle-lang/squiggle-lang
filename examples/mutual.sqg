@@ -1,0 +1,23 @@
+let {console} = global
+
+def is_even(n)
+    match n
+    case 0 then true
+    case _ then is_odd(n - 1)
+    end
+end
+
+def is_odd(n)
+    match n
+    case 0 then false
+    case _ then is_even(n - 1)
+    end
+end
+
+def analyze(n)
+    console.log("is_even(" .. n .. ") = " .. is_even(n))
+    console.log("is_odd(" .. n .. ") = " .. is_odd(n))
+end
+
+[0, 1, 2, 3, 4, 5, 6, 7]
+    .forEach(fn(n, _, _) analyze(n))

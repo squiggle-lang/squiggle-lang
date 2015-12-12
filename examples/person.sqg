@@ -1,0 +1,18 @@
+let {Object, console} = global
+
+def getName(@this, ...args)
+    console.log("getName() called with these args: " .. args.join(", "))
+    this.name
+end
+
+let proto = {getName}
+
+def create(name)
+    Object.create(proto) ~ {name}
+end
+
+let brian = create("Brian")
+
+console.log("Welcome to " .. brian.getName() .. " Land!")
+console.log("The object:", brian)
+console.log("The prototype:", Object.getPrototypeOf(brian))

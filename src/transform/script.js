@@ -4,7 +4,7 @@ var helpersFor = require("../helpers-for");
 var fileWrapper = require("../file-wrapper");
 
 function Script(transform, node) {
-    var ret = ast.Undefined(null);
+    var ret = ast.ExprStmt(null, ast.Undefined(null));
     var block = ast.Block(null, node.statements, ret);
     var expr = transform(block);
     var predef = helpersFor(expr);

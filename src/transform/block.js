@@ -27,13 +27,13 @@ function Block(transform, node) {
             }
         })
         .reduce(concat, []);
-    var expr = transform(node.expression);
-    var retExpr = es.ReturnStatement(node.expression.loc, expr);
+    var expr = transform(node.expression.expression);
+    var retStmt = es.ReturnStatement(node.expression.loc, expr);
     var tmp =
         decls.length === 0 ?
             [] :
             [tmpDecl];
-    var everything = flatten([tmp, decls, statements, [retExpr]]);
+    var everything = flatten([tmp, decls, statements, [retStmt]]);
     var block = es.BlockStatement(null, everything);
     var fn = es.FunctionExpression(null, null, [], block);
     return es.CallExpression(null, fn, []);
