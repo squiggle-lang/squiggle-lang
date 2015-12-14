@@ -6,10 +6,8 @@ function _walk(parents, obj, ast) {
     var recur = _walk.bind(null, parents, obj);
     var handlers = {
         Module: function(node) {
-            recur(node.expr);
-        },
-        Script: function(node) {
             node.statements.forEach(recur);
+            node.exports.forEach(recur);
         },
         GetProperty: function(node) {
             recur(node.obj);

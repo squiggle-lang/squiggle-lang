@@ -3,8 +3,7 @@ var mapValues = require("lodash/object/mapValues");
 var nm = require('./node-maker');
 
 var almostAst = {
-    Module:      ["expr"],
-    Script:      ["statements"],
+    Module:      ["statements", "exports"],
     Try:         ["expr"],
     Require:     ["expr"],
     Not:         ["expr"],
