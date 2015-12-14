@@ -1,18 +1,23 @@
+var P = require("parsimmon");
+
 var ast = require("../ast");
 var H = require("../parse-helpers");
 var _ = require("./whitespace")(null);
 
 var spaced = H.spaced;
-// var word = H.word;
+var word = H.word;
+var iseq = H.iseq;
 
 module.exports = function(ps) {
-    var makeScript = ast.Script.bind(null, null);
-    // var makeModule = ast.Module.bind(null, null);
     var TopLevelStatement = _.then(ps.Statement).skip(ps.Terminator);
     var TopLevel = TopLevelStatement.many();
-    var Script = TopLevel.map(makeScript);
-    // var Module = word("export").then(TopLevel).map(makeModule);
-    // return spaced(Module.or(Script));
-    return spaced(Script);
+    var Export = _.then(word("export")).then(ps.Identifier).skip(ps.Terminator);
+    var Exports = Export.many();
+    var Module = iseq(ast.Module,
+        P.seq(
+            TopLevel,
+            Exports
+        ));
+    return spaced(Module);
 };
 
