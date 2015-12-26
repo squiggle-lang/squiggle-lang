@@ -22,14 +22,14 @@ function Module(transform, node) {
     var blockJs = transform(block);
     var predef = helpersFor(blockJs);
     var theExports = makeExportsFor(transform, node.exports);
-    // BEGIN HACK: Add the exports into the black
+    // BEGIN HACK: Add the exports into the block
     var theBody = blockJs.callee.body.body;
     theBody.pop();
     theExports.forEach(function(exp) {
         theBody.push(exp);
     });
     // END HACK
-    var body = predef.concat([blockJs]);
+    var body = predef.concat([es.ExpressionStatement(null, blockJs)]);
     return fileWrapper(body);
 }
 
