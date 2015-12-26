@@ -41,7 +41,7 @@ function optimizeNestedIifes(node) {
         get(node, "argument.callee.body.body[0].type") === "ReturnStatement";
     if (ok) {
         // console.error("ITS HAPPENING", JSON.stringify(node, null, 2));
-        var kidNode = node.argument.callee.body.body[0]
+        var kidNode = node.argument.callee.body.body[0];
         estraverse.replace(kidNode, {enter: optimizeNestedIifes});
         return kidNode;
     }
