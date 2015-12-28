@@ -1,3 +1,5 @@
+"use strict";
+
 var P = require("parsimmon");
 
 var _ = require("./whitespace")(null);

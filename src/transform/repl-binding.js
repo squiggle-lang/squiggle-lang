@@ -1,3 +1,5 @@
+"use strict";
+
 var fileWrapper = require("../file-wrapper");
 var es = require("../es");
 

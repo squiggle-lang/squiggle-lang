@@ -1,3 +1,5 @@
+"use strict";
+
 function indexToPosition(text, index) {
     if (typeof index !== "number") {
         throw new Error("index must be a number");

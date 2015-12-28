@@ -1,3 +1,5 @@
+"use strict";
+
 var P = require("parsimmon");
 
 var ast = require("../ast");

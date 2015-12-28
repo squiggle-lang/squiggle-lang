@@ -1,3 +1,5 @@
+"use strict";
+
 var estraverse = require("estraverse");
 var matches = require("lodash/utility/matches");
 var get = require("lodash/object/get");

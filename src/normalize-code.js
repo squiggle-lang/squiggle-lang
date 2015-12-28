@@ -1,3 +1,5 @@
+"use strict";
+
 function normalizeCode(code) {
     return code
         // Replace Windows CRLF with just LF

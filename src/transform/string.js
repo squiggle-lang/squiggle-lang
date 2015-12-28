@@ -1,3 +1,5 @@
+"use strict";
+
 var es = require("../es");
 
 function String_(transform, node) {

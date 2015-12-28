@@ -1,3 +1,5 @@
+"use strict";
+
 var last = require('lodash/array/last');
 
 function _walk(parents, obj, ast) {

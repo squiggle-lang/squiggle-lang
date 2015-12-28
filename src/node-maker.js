@@ -1,3 +1,5 @@
+"use strict";
+
 function f(prefix, type, props) {
     return function() {
         var obj = {};

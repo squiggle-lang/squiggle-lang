@@ -1,3 +1,5 @@
+"use strict";
+
 var P = require("parsimmon");
 
 module.exports = function(ps) {

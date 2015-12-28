@@ -1,3 +1,5 @@
+"use strict";
+
 var esprima = require("esprima");
 var L = require("lodash");
 

@@ -1,3 +1,5 @@
+"use strict";
+
 var estraverse = require("estraverse");
 var esprima = require("esprima");
 var L = require("lodash");

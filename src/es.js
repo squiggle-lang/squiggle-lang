@@ -1,3 +1,5 @@
+"use strict";
+
 var mapValues = require("lodash/object/mapValues");
 
 var nm = require('./node-maker');

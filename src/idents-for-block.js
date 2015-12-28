@@ -1,3 +1,5 @@
+"use strict";
+
 var LH = require("./transform/let-helpers");
 
 function concat(a, b) {

@@ -1,3 +1,5 @@
+"use strict";
+
 var ast = require("../ast");
 
 function GetProperty(transform, node) {

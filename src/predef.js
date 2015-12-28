@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
     add: {
         dependencies: ['number'],

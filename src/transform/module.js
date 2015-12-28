@@ -1,3 +1,5 @@
+"use strict";
+
 var helpersFor = require("../helpers-for");
 var fileWrapper = require("../file-wrapper");
 var ast = require("../ast");

@@ -1,3 +1,5 @@
+"use strict";
+
 var isObject = require("lodash/lang/isObject");
 
 var jsonify = JSON.stringify;

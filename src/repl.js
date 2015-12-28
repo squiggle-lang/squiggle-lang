@@ -1,3 +1,5 @@
+"use strict";
+
 var uniq = require("lodash/array/uniq");
 var readline = require("readline");
 var chalk = require("chalk");

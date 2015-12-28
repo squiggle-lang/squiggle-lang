@@ -1,3 +1,5 @@
+"use strict";
+
 var parsimmonSalad = require("./parsimmon-salad");
 
 var ps = parsimmonSalad({

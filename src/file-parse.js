@@ -1,3 +1,5 @@
+"use strict";
+
 var parser = require("./parser");
 
 function fileParse(text) {

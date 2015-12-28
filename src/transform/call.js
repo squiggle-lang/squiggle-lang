@@ -1,3 +1,5 @@
+"use strict";
+
 var es = require("../es");
 var ast = require("../ast");
 

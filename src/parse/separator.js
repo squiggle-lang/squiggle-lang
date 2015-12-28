@@ -1,3 +1,5 @@
+"use strict";
+
 var P = require("parsimmon");
 
 var H = require("../parse-helpers");

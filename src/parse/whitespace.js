@@ -1,3 +1,5 @@
+"use strict";
+
 var P = require("parsimmon");
 
 var Comment = require("./comment")(null);

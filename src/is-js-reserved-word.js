@@ -1,3 +1,5 @@
+"use strict";
+
 var words = require("./js-reserved-words");
 
 var regex = new RegExp("^(?:" + words.join("|") + ")$");

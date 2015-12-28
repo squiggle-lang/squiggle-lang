@@ -1,3 +1,5 @@
+"use strict";
+
 var es = require("../es");
 
 function Global(transform, node) {

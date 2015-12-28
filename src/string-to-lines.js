@@ -1,3 +1,5 @@
+"use strict";
+
 function stringToLines(text) {
     var lines = text.split(/\r?\n/);
     // Files should end with newlines, but not everyone obeys this convention,

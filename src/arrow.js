@@ -1,3 +1,5 @@
+"use strict";
+
 // Draws an arrow using text that is `n` characters long. It points above.
 // Example:
 //

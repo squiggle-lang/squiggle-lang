@@ -1,3 +1,5 @@
+"use strict";
+
 var flatten = require("lodash/array/flatten");
 var esprima = require("esprima");
 

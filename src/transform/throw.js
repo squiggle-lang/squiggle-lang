@@ -1,3 +1,5 @@
+"use strict";
+
 var throwHelper = require("../throw-helper");
 
 function Throw(transform, node) {

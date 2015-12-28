@@ -1,3 +1,5 @@
+"use strict";
+
 var convertSourceMap = require("convert-source-map");
 var escodegen = require("escodegen");
 var esmangle = require("esmangle");

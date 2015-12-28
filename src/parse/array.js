@@ -1,3 +1,5 @@
+"use strict";
+
 var H = require("../parse-helpers");
 var ast = require("../ast");
 

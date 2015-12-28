@@ -1,3 +1,5 @@
+"use strict";
+
 var es = require("../es");
 
 function Number_(transform, node) {

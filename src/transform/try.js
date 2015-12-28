@@ -1,3 +1,5 @@
+"use strict";
+
 var esprima = require("esprima");
 
 var es = require("../es");

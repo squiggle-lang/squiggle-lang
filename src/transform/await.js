@@ -1,3 +1,5 @@
+"use strict";
+
 var es = require("../es");
 
 function Await(transform, node) {

@@ -1,3 +1,5 @@
+"use strict";
+
 var H = require("../parse-helpers");
 var wrap = H.wrap;
 
