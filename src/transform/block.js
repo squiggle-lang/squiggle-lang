@@ -16,10 +16,15 @@ function Block(transform, node) {
         .map(function(identifier) {
             return LH.esDeclare(null, identifier, LH.undef);
         });
+    var needsTmpVar = false;
     var statements = node
         .statements
         .map(function(node) {
             if (node.type === "Let") {
+                // HACK: PatternSimple gets compiled to not use $tmp
+                if (node.binding.pattern.type !== "PatternSimple") {
+                    needsTmpVar = true;
+                }
                 // TODO: Don't call LH.bindingToDeclAndInit *again*
                 return LH
                     .bindingToDeclAndInit(transform, node.binding)
@@ -31,10 +36,7 @@ function Block(transform, node) {
         .reduce(concat, []);
     var expr = transform(node.expression.expression);
     var retStmt = es.ReturnStatement(node.expression.loc, expr);
-    var tmp =
-        decls.length === 0 ?
-            [] :
-            [tmpDecl];
+    var tmp = needsTmpVar ? [tmpDecl] : [];
     var everything = flatten([tmp, decls, statements, [retStmt]]);
     var block = es.BlockStatement(null, everything);
     var fn = es.FunctionExpression(null, null, [], block);

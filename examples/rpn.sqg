@@ -5,7 +5,7 @@ let text = "2 3 4 * 3 - +"
 # You have to explicitly ignore arguments
 # with an underscore in Squiggle.
 def tokenize(text)
-    text.split(" ").map(fn(x, _, _) tokenValue(x))
+    text.split(" ").map(fn(x, ...) tokenValue(x))
 end
 
 def tokenValue(token)
@@ -24,8 +24,8 @@ def evaluateWithStack(stack, values)
         evaluateWithStack([f(first, second)] ++ rest, xs)
     case [stack, [["number", n], ...xs]] then
         evaluateWithStack([n] ++ stack, xs)
-    case [stack, _] then
-        stack[0]
+    case [[result, ...], _] then
+        result
     end
 end
 

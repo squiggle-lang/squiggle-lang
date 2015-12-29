@@ -22,7 +22,11 @@ module.exports = function(ps) {
     // The third piece (...xs) is the slurpy.
     // All pieces are optional.
 
-    var ParamSlurpy = word("...").then(Parameter);
+    var BareSlurp =
+        ione(ast.Parameter,
+            ione(ast.Identifier, P.of("_")));
+
+    var ParamSlurpy = word("...").then(Parameter.or(BareSlurp));
     var ParamContext = P.string("@").then(Parameter);
     var ParamsPositional = list0(ps.Separator, Parameter);
 

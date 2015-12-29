@@ -11,7 +11,7 @@ function esDeclare(loc, id, expr) {
         throw new Error("invalid id");
     }
     return es.VariableDeclaration(loc, "var", [
-        es.VariableDeclarator(null, id || "POOP", expr)
+        es.VariableDeclarator(null, id, expr)
     ]);
 }
 

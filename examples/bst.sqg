@@ -1,7 +1,7 @@
 let {console} = global
 
 def foldRight(xs, z, f)
-    def g(acc, x, _, _)
+    def g(acc, x, ...)
         f(x, acc)
     end
     xs.slice().reverse().reduce(g, z)

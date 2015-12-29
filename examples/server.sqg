@@ -58,6 +58,6 @@ def handler(req, res)
     res.end(dispatch(method, url) .. "\n")
 end
 
-http.createServer(handler).listen(port, address)
+# http.createServer(handler).listen(port, address)
 console.log("Server running at " .. url)
 

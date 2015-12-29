@@ -31,4 +31,4 @@ def analyze(n)
 end
 
 [0, 1, 2, 3, 4, 5, 6, 7]
-    .forEach(fn(n, _, _) analyze(n))
+    .forEach(fn(n, ...) analyze(n))

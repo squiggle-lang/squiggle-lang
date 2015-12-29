@@ -83,13 +83,17 @@ function patternFactory(type, ps) {
         ione(ast.PatternArray,
             wrap("[", list0(ps.Separator, Pattern), "]"));
 
+    var BareSlurp =
+        ione(ast.PatternSimple,
+            ione(ast.Identifier, P.of("_")));
+
     var PatternArraySlurpy =
         iseq(ast.PatternArraySlurpy,
             wrap(
                 "[",
                 P.seq(
                     Pattern.skip(ps.Separator).many(),
-                    word("...").then(Pattern)
+                    word("...").then(Pattern.or(BareSlurp))
                 ),
                 "]"
             ));

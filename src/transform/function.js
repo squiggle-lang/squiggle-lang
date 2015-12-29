@@ -35,7 +35,8 @@ function Function_(transform, node) {
             es.Identifier(null, "$slice"),
             [es.Identifier(null, "arguments"), es.Literal(null, n)]
         );
-    var bindSlurpy = slurpy ?
+    var shouldBindSlurpy = slurpy && slurpy.identifier.data !== "_";
+    var bindSlurpy = shouldBindSlurpy ?
         [declareAssign(transform(slurpy), getSlurpy)] :
         [];
     var expr = transform(node.body);
