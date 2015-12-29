@@ -1,22 +1,33 @@
 let {console} = global
 
-def is_even(n)
+def isEven(n)
     match n
     case 0 then true
-    case _ then is_odd(n - 1)
+    case _ then isOdd(n - 1)
     end
 end
 
-def is_odd(n)
+def isOdd(n)
     match n
     case 0 then false
-    case _ then is_even(n - 1)
+    case _ then isEven(n - 1)
+    end
+end
+
+def isX(word, n)
+    match [word, n]
+    case ["even", 0] then true
+    case ["odd",  0] then false
+    case ["even", n] then isX("odd",  n - 1)
+    case ["odd",  n] then isX("even", n - 1)
     end
 end
 
 def analyze(n)
-    console.log("is_even(" .. n .. ") = " .. is_even(n))
-    console.log("is_odd(" .. n .. ") = " .. is_odd(n))
+    # console.log("isEven(" .. n .. ") = " .. isEven(n))
+    # console.log("isOdd(" .. n .. ") = " .. isOdd(n))
+    console.log("isEven(" .. n .. ") = " .. isX("even", n))
+    console.log("isOdd(" .. n .. ") = " .. isX("odd", n))
 end
 
 [0, 1, 2, 3, 4, 5, 6, 7]
