@@ -3,14 +3,14 @@ let {console} = global
 def isEven(n)
     match n
     case 0 then true
-    case _ then isOdd(n - 1)
+    else isOdd(n - 1)
     end
 end
 
 def isOdd(n)
     match n
     case 0 then false
-    case _ then isEven(n - 1)
+    else isEven(n - 1)
     end
 end
 

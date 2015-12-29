@@ -39,7 +39,7 @@ def dispatchGet(url)
     match parsePath(url)
     case ["factorial", x] then handlerFactorial(x)
     case ["echo", x] then x
-    case _ then "I don't know what you want to GET"
+    else "I don't know what you want to GET"
     end
 end
 
@@ -49,7 +49,7 @@ def dispatch(method, url)
     case "POST" then "Looks like you POST-ed me!"
     case "DELETE" then "Not interested in DELETE-ing!"
     case "OPTIONS" then "What OPTIONS are you looking for?"
-    case _ then "ERROR"
+    else "ERROR"
     end
 end
 

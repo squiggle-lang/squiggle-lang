@@ -31,7 +31,7 @@ end
 match global
 case {parseInt, Number: num, "parseFloat": pf} then
     [parseInt, num, pf]
-case _ then
+else
     3
 end
 
