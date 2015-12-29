@@ -1,19 +1,19 @@
 let {console} = global
 
-def foldRight(xs, z, f)
-    def g(acc, x, ...)
+def foldRight(xs, z, f) do
+    def g(acc, x, ...) do
         f(x, acc)
     end
     xs.slice().reverse().reduce(g, z)
 end
 
-def Branch(data, left, right)
+def Branch(data, left, right) do
     {type: "Branch", data, left, right}
 end
 
 let Tip = {type: "Tip"}
 
-def leaf(x)
+def leaf(x) do
     Branch(x, Tip, Tip)
 end
 
@@ -22,7 +22,7 @@ console.log(x1)
 
 # This actually doesn't end up looking much better with pattern matching since
 # we need to make the "less-than" check on the data.
-def bstAdd(n, d)
+def bstAdd(n, d) do
     if n.type == "Tip" then
         leaf(d)
     elseif n.type == "Branch" then
@@ -36,7 +36,7 @@ def bstAdd(n, d)
     end
 end
 
-def inOrder(node)
+def inOrder(node) do
     match node
     case {type: "Tip"} then
         []

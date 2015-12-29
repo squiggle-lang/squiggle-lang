@@ -30,7 +30,7 @@ module.exports = function(ps) {
         iseq(makeDefBinding,
             P.seq(
                 word("def").then(ps.Identifier).skip(_),
-                wrap("(", ps.Parameters, ")").skip(_),
+                wrap("(", ps.Parameters, ")").skip(_).skip(word("do")),
                 ps.Block.skip(_).skip(P.string("end"))
             ));
 

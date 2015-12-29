@@ -5,26 +5,26 @@ let port = 1337
 let address = "127.0.0.1"
 let url = "http://" .. address .. ":" .. port .. "/"
 
-def factorial(n)
+def factorial(n) do
     match n
     case 0 then 1
     case n then n * factorial(n - 1)
     end
 end
 
-def factorial2(n)
+def factorial2(n) do
     if n <= 1
     then 1
     else n * factorial2(n - 1)
     end
 end
 
-def handlerFactorial(x)
+def handlerFactorial(x) do
     String(factorial(Number(x)))
 end
 
-def parsePath(s)
-    def mod(s, i)
+def parsePath(s) do
+    def mod(s, i) do
         Number(s.charAt(i) == "/")
     end
 
@@ -35,7 +35,7 @@ def parsePath(s)
     s.slice(a, n - b).split("/")
 end
 
-def dispatchGet(url)
+def dispatchGet(url) do
     match parsePath(url)
     case ["factorial", x] then handlerFactorial(x)
     case ["echo", x] then x
@@ -43,7 +43,7 @@ def dispatchGet(url)
     end
 end
 
-def dispatch(method, url)
+def dispatch(method, url) do
     match method
     case "GET" then dispatchGet(url)
     case "POST" then "Looks like you POST-ed me!"
@@ -53,7 +53,7 @@ def dispatch(method, url)
     end
 end
 
-def handler(req, res)
+def handler(req, res) do
     let {method, url} = req
     res.end(dispatch(method, url) .. "\n")
 end

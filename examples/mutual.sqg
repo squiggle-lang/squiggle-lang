@@ -1,20 +1,20 @@
 let {console} = global
 
-def isEven(n)
+def isEven(n) do
     match n
     case 0 then true
     else isOdd(n - 1)
     end
 end
 
-def isOdd(n)
+def isOdd(n) do
     match n
     case 0 then false
     else isEven(n - 1)
     end
 end
 
-def isX(word, n)
+def isX(word, n) do
     match [word, n]
     case ["even", 0] then true
     case ["odd",  0] then false
@@ -23,7 +23,7 @@ def isX(word, n)
     end
 end
 
-def analyze(n)
+def analyze(n) do
     # console.log("isEven(" .. n .. ") = " .. isEven(n))
     # console.log("isOdd(" .. n .. ") = " .. isOdd(n))
     console.log("isEven(" .. n .. ") = " .. isX("even", n))

@@ -5,7 +5,7 @@ let {console, Date} = global
 
 let foo = fn foo(x) x
 
-def bar(x, y)
+def bar(x, y) do
     x + y
 end
 
