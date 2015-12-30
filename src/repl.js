@@ -26,30 +26,30 @@ function loadPredef() {
     globalEval("var exit = quit;");
 }
 
-function prettySyntaxError(code, result) {
-    var i = result.index + 1;
-    var expectations = uniq(result.expected).join(", ");
+function prettySyntaxError(code, o) {
     // TODO: Work for multiline code, if the REPL ever allows that...
-    var pointy = chalk.reset.bold(code) +
-        "\n" + chalk.bold.yellow(arrow(result.index));
     return error(
-        "syntax error at character " + i +
-        ": expected " + expectations + "\n\n" + pointy
+        "Syntax error at column " + o.column + "\n\n" +
+        o.data + "\n\n" +
+        o.context
     );
 }
 
 function runTheirCode(code) {
-    var res = compile(
-        code,
-        "<repl.sqg>",
-        {embedSourceMaps: false});
+    code += "\n";
+    var filename = "<repl.sqg>";
+    var options = {
+        embedSourceMaps: false,
+        color: true
+    };
+    var res =  compile(code, filename, options);
     if (res.parsed) {
         if (SHOW_JS) {
             console.log(chalk.cyan(res.code));
         }
         console.log(inspect(globalEval(res.code)));
     } else {
-        console.log(prettySyntaxError(code, res.result));
+        console.log(prettySyntaxError(code, res.result.oopsy));
     }
 }
 
