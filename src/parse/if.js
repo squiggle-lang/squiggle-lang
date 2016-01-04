@@ -7,20 +7,20 @@ var _ = require("./whitespace")(null);
 var H = require("../parse-helpers");
 
 var iseq = H.iseq;
-var word = H.word;
+var keyword = H.keyword;
 
 module.exports = function(ps) {
     var ElseIf = iseq(ast.ElseIf,
         P.seq(
-            word("elseif").then(ps.Expr).skip(_),
-            word("then").then(ps.Block).skip(_)
+            keyword("elseif").then(_).then(ps.Expr).skip(_),
+            keyword("then").then(_).then(ps.Block).skip(_)
         ));
     return iseq(ast.If,
         P.seq(
-            word("if").then(ps.Expr).skip(_),
-            word("then").then(ps.Block).skip(_),
+            keyword("if").then(_).then(ps.Expr).skip(_),
+            keyword("then").then(_).then(ps.Block).skip(_),
             ElseIf.many(),
-            word("else").then(ps.Block).skip(_)
-                .skip(P.string("end"))
+            keyword("else").then(_).then(ps.Block).skip(_)
+                .skip(keyword("end"))
         ));
 };

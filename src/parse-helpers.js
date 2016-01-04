@@ -19,6 +19,14 @@ function wrap(left, middle, right) {
         .skip(P.string(right));
 }
 
+function pwrap(left, middle, right) {
+    return left
+        .then(_)
+        .then(middle)
+        .skip(_)
+        .skip(right);
+}
+
 function join(separator, array) {
     if (arguments.length === 1) {
         return join.bind(null, separator);
@@ -89,14 +97,29 @@ function combineIndices(index1, index2) {
 
 var indc = combineIndices;
 
+var NameParser = P.regex(/[_a-z][_a-z0-9]*/i).desc("name");
+
+function keyword(kw) {
+    return NameParser.chain(function(x) {
+        if (x === kw) {
+            return P.of(kw);
+        } else {
+            return P.fail(kw);
+        }
+    })
+}
+
 module.exports = {
     cons: cons,
     wrap: wrap,
+    pwrap: pwrap,
     spaced: spaced,
     word: word,
     spread: spread,
     list0: list0,
     list1: list1,
+    NameParser: NameParser,
+    keyword: keyword,
     indexedSequence: indexedSequence,
     indexedSingle: indexedSingle,
     combineIndices: combineIndices,

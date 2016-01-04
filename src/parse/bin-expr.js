@@ -3,9 +3,11 @@
 var P = require("parsimmon");
 
 var H = require("../parse-helpers");
+var _ = require("./whitespace")(null);
 var ast = require("../ast");
 
 var spaced = H.spaced;
+var keyword = H.keyword;
 var word = H.word;
 var ione = H.ione;
 var indc = H.indc;
@@ -16,12 +18,11 @@ var indc = H.indc;
 /// operators out with left-associativity, so that `lbo(lbo(Number, "+ -"), "*
 /// /")` correctly parses multiplication and division as having higher priority
 /// than addition and subtraction.
-function lbo(ops, e) {
+function lbo(array, e) {
     if (arguments.length < 2) {
-        return lbo.bind(null, ops);
+        return lbo.bind(null, array);
     }
-    var array = ops.split(" ");
-    var parsers = array.map(P.string).map(spaced);
+    var parsers = array.map(spaced);
     var combined = ione(ast.Operator, P.alt.apply(null, parsers));
     var allTogether = P.seq(e, P.seq(combined, e).many());
     return allTogether.map(function(data) {
@@ -37,15 +38,43 @@ function combine(parser, almostParser) {
 
 module.exports = function(ps) {
     var stuff = [
-        lbo("* /"),
-        lbo("+ -"),
-        lbo("++ ~ .."),
-        lbo(">= <= > < == != has is"),
+        lbo([
+            P.string("*"),
+            P.string("/")
+        ]),
+        lbo([
+            P.string("+"),
+            P.string("-")
+        ]),
+        lbo([
+            P.string("++"),
+            P.string("~"),
+            P.string("..")
+        ]),
+        lbo([
+            P.string(">="),
+            P.string("<="),
+            P.string("<"),
+            P.string(">"),
+            P.string("=="),
+            P.string("!="),
+            keyword("has"),
+            keyword("is"),
+        ]),
         function(pp) {
-            return ione(ast.Not, word("not").then(pp)).or(pp);
+            return ione(
+                ast.Not,
+                keyword("not")
+                    .then(_)
+                    .then(pp)
+            ).or(pp);
         },
-        lbo("and"),
-        lbo("or")
+        lbo([
+            keyword("and")
+        ]),
+        lbo([
+            keyword("or")
+        ])
     ];
     var OtherOpExpr = P.alt(ps.CallOrGet, ps.Literal);
     var Negate = ione(ast.Negate, word("-").then(OtherOpExpr));

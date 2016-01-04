@@ -6,7 +6,7 @@ var H = require("../parse-helpers");
 var _ = require("./whitespace")(null);
 var ast = require("../ast");
 
-var word = H.word;
+var keyword = H.keyword;
 var ione = H.ione;
 var iseq = H.iseq;
 
@@ -16,21 +16,21 @@ module.exports = function(ps) {
             ione(ast.Identifier, P.of("_")));
     var NormalClause =
         P.seq(
-            word("case").then(ps.MatchPattern),
-            _.then(word("then")).then(ps.Block)
+            keyword("case").then(_).then(ps.MatchPattern),
+            _.then(keyword("then").then(_)).then(ps.Block)
         );
     var ElseClause =
         P.seq(
             emptyPattern,
-            _.then(word("else")).then(ps.Block)
+            _.then(keyword("else").then(_)).then(ps.Block)
         );
     var MatchClause =
         iseq(ast.MatchClause, NormalClause.or(ElseClause));
     return iseq(ast.Match,
         P.seq(
-            word("match").then(ps.BinExpr),
+            keyword("match").then(_).then(ps.BinExpr),
             _.then(MatchClause).atLeast(1)
                 .skip(_)
-                .skip(P.string("end"))
+                .skip(keyword("end"))
         ));
 };

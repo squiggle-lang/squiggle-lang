@@ -16,6 +16,7 @@ var keywords = [
     "let", "def",
     "has", "is",
     "and", "or",
+    "do",
     "global",
     "await",
     "true", "false",

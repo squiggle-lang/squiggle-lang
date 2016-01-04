@@ -6,6 +6,7 @@ var ast = require("../ast");
 var H = require("../parse-helpers");
 var _ = require("./whitespace")(null);
 
+var keyword = H.keyword;
 var indc = H.indc;
 var word = H.word;
 var wrap = H.wrap;
@@ -22,16 +23,28 @@ module.exports = function(ps) {
     var LetBinding =
         iseq(ast.Binding,
             P.seq(
-                word("let").then(ps.LetPattern).skip(_),
-                word("=").then(ps.Expr)
+                keyword("let")
+                    .then(_)
+                    .then(ps.LetPattern)
+                    .skip(_),
+                word("=")
+                    .then(ps.Expr)
             ));
 
     var DefBinding =
         iseq(makeDefBinding,
             P.seq(
-                word("def").then(ps.Identifier).skip(_),
-                wrap("(", ps.Parameters, ")").skip(_).skip(word("do")),
-                ps.Block.skip(_).skip(P.string("end"))
+                keyword("def")
+                    .then(_)
+                    .then(ps.Identifier)
+                    .skip(_),
+                wrap("(", ps.Parameters, ")")
+                    .skip(_)
+                    .skip(keyword("do"))
+                    .skip(_),
+                ps.Block
+                    .skip(_)
+                    .skip(keyword("end"))
             ));
 
     return ione(ast.Let,
