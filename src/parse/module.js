@@ -17,6 +17,7 @@ module.exports = function(ps) {
     var TopLevel = TopLevelStatement.many();
     var Export =
         _.then(keyword("export"))
+        .then(_)
         .then(ps.Identifier)
         .skip(ps.Terminator);
     var Exports = Export.many();
