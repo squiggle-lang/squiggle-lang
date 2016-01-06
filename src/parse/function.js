@@ -8,7 +8,6 @@ var H = require("../parse-helpers");
 
 var keyword = H.keyword;
 var iseq = H.iseq;
-var word = H.word;
 var wrap = H.wrap;
 
 module.exports = function(ps) {

@@ -1,13 +1,11 @@
 "use strict";
 
-var uniq = require("lodash/array/uniq");
 var readline = require("readline");
 var chalk = require("chalk");
 
 var pkg = require("../package.json");
 var inspect = require("./inspect");
 var compile = require("./compile");
-var arrow = require("./arrow");
 
 var SHOW_JS = true;
 

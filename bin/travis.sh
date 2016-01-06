@@ -5,3 +5,4 @@ PATH="$(npm bin):$PATH"
 
 jscs src
 jshint src
+# mocha src

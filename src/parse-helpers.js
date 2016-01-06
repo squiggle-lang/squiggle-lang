@@ -106,7 +106,7 @@ function keyword(kw) {
         } else {
             return P.fail(kw);
         }
-    })
+    });
 }
 
 module.exports = {
