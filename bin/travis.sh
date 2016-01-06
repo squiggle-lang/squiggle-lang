@@ -3,6 +3,6 @@ set -e
 
 PATH="$(npm bin):$PATH"
 
-jscs src
-jshint src
-# mocha src
+jscs src tests
+jshint src tests
+mocha tests --reporter dot

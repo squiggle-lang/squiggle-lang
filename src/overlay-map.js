@@ -44,7 +44,7 @@ function OverlayMap(parent) {
     api.allKeys = function() {
         var ks = Object.keys(map);
         if (parent) {
-            return ks.concat(parent.keys());
+            return ks.concat(parent.allKeys());
         }
         return ks;
     };
