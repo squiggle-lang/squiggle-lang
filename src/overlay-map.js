@@ -1,5 +1,7 @@
 "use strict";
 
+// TODO: Rename this to Scope.
+
 // TODO: Make some of these methods pseudo-private with underscores or something
 // to keep the intended outside API clear.
 
@@ -11,8 +13,8 @@ function OverlayMap(parent) {
     var map = Object.create(null);
     var api = {};
     api.set = function(k, v) {
-        if (typeof k !== 'string') {
-            throw new Error('OverlayMap keys must be strings: ' + k);
+        if (typeof k !== "string") {
+            throw new Error("OverlayMap keys must be strings: " + k);
         }
         map[k] = v;
         return api;
@@ -24,7 +26,7 @@ function OverlayMap(parent) {
         if (parent) {
             return parent.get(k);
         }
-        throw new Error('no such key ' + k + ' in OverlayMap');
+        throw new Error("no such key " + k + " in OverlayMap");
     };
     api.hasKey = function(k) {
         if (api.hasOwnKey(k)) {
