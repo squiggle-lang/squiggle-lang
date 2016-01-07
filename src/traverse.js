@@ -57,6 +57,7 @@ function _walk(parents, obj, ast) {
             recur(node.expression);
         },
         If: function(node) {
+            recur(node.condition);
             recur(node.ifBranch);
             node.elseIfs.forEach(recur);
             recur(node.elseBranch);

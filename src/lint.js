@@ -33,7 +33,7 @@ function findUnusedOrUndeclaredBindings(ast) {
     function enter(node, parent) {
         var t = node.type;
         var start;
-        if (t === 'Block' || t === 'Script') {
+        if (t === 'Block' || t === 'Module') {
             scopes = OverlayMap(scopes);
             start = null;
             identsForBlock(fakeTransform, node).forEach(function(ident) {
