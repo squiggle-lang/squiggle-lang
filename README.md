@@ -1,6 +1,6 @@
 # squiggle
 
-[![Build Status](https://travis-ci.org/wavebeem/squiggle.svg)](https://travis-ci.org/wavebeem/squiggle)
+[![Build Status](https://travis-ci.org/squiggle-lang/squiggle.svg)](https://travis-ci.org/squiggle-lang/squiggle-lang)
 [![npm version](https://badge.fury.io/js/squiggle-lang.svg)](https://badge.fury.io/js/squiggle-lang)
 
 ## What is it?
