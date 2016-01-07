@@ -30,7 +30,9 @@
     "parsimmon": "^0.7.0"
   },
   "devDependencies": {
+    "chai": "^3.4.1",
     "jscs": "^1.13.1",
-    "jshint": "^2.8.0"
+    "jshint": "^2.8.0",
+    "mocha": "^2.3.4"
   }
 }
