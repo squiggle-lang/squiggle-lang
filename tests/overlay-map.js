@@ -62,11 +62,12 @@ describe("OverlayMap", function() {
         eq(scope.ownKeys(), ["b"]);
     });
 
-    it("should support .allKeys", function() {
+    it("should have a useful .toString", function() {
         var parent = OverlayMap(null);
-        parent.set("a", 1);
+        parent.set("a", {used: true});
+        parent.set("b", {used: false});
         var scope = OverlayMap(parent);
-        scope.set("b", 2);
-        eq(scope.allKeys().sort(), ["a", "b"]);
+        scope.set("c", {used: false});
+        eq(scope.toString(), "OM[{a: T, b: F} > {c: F}]");
     });
 });

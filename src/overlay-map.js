@@ -43,13 +43,6 @@ function OverlayMap(parent) {
     api.ownKeys = function() {
         return Object.keys(map);
     };
-    api.allKeys = function() {
-        var ks = Object.keys(map);
-        if (parent) {
-            return ks.concat(parent.allKeys());
-        }
-        return ks;
-    };
     api.bareToString = function() {
         var innards = Object
             .keys(map)
