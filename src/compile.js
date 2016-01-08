@@ -6,9 +6,7 @@ var esmangle = require("esmangle");
 var uniq = require("lodash/array/uniq");
 var OopsyData = require("oopsy-data");
 
-var addLocMaker = require("./file-index-to-position-mapper");
 var transformAst = require("./transform-ast");
-var traverse = require("./traverse");
 var optimize = require("./optimize");
 var parse = require("./file-parse");
 var lint = require("./lint");
@@ -63,8 +61,6 @@ function compile(code, filename, options) {
         };
     }
     var squiggleAst = result.value;
-    var addLocToNode = addLocMaker(code, filename);
-    traverse.walk({enter: addLocToNode}, squiggleAst);
     var warnings = lint(squiggleAst);
     var contextualWarnings =
         OopsyData.fromLocations(code, warnings, {color: options.color});

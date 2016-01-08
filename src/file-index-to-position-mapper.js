@@ -1,6 +1,6 @@
 "use strict";
 
-function fileIndexToPositionMapper(code, filename) {
+function fileIndexToPositionMapper(code) {
     var positions = [];
     var line = 1;
     var column = 1;
