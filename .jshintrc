@@ -5,6 +5,7 @@
     "eqeqeq": true,
     "funcscope": true,
     "futurehostile": true,
+    "esnext": true,
     "maxcomplexity": 10,
     "maxdepth": 2,
     "maxparams": 4,

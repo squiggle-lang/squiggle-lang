@@ -1,6 +1,6 @@
 {
   "name": "squiggle-lang",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "description": "An experimental programming language",
   "bin": {
     "squiggle": "src/main.js"
