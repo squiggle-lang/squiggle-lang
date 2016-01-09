@@ -30,6 +30,10 @@ This project uses the [Contributor Covenant][coc] as its code of conduct.
 
 [MIT][]
 
+## Contributors
+
+Squiggle is primarily authored by [Brian Mock][bmock]. Additional contributors are listed in [CONTRIBUTORS.md][].
+
 ## Contributing
 
 - Click the "Fork" repository button and locally clone your fork
@@ -39,6 +43,8 @@ This project uses the [Contributor Covenant][coc] as its code of conduct.
 - `node src/main.js`
 - Optional: `npm link` so you can just run `squiggle`
 
+[CONTRIBUTORS.md]: https://github.com/squiggle-lang/squiggle-lang/blob/master/CONTRIBUTORS.md
+[bmock]: https://github.com/wavebeem
 [es5]: http://kangax.github.io/compat-table/es5/
 [tutorial]: http://squiggle-lang.org/tutorial/
 [coc]: https://github.com/wavebeem/squiggle/blob/master/CODE_OF_CONDUCT.md
