@@ -6,7 +6,7 @@
     "funcscope": true,
     "futurehostile": true,
     "esnext": true,
-    // "maxcomplexity": 10,
+    "maxcomplexity": 10,
     "maxdepth": 2,
     "maxparams": 4,
     "maxstatements": 25,
