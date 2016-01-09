@@ -2,12 +2,20 @@ var flatten = require("lodash/array/flatten");
 
 var identsForBlock = require("../idents-for-block");
 var traverse = require("../traverse");
-var OverlayMap = require("../overlay-map");
+var Scope = require("../scope");
 
-function isIdentifierOkayToNotUse(id) {
-    return id !== '_';
-}
-
+// Only look at identifiers that are being used for their
+// values, not their names.
+//
+// Example:
+// let x = 1
+// def f(z) do
+//     2
+// end
+// y + 3
+//
+// `x` and `z` are being used for their names, and `y` is being
+// used for its value.
 function isIdentifierUsage(node, parent) {
     return (
         node.type === 'Identifier' &&
@@ -19,97 +27,102 @@ function fakeTransform(x) {
     return x;
 }
 
+function markAsUsed(messages, scope, node) {
+    var name = node.data;
+    var start = node.loc.start;
+    if (scope.hasVar(name)) {
+        scope.markAsUsed(name);
+    } else {
+        messages.push({
+            line: start.line,
+            column: start.column,
+            data: "undeclared variable " + name
+        });
+    }
+}
+
 function unusedOrUndeclared(ast) {
     var messages = [];
-    var scopes = OverlayMap(null);
+    var currentScope = Scope(null);
     function enter(node, parent) {
         var t = node.type;
         var start;
-        if (t === 'Block' || t === 'Module') {
-            scopes = OverlayMap(scopes);
+        if (t === 'Block') {
+            currentScope = Scope(currentScope);
             start = null;
             identsForBlock(fakeTransform, node).forEach(function(ident) {
-                scopes.set(ident.data, {
-                    line: ident.loc.line,
-                    column: ident.loc.column,
+                currentScope.declare(ident.data, {
+                    line: ident.loc.start.line,
+                    column: ident.loc.start.column,
                     used: false
                 });
             });
+        } else if (t === 'Module') {
+            start = null;
+            identsForBlock(fakeTransform, node).forEach(function(ident) {
+                currentScope.declare(ident.data, {
+                    line: ident.loc.start.line,
+                    column: ident.loc.start.column,
+                    used: false
+                });
+            });
+            node.exports.forEach(function(ident) {
+                markAsUsed(messages, currentScope, ident);
+            });
         } else if (t === 'AwaitExpr') {
-            scopes = OverlayMap(scopes);
+            currentScope = Scope(currentScope);
             start = parent.binding.loc.start;
-            scopes.set(parent.binding.data, {
+            currentScope.declare(parent.binding.data, {
                 line: start.line,
                 column: start.column,
                 used: false
             });
         } else if (t === 'Function') {
-            scopes = OverlayMap(scopes);
+            currentScope = Scope(currentScope);
             flatten([
                 node.parameters.context || [],
                 node.parameters.positional,
                 node.parameters.slurpy || []
             ]).forEach(function(b) {
                 start = b.identifier.loc.start;
-                scopes.set(b.identifier.data, {
+                currentScope.declare(b.identifier.data, {
                     line: start.line,
                     column: start.column,
                     used: false
                 });
             });
+        } else if (t === 'MatchClause') {
+            currentScope = Scope(currentScope);
         } else if (t === 'PatternSimple') {
             start = node.identifier.loc.start;
-            scopes.set(node.identifier.data, {
+            currentScope.declare(node.identifier.data, {
                 line: start.line,
                 column: start.column,
                 used: false
             });
         } else if (isIdentifierUsage(node, parent)) {
-            // Only look at identifiers that are being used for their
-            // values, not their names.
-            //
-            // Example:
-            // let x = 1
-            // def f(z)
-            //     2
-            // end
-            // y + 3
-            //
-            // `x` and `z` are being used for their names, and `y` is being
-            // used for its value.
-            var k = node.data;
-            if (scopes.hasKey(k)) {
-                scopes.get(k).used = true;
-            } else {
-                messages.push({
-                    line: node.loc.start.line,
-                    column: node.loc.start.column,
-                    data: "undeclared variable " + k
-                });
-            }
+            markAsUsed(messages, currentScope, node);
         }
     }
     function exit(node, parent) {
         var t = node.type;
         var ok = (
             t === 'Block' ||
-            t === 'Script' ||
+            t === 'Module' ||
             t === 'Function' ||
+            t === 'MatchClause' ||
             t === 'AwaitExpr'
         );
         if (ok) {
             // Pop the scope stack and investigate for unused variables.
-            scopes.ownKeys().forEach(function(k) {
-                if (isIdentifierOkayToNotUse(k) && !scopes.get(k).used) {
-                    var id = scopes.get(k);
-                    messages.push({
-                        line: id.line,
-                        column: id.column,
-                        data: "unused variable " + k
-                    });
-                }
+            currentScope.ownUnusedVars().forEach(function(id) {
+                messages.push({
+                    line: id.line,
+                    column: id.column,
+                    data: "unused variable " + id.name
+                });
             });
-            scopes = scopes.parent;
+            currentScope = currentScope.parent;
         }
     }
     traverse.walk({enter: enter, exit: exit}, ast);
