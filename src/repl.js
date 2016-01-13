@@ -23,9 +23,9 @@ function loadPredef() {
     });
     global.help = "You may have meant to type :help";
     global.quit = "You may have meant to type :quit";
+    global.h = "You may have meant to type :h";
+    global.q = "You may have meant to type :q";
     global.exit = global.quit;
-    global.q = global.quit;
-    global.h = global.help;
     global.require = require;
     global.module = {exports: {}};
     global.exports = global.module.exports;
@@ -33,11 +33,7 @@ function loadPredef() {
 
 function prettySyntaxError(code, o) {
     // TODO: Work for multiline code, if the REPL ever allows that...
-    return error(
-        "Syntax error at column " + o.column + "\n\n" +
-        o.data + "\n\n" +
-        o.context
-    );
+    return error("syntax error: " + o.data + "\n\n" + o.context);
 }
 
 function runTheirCode(code) {
@@ -51,7 +47,7 @@ function runTheirCode(code) {
     var res =  compile(code, filename, options);
     if (res.parsed) {
         if (SHOW_JS) {
-            console.log(chalk.cyan(res.code));
+            console.log(chalk.magenta(res.code));
         }
         console.log(inspect(globalEval(res.code)));
     } else {
@@ -59,31 +55,36 @@ function runTheirCode(code) {
     }
 }
 
+var currentCode = "";
+
 function processLine(rl, text) {
-    if (text.trim() === "") {
+    var tt = text.trim();
+    if (isMultiline) {
+        currentCode += text + "\n";
+        rl.prompt();
+    } else if (currentCode.length > 0) {
+        runAllTheCode(rl, text);
+    } else if (tt === "") {
         rl.prompt();
         return;
-    }
-
-    if (text.trim() === ":quit") {
+    } else if (tt === ":quit" || tt === ":q") {
         process.exit();
-    }
-
-    if (text.trim() === ":help") {
+    } else if (tt === ":help" || tt === ":h") {
         console.log(help());
         rl.prompt();
-        return;
+    } else {
+        runAllTheCode(rl, text);
     }
+}
 
+function runAllTheCode(rl, text) {
     try {
-        runTheirCode(text);
+        var theCode = currentCode + text;
+        currentCode = "";
+        runTheirCode(theCode);
     } catch (e) {
         console.log(error(e.stack));
-        console.log();
-        rl.prompt();
-        return;
     }
-
     console.log();
     rl.prompt();
 }
@@ -116,9 +117,12 @@ function S(n) {
 
 function help() {
     return [
-        keyword(":help") + S(3) + "Show this help message.",
-        keyword(":quit") + S(3) + "Quit Squiggle.",
-        meta("expr") + S(4) + "Evaluate " + meta("expr") +
+        keyword(":help") + " or " + keyword(":h") +
+            S(1) + "Show this help message.",
+        keyword(":quit") + " or " + keyword(":q") +
+            S(1) + "Quit Squiggle.",
+        keyword("Control-G") + S(3) + "Toggle multiline mode.",
+        meta("expr") + S(8) + "Evaluate " + meta("expr") +
             " as an expression.",
         "",
         "This is the Squiggle interactive interpreter (REPL).",
@@ -135,8 +139,11 @@ function completer(text) {
     return [[], text];
 }
 
+var PROMPT_MULTI = chalk.bold("... ");
+var PROMPT_SINGLE = chalk.bold("squiggle> ");
+
 function prompt() {
-    return chalk.bold("squiggle> ");
+    return isMultiline ? PROMPT_MULTI : PROMPT_SINGLE;
 }
 
 function interruptMessage() {
@@ -149,6 +156,20 @@ function interruptHandler(rl) {
     rl.prompt();
 }
 
+var isMultiline = false;
+
+function toggleMultilineMode(rl) {
+    isMultiline = !isMultiline;
+    rl.setPrompt(prompt());
+    rl.prompt();
+}
+
+function keybindHandler(rl, c, k) {
+    if (k && k.ctrl && k.name === 'g') {
+        toggleMultilineMode(rl);
+    }
+}
+
 function start() {
     console.log(greetings());
     loadPredef();
@@ -157,6 +178,7 @@ function start() {
         output: process.stdout,
         completer: completer,
     });
+    rl.input.on("keypress", keybindHandler.bind(null, rl));
     rl.setPrompt(prompt());
     rl.prompt();
     rl.on("line", processLine.bind(null, rl));
