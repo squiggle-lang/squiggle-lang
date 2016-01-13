@@ -24,6 +24,7 @@ function Module(transform, node) {
     var blockJs = transform(block);
     var predef = helpersFor(blockJs);
     var theExports = makeExportsFor(transform, node.exports);
+
     // BEGIN HACK: Add the exports into the block
     var theBody = blockJs.callee.body.body;
     theBody.pop();
@@ -31,8 +32,18 @@ function Module(transform, node) {
         theBody.push(exp);
     });
     // END HACK
-    var body = predef.concat([es.ExpressionStatement(null, blockJs)]);
-    return fileWrapper(body);
+
+    // REPL code doesn't need a big wrapper with predef stuff. Eventually this
+    // should be usable for Browserify somehow too, to avoid duplication.
+    if (node.bareModule) {
+        // TODO: Kinda gross to just reach into the compiled output like this.
+        var blockInnards = blockJs.callee.body.body;
+        return es.Program(null, blockInnards);
+    } else {
+        var statements = [es.ExpressionStatement(null, blockJs)];
+        var body = predef.concat(statements);
+        return fileWrapper(body);
+    }
 }
 
 module.exports = Module;

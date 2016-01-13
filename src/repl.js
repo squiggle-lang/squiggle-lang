@@ -3,6 +3,7 @@
 var readline = require("readline");
 var chalk = require("chalk");
 
+var predef = require("./predef");
 var pkg = require("../package.json");
 var inspect = require("./inspect");
 var compile = require("./compile");
@@ -17,11 +18,17 @@ var SHOW_JS = true;
 var globalEval = false || eval;
 
 function loadPredef() {
-    globalEval("var help = 'You may have meant to type :help';");
-    globalEval("var quit = 'You may have meant to type :quit';");
-    globalEval("var h = help;");
-    globalEval("var q = quit;");
-    globalEval("var exit = quit;");
+    Object.keys(predef).forEach(function(k) {
+        globalEval(predef[k].code);
+    });
+    global.help = "You may have meant to type :help";
+    global.quit = "You may have meant to type :quit";
+    global.exit = global.quit;
+    global.q = global.quit;
+    global.h = global.help;
+    global.require = require;
+    global.module = {exports: {}};
+    global.exports = global.module.exports;
 }
 
 function prettySyntaxError(code, o) {
@@ -38,6 +45,7 @@ function runTheirCode(code) {
     var filename = "<repl.sqg>";
     var options = {
         embedSourceMaps: false,
+        bareModule: true,
         color: true
     };
     var res =  compile(code, filename, options);

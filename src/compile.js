@@ -4,6 +4,7 @@ var convertSourceMap = require("convert-source-map");
 var escodegen = require("escodegen");
 var esmangle = require("esmangle");
 var uniq = require("lodash/array/uniq");
+var defaults = require("lodash/object/defaults");
 var OopsyData = require("oopsy-data");
 
 var transformAst = require("./transform-ast");
@@ -36,15 +37,15 @@ function addSourceMapUrl(code, sourceMap) {
 
 // TODO: Make it possible to compile REPL code as well.
 function compile(code, filename, options) {
-    // TODO: Merge options if there are ever more.
-    options = options || {
+    options = defaults(options || {}, {
         embedSourceMaps: true,
+        bareModule: false,
         color: false
-    };
+    });
     if (arguments.length !== compile.length) {
         throw new Error("incorrect argument count to compile");
     }
-    var result = parse(code);
+    var result = parse(ensureNewline(code));
     if (!result.status) {
         var expectations = uniq(result.expected);
         var data = "expected one of " + expectations.join(", ");
@@ -61,6 +62,7 @@ function compile(code, filename, options) {
         };
     }
     var squiggleAst = result.value;
+    squiggleAst.bareModule = options.bareModule;
     var warnings = lint(squiggleAst);
     var contextualWarnings =
         OopsyData.fromLocations(code, warnings, {color: options.color});
