@@ -6,7 +6,7 @@
     "squiggle": "src/main.js"
   },
   "main": "src/api.js",
-  "repository": "wavebeem/squiggle",
+  "repository": "squiggle-lang/squiggle-lang",
   "keywords": [
     "language",
     "compiler",
