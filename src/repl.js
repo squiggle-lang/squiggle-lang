@@ -139,11 +139,11 @@ function completer(text) {
     return [[], text];
 }
 
-var PROMPT_MULTI = chalk.bold("... ");
-var PROMPT_SINGLE = chalk.bold("squiggle> ");
-
 function prompt() {
-    return isMultiline ? PROMPT_MULTI : PROMPT_SINGLE;
+    var text = isMultiline ?
+        "......... " :
+        "squiggle> ";
+    return chalk.bold(text);
 }
 
 function interruptMessage() {
@@ -162,6 +162,9 @@ function toggleMultilineMode(rl) {
     isMultiline = !isMultiline;
     rl.setPrompt(prompt());
     rl.prompt();
+    if (currentCode.length > 0 || rl.line.length > 0) {
+        rl.write("\n");
+    }
 }
 
 function keybindHandler(rl, c, k) {
