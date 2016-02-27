@@ -30,8 +30,9 @@ function combine(index, expr, others) {
 
 module.exports = function(ps) {
     var DotProp = _.then(word(".")).then(ps.IdentifierAsString);
-    var BracketProp = wrap("[", ps.Expr, "]");
-    var Property = DotProp.or(BracketProp);
+    var BraceProp = wrap("{", ps.Expr, "}");
+    var IndexProp = wrap("[", ps.Expr, "]");
+    var Property = DotProp.or(BraceProp);
     /// I think so far I'm feeling ok about `foo::bar` as a syntax. I think to
     /// fit in with pattern matching expressions vs literals, the syntax for
     /// getting a bound method based on a computed value could be `foo::(bar)`,
@@ -42,6 +43,7 @@ module.exports = function(ps) {
         P.alt(
             ione(almostSpready(ast.Call), ArgList),
             ione(almostSpready(ast.GetProperty), Property),
+            ione(almostSpready(ast.GetIndex), IndexProp),
             ione(almostSpready(ast.GetMethod), BoundMethod)
         );
     return iseq(combine,

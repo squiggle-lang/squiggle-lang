@@ -15,6 +15,7 @@ var handlers = {
     ReplBinding: require("./transform/repl-expression"),
     ReplExpression: require("./transform/repl-expression"),
     GetProperty: require("./transform/get-property"),
+    GetIndex: require("./transform/get-index"),
     BinOp: require("./transform/bin-op"),
     ExprStmt: require("./transform/expr-stmt"),
     Identifier: require("./transform/identifier"),

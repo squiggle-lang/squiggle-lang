@@ -15,6 +15,10 @@ function _walk(parents, obj, ast) {
             recur(node.obj);
             recur(node.prop);
         },
+        GetIndex: function(node) {
+            recur(node.array);
+            recur(node.arrayIndex);
+        },
         GetMethod: function(node) {
             recur(node.obj);
             recur(node.prop);

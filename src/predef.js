@@ -77,6 +77,37 @@ module.exports = {
             '}'
         ].join("\n")
     },
+    idx: {
+        dependencies: [],
+        code: [
+'function $idx(array, index) {',
+'    if (Array.isArray(array)) {',
+'      if (typeof index === "number" && index % 1 === 0) {',
+'        var n = array.length;',
+'        if (-n <= index && index < n) {',
+'          return true;',
+'        } else {',
+'          throw new Error("index out of range: " + index);',
+'        }',
+'      } else {',
+'        throw new Error("index is not an integer: " + index);',
+'      }',
+'    } else {',
+'      throw new Error("cannot numerically index non-array: " + array);',
+'    }',
+'}',
+        ].join("\n")
+    },
+    at: {
+        dependencies: ['idx'],
+        code: [
+            'function $at(array, index) {',
+            '    $idx(array, index);',
+            '    var n = array.length;',
+            '    return array[(index + n) % n];',
+            '}'
+        ].join("\n")
+    },
     get: {
         dependencies: ['has'],
         code: [
@@ -106,11 +137,10 @@ module.exports = {
             '    if (obj === null || obj === undefined) {',
             '        throw new Error(obj + " cannot have keys");',
             '    }',
-            '    if (typeof key === "string" ||',
-            '        typeof key === "number" && key % 1 === 0) {',
+            '    if (typeof key === "string") {',
             '        return obj[key] !== undefined;',
             '    }',
-            '    throw new Error("Key must be a string or integer" +',
+            '    throw new Error("Key must be a string" +',
             '                    ", got " + typeof key);',
             '}'
         ].join("\n")

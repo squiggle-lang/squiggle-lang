@@ -13,6 +13,7 @@ var almostAst = {
     Block:       ["statements", "expression"],
     ExprStmt:    ["expression"],
     GetProperty: ["obj", "prop"],
+    GetIndex:    ["array", "arrayIndex"],
     GetMethod:   ["obj", "prop"],
     CallMethod:  ["obj", "prop", "args"],
     Await:       ["binding", "promise", "expression"],
