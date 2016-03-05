@@ -43,7 +43,7 @@ module.exports = {
         dependencies: ['isObject'],
         code: [
             'function $strcat(a, b) {' +
-            '    if ($isObject(a) || $isObject(b)) {' +
+            '    if ($isValueType(a) || $isValueType(b)) {' +
             '        throw new Error("incorrect argument types for ..");' +
             '    }' +
             '    return "" + a + b;' +
