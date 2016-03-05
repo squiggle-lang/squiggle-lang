@@ -6,7 +6,8 @@ var es = require("../es");
 
 function frozenArray(xs) {
     var fn = es.Identifier(null, "$array");
-    return es.CallExpression(null, fn, xs);
+    var args = [es.Literal(null, true)].concat(xs);
+    return es.CallExpression(null, fn, args);
 }
 
 function Try(transform, node) {

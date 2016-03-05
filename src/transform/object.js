@@ -10,7 +10,8 @@ function pairToArray(pair) {
 
 function Object_(transform, node) {
     var pairs = node.data.map(pairToArray);
-    var args = flatten(pairs).map(transform);
+    var isFrozen = es.Literal(null, node.isFrozen);
+    var args = [isFrozen].concat(flatten(pairs).map(transform));
     var id = es.Identifier(null, '$object');
     return es.CallExpression(node.loc, id, args);
 }

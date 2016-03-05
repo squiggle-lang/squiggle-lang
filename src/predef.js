@@ -9,7 +9,11 @@ module.exports = {
         dependencies: ['slice'],
         code: [
             'function $array() { ',
-            '   return Object.freeze($slice(arguments, 0));',
+            '    var a = Array.prototype.slice.call(arguments, 1);',
+            '    if (arguments[0]) {',
+            '        Object.freeze(a);',
+            '    }',
+            '   return a;',
             '}'
         ].join("\n")
     },
@@ -205,11 +209,11 @@ module.exports = {
         dependencies: [],
         code: [
 'function $object() {',
-'    if (arguments.length % 2 !== 0) {',
+'    if (arguments.length % 2 !== 1) {',
 '        throw new Error("objects must have an even number of items");',
 '    }',
 '    var obj = {};',
-'    var i = 0;',
+'    var i = 1;',
 '    var n = arguments.length - 1;',
 '    while (i < n) {',
 '        if (typeof arguments[i] !== "string") {',
@@ -218,7 +222,10 @@ module.exports = {
 '        obj[arguments[i]] = arguments[i + 1];',
 '        i += 2;',
 '    }',
-'    return Object.freeze(obj);',
+'    if (arguments[0]) {',
+'        Object.freeze(obj);',
+'    }',
+'    return obj;',
 '}'
 ].join("\n")
     },
