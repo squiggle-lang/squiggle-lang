@@ -1,6 +1,7 @@
 "use strict";
 
 var flatten = require("lodash/array/flatten");
+var esprima = require("esprima");
 
 var es = require("../es");
 
@@ -22,6 +23,11 @@ function satisfiesPattern2(transform, root, p) {
         return _satisfiesPattern[p.type](transform, root, p);
     }
     throw new Error("can't satisfiesPattern2 of " + j(p));
+}
+
+function esIsArray(x) {
+    var isArray = esprima.parse('Array.isArray').body[0].expression;
+    return es.CallExpression(null, isArray, [x]);
 }
 
 function esAnd(a, b) {
@@ -93,7 +99,11 @@ var _satisfiesPattern = {
             ps.map(function(x, i) {
                 return satisfiesPattern2(transform, esNth(root, i), x);
             });
-        return flatten([checkLength, flatten(checkNormal)]);
+        return flatten([
+            esIsArray(root),
+            checkLength,
+            flatten(checkNormal)
+        ]);
     },
     PatternArraySlurpy: function(transform, root, p) {
         var ps = p.patterns;
@@ -107,6 +117,7 @@ var _satisfiesPattern = {
         var checkSlurpy =
             satisfiesPattern2(transform, esSlice(root, n), p.slurp);
         return flatten([
+            esIsArray(root),
             checkLength,
             flatten(checkNormal),
             checkSlurpy
