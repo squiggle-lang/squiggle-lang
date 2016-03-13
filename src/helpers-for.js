@@ -24,7 +24,7 @@ function needsDeps(name) {
 
 function directDeps(node) {
     function enter(node) {
-        if (node.type === "Identifier" && needsDeps(node.name)) {
+        if (node.fullType === "es.Identifier" && needsDeps(node.name)) {
             deps.push(node.name.slice(1));
         }
     }

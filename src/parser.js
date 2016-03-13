@@ -13,6 +13,7 @@ var ps = parsimmonSalad({
     Block: require("./parse/block"),
     Number: require("./parse/number"),
     String: require("./parse/string"),
+    Declaration: require("./parse/declaration"),
     Parameters: require("./parse/parameters"),
     Function: require("./parse/function"),
     BasicLiteral: require("./parse/basic-literal"),

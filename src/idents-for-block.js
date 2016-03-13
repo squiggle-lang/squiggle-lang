@@ -10,11 +10,11 @@ function identsForBlock(transform, node) {
     return node
         .statements
         .filter(function(node) {
-            return node.type === "Let";
+            return node.fullType === "ast.Let";
         })
-        .map(function(theLet) {
+        .map(function(node) {
             return LH
-                .bindingToDeclAndInit(transform, theLet.binding)
+                .bindingToDeclAndInit(transform, node.binding)
                 .identifiers;
         })
         .reduce(concat, []);

@@ -47,6 +47,9 @@ function _walk(parents, obj, ast) {
         AwaitExpr: function(node) {
             recur(node.expression);
         },
+        Declaration: function(node) {
+            recur(node.identifier);
+        },
         Parameters: function(node) {
             if (node.context) {
                 recur(node.context);

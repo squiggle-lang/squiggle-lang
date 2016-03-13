@@ -16,23 +16,31 @@ function warningsFor(code) {
 
 function assertNumWarnings(n, code) {
     var w = warningsFor(code);
+    if (w.length !== n) {
+        console.log();
+        console.log(code);
+        console.log();
+        console.log('>>> Expected', n, 'warnings, but got:');
+        console.log(w);
+        console.log();
+    }
     eq(w.length, n);
 }
 
 describe("unusedOrUndeclared()", function() {
+    it("should find unused variables in modules", function() {
+        assertNumWarnings(1, `
+            let foo = 1
+            "never used foo"
+        `);
+    });
+
     it("should find unused variables in blocks", function() {
         assertNumWarnings(1, `
             do
                 let foo = 1
                 "never used foo"
             end
-        `);
-    });
-
-    it("should find unused variables in modules", function() {
-        assertNumWarnings(1, `
-            let foo = 1
-            "never used foo"
         `);
     });
 
@@ -49,10 +57,8 @@ describe("unusedOrUndeclared()", function() {
         `);
     });
 
-    // This one seems weird, but it's so we can have mutually recursive
-    // functions and such. The runtime catches errors with this.
-    it("should allow variables to be referenced before init", function() {
-        assertNumWarnings(0, `
+    it("should not allow variables to be referenced before decl", function() {
+        assertNumWarnings(2, `
             def inc(x) do
                 x + y
             end
@@ -61,8 +67,53 @@ describe("unusedOrUndeclared()", function() {
         `);
     });
 
-    it("should allow mutual recursion", function() {
+    it("should allow 'declared' variables before real decl", function() {
         assertNumWarnings(0, `
+            declare y
+            def inc(x) do
+                x + y
+            end
+            let y = 1
+            inc(4)
+        `);
+    });
+
+    it("should allow 'declared' variables for ambient vars", function() {
+        assertNumWarnings(0, `
+            declare __dirname
+            declare console
+            console.log(__dirname)
+        `);
+    });
+
+    it("should disallow use before declaration", function() {
+        assertNumWarnings(1, `
+            declare console
+            let x = y
+            let y = 2
+            console.log(x)
+            console.log(y)
+        `);
+    });
+
+    it("should allow mutual recursion with decl", function() {
+        assertNumWarnings(0, `
+            declare g
+
+            def f(x) do
+                g(x - 1)
+            end
+
+            def g(x) do
+                f(x - 1)
+            end
+
+            f(3)
+        `);
+    });
+
+    it("should not allow mutual recursion without decl", function() {
+        assertNumWarnings(2, `
             def f(x) do
                 g(x - 1)
             end

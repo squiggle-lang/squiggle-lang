@@ -40,13 +40,13 @@ module.exports = {
         ].join("\n")
     },
     strcat: {
-        dependencies: ['isObject'],
+        dependencies: ['isValueType'],
         code: [
-            'function $strcat(a, b) {' +
-            '    if ($isValueType(a) || $isValueType(b)) {' +
-            '        throw new Error("incorrect argument types for ..");' +
-            '    }' +
-            '    return "" + a + b;' +
+            'function $strcat(a, b) {',
+            '    if ($isValueType(a) && $isValueType(b)) {',
+            '        return "" + a + b;',
+            '    }',
+            'throw new Error("incorrect argument types for ..");',
             '}'
         ].join("\n")
     },

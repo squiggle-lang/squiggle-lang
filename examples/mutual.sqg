@@ -1,4 +1,5 @@
 let {console} = global
+declare isOdd
 
 def isEven(n) do
     match n

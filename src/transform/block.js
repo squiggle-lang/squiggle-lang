@@ -19,6 +19,9 @@ function Block(transform, node) {
     var needsTmpVar = false;
     var statements = node
         .statements
+        .filter(function(node) {
+            return node.type !== "Declaration";
+        })
         .map(function(node) {
             if (node.type === "Let") {
                 // HACK: PatternSimple gets compiled to not use $tmp

@@ -5,48 +5,48 @@ var isObject = require("lodash/lang/isObject");
 var jsonify = JSON.stringify;
 
 var handlers = {
-    Await: require("./transform/await"),
-    AwaitExpr: require("./transform/await-expr"),
-    Module: require("./transform/module"),
-    GetMethod: require("./transform/get-method"),
-    CallMethod: require("./transform/call-method"),
-    Not: require("./transform/not"),
-    Negate: require("./transform/negate"),
-    ReplBinding: require("./transform/repl-expression"),
-    ReplExpression: require("./transform/repl-expression"),
-    GetProperty: require("./transform/get-property"),
-    GetIndex: require("./transform/get-index"),
-    BinOp: require("./transform/bin-op"),
-    ExprStmt: require("./transform/expr-stmt"),
-    Identifier: require("./transform/identifier"),
-    IdentifierExpression: require("./transform/identifier-expression"),
-    Call: require("./transform/call"),
-    Parameter: require("./transform/parameter"),
-    Function: require("./transform/function"),
-    If: require("./transform/if"),
-    Try: require("./transform/try"),
-    Error: require("./transform/error"),
-    Throw: require("./transform/throw"),
-    Require: require("./transform/require"),
-    Array: require("./transform/array"),
-    Object: require("./transform/object"),
-    Block: require("./transform/block"),
-    Match: require("./transform/match"),
-    Global: require("./transform/global"),
-    True: require("./transform/true"),
-    False: require("./transform/false"),
-    Null: require("./transform/null"),
-    Undefined: require("./transform/undefined"),
-    Number: require("./transform/number"),
-    String: require("./transform/string")
+    'ast.Array': require("./transform/array"),
+    'ast.Await': require("./transform/await"),
+    'ast.AwaitExpr': require("./transform/await-expr"),
+    'ast.BinOp': require("./transform/bin-op"),
+    'ast.Block': require("./transform/block"),
+    'ast.Call': require("./transform/call"),
+    'ast.CallMethod': require("./transform/call-method"),
+    'ast.Error': require("./transform/error"),
+    'ast.ExprStmt': require("./transform/expr-stmt"),
+    'ast.False': require("./transform/false"),
+    'ast.Function': require("./transform/function"),
+    'ast.GetIndex': require("./transform/get-index"),
+    'ast.GetMethod': require("./transform/get-method"),
+    'ast.GetProperty': require("./transform/get-property"),
+    'ast.Global': require("./transform/global"),
+    'ast.Identifier': require("./transform/identifier"),
+    'ast.IdentifierExpression': require("./transform/identifier-expression"),
+    'ast.If': require("./transform/if"),
+    'ast.Match': require("./transform/match"),
+    'ast.Module': require("./transform/module"),
+    'ast.Negate': require("./transform/negate"),
+    'ast.Not': require("./transform/not"),
+    'ast.Null': require("./transform/null"),
+    'ast.Number': require("./transform/number"),
+    'ast.Object': require("./transform/object"),
+    'ast.Parameter': require("./transform/parameter"),
+    'ast.ReplBinding': require("./transform/repl-expression"),
+    'ast.ReplExpression': require("./transform/repl-expression"),
+    'ast.Require': require("./transform/require"),
+    'ast.String': require("./transform/string"),
+    'ast.Throw': require("./transform/throw"),
+    'ast.True': require("./transform/true"),
+    'ast.Try': require("./transform/try"),
+    'ast.Undefined': require("./transform/undefined"),
 };
 
 function transform(node) {
     if (!isObject(node)) {
         throw new Error("Not a node: " + jsonify(node));
     }
-    if (handlers.hasOwnProperty(node.type)) {
-        return handlers[node.type](transform, node);
+    if (handlers.hasOwnProperty(node.fullType)) {
+        return handlers[node.fullType](transform, node);
     }
     throw new Error("Unknown AST node: " + jsonify(node));
 }

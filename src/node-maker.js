@@ -6,15 +6,17 @@ function f(prefix, type, props) {
         var args = [].slice.call(arguments);
         var n = args.length;
         var m = props.length;
+        var fullType = [prefix, type].join(".");
         if (n !== m) {
-            var name = [prefix, type].join(".");
             throw new Error(
                 "got " + n + " arguments, " +
-                "expected " + m + " arguments for " + name +
+                "expected " + m + " arguments for " + fullType +
                 " (args: " + args.join(", ") + ")"
             );
         }
         obj.type = type;
+        obj.kind = prefix;
+        obj.fullType = fullType;
         props.forEach(function(p, i) {
             obj[p] = args[i];
         });
