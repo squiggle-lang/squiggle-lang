@@ -3,34 +3,34 @@ let {Number, console} = global
 let text = "2 3 4 * 3 - +"
 
 def tokenValue(token) do
-    match token
-    case "+" then ["Fn", fn(a, b) a + b]
-    case "-" then ["Fn", fn(a, b) a - b]
-    case "*" then ["Fn", fn(a, b) a * b]
-    case "/" then ["Fn", fn(a, b) a / b]
-    case num then ["Num", Number(num)]
-    end
+  match token
+  case "+" then ["Fn", fn(a, b) a + b]
+  case "-" then ["Fn", fn(a, b) a - b]
+  case "*" then ["Fn", fn(a, b) a * b]
+  case "/" then ["Fn", fn(a, b) a / b]
+  case num then ["Num", Number(num)]
+  end
 end
 
 # You have to explicitly ignore arguments
 # with an underscore in Squiggle.
 def tokenize(text) do
-    text.split(" ").map(fn(x, ...) tokenValue(x))
+  text.split(" ").map(fn(x, ...) tokenValue(x))
 end
 
 def evaluateWithStack(stack, values) do
-    match [stack, values]
-    case [[first, second, ...rest], [["Fn", f], ...xs]] then
-        evaluateWithStack([f(first, second)] ++ rest, xs)
-    case [stack, [["Num", n], ...xs]] then
-        evaluateWithStack([n] ++ stack, xs)
-    case [[result, ...], _] then
-        result
-    end
+  match [stack, values]
+  case [[first, second, ...rest], [["Fn", f], ...xs]] then
+    evaluateWithStack([f(first, second)] ++ rest, xs)
+  case [stack, [["Num", n], ...xs]] then
+    evaluateWithStack([n] ++ stack, xs)
+  case [[result, ...], _] then
+    result
+  end
 end
 
 def evaluate(text) do
-    evaluateWithStack([], tokenize(text))
+  evaluateWithStack([], tokenize(text))
 end
 
 console.log(evaluate(text))

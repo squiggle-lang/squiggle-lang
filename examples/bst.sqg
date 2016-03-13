@@ -1,20 +1,20 @@
 let {console} = global
 
 def foldRight(xs, z, f) do
-    def g(acc, x, ...) do
-        f(x, acc)
-    end
-    xs.slice().reverse().reduce(g, z)
+  def g(acc, x, ...) do
+    f(x, acc)
+  end
+  xs.slice().reverse().reduce(g, z)
 end
 
 def Branch(data, left, right) do
-    {type: "Branch", data, left, right}
+  {type: "Branch", data, left, right}
 end
 
 let Tip = {type: "Tip"}
 
 def leaf(x) do
-    Branch(x, Tip, Tip)
+  Branch(x, Tip, Tip)
 end
 
 let x1 = "Welcome to BST-land!"
@@ -23,32 +23,32 @@ console.log(x1)
 # This actually doesn't end up looking much better with pattern matching since
 # we need to make the "less-than" check on the data.
 def bstAdd(n, d) do
-    if n.type == "Tip" then
-        leaf(d)
-    elseif n.type == "Branch" then
-        if d < n.data then
-            Branch(n.data, bstAdd(n.left, d), n.right)
-        else
-            Branch(n.data, n.left, bstAdd(n.right, d))
-        end
+  if n.type == "Tip" then
+    leaf(d)
+  elseif n.type == "Branch" then
+    if d < n.data then
+      Branch(n.data, bstAdd(n.left, d), n.right)
     else
-        error "not a node"
+      Branch(n.data, n.left, bstAdd(n.right, d))
     end
+  else
+    error "not a node"
+  end
 end
 
 def inOrder(node) do
-    match node
-    case {type: "Tip"} then
-        []
-    case {type: "Branch", left, right, data} then
-        inOrder(left) ++ [data] ++ inOrder(right)
-    end
+  match node
+  case {type: "Tip"} then
+    []
+  case {type: "Branch", left, right, data} then
+    inOrder(left) ++ [data] ++ inOrder(right)
+  end
 end
 
 let root = foldRight(
-    [4, 2, 1, 3, 6, 5, 7],
-    Tip,
-    fn(x, node) bstAdd(node, x)
+  [4, 2, 1, 3, 6, 5, 7],
+  Tip,
+  fn(x, node) bstAdd(node, x)
 )
 
 console.log(inOrder(root))

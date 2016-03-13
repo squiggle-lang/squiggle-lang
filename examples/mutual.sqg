@@ -2,34 +2,34 @@ let {console} = global
 declare isOdd
 
 def isEven(n) do
-    match n
-    case 0 then true
-    else isOdd(n - 1)
-    end
+  match n
+  case 0 then true
+  else isOdd(n - 1)
+  end
 end
 
 def isOdd(n) do
-    match n
-    case 0 then false
-    else isEven(n - 1)
-    end
+  match n
+  case 0 then false
+  else isEven(n - 1)
+  end
 end
 
 def isX(word, n) do
-    match [word, n]
-    case ["even", 0] then true
-    case ["odd",  0] then false
-    case ["even", n] then isX("odd",  n - 1)
-    case ["odd",  n] then isX("even", n - 1)
-    end
+  match [word, n]
+  case ["even", 0] then true
+  case ["odd",  0] then false
+  case ["even", n] then isX("odd",  n - 1)
+  case ["odd",  n] then isX("even", n - 1)
+  end
 end
 
 def analyze(n) do
-    # console.log("isEven(" .. n .. ") = " .. isEven(n))
-    # console.log("isOdd(" .. n .. ") = " .. isOdd(n))
-    console.log("isEven(" .. n .. ") = " .. isX("even", n))
-    console.log("isOdd(" .. n .. ") = " .. isX("odd", n))
+  console.log("isEven " .. n .. " = " .. isEven(n))
+  console.log("isOdd  " .. n .. " = " .. isOdd(n))
+  console.log("isEven " .. n .. " = " .. isX("even", n))
+  console.log("isOdd  " .. n .. " = " .. isX("odd", n))
 end
 
 [0, 1, 2, 3, 4, 5, 6, 7]
-    .forEach(fn(n, ...) analyze(n))
+  .forEach(fn(n, ...) analyze(n))

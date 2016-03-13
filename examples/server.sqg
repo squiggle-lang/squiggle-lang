@@ -6,56 +6,56 @@ let address = "127.0.0.1"
 let url = "http://" .. address .. ":" .. port .. "/"
 
 def factorial(n) do
-    match n
-    case 0 then 1
-    case n then n * factorial(n - 1)
-    end
+  match n
+  case 0 then 1
+  case n then n * factorial(n - 1)
+  end
 end
 
 def factorial2(n) do
-    if n <= 1
-    then 1
-    else n * factorial2(n - 1)
-    end
+  if n <= 1
+  then 1
+  else n * factorial2(n - 1)
+  end
 end
 
 def handlerFactorial(x) do
-    String(factorial(Number(x)))
+  String(factorial(Number(x)))
 end
 
 def parsePath(s) do
-    def mod(s, i) do
-        Number(s.charAt(i) == "/")
-    end
+  def mod(s, i) do
+    Number(s.charAt(i) == "/")
+  end
 
-    let n = s.length
-    let a = mod(s, 0)
-    let b = mod(s, n - 1)
+  let n = s.length
+  let a = mod(s, 0)
+  let b = mod(s, n - 1)
 
-    s.slice(a, n - b).split("/")
+  s.slice(a, n - b).split("/")
 end
 
 def dispatchGet(url) do
-    match parsePath(url)
-    case ["factorial", x] then handlerFactorial(x)
-    case ["echo", x] then x
-    else "I don't know what you want to GET"
-    end
+  match parsePath(url)
+  case ["factorial", x] then handlerFactorial(x)
+  case ["echo", x] then x
+  else "I don't know what you want to GET"
+  end
 end
 
 def dispatch(method, url) do
-    match method
-    case "GET" then dispatchGet(url)
-    case "POST" then "Looks like you POST-ed me!"
-    case "DELETE" then "Not interested in DELETE-ing!"
-    case "OPTIONS" then "What OPTIONS are you looking for?"
-    else "ERROR"
-    end
+  match method
+  case "GET" then dispatchGet(url)
+  case "POST" then "Looks like you POST-ed me!"
+  case "DELETE" then "Not interested in DELETE-ing!"
+  case "OPTIONS" then "What OPTIONS are you looking for?"
+  else "ERROR"
+  end
 end
 
 def handler(req, res) do
-    let {method, url} = req
-    res.end(dispatch(method, url) .. "\n")
+  let {method, url} = req
+  res.end(dispatch(method, url) .. "\n")
 end
 
 # http.createServer(handler).listen(port, address)
