@@ -40,7 +40,11 @@ function Module(transform, node) {
         var blockInnards = blockJs.callee.body.body;
         return es.Program(null, blockInnards);
     } else {
-        var statements = [es.ExpressionStatement(null, blockJs)];
+        // var statements = [es.ExpressionStatement(null, blockJs)];
+
+        // TODO: This might be a bad hack, but it makes the output one level
+        // shallower for now.
+        var statements = blockJs.callee.body.body;
         var body = predef.concat(statements);
         return fileWrapper(body);
     }
