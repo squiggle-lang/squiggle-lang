@@ -24,6 +24,11 @@ function ensureNewline(x) {
 
 function generateCodeAndSourceMap(node, name, code) {
     return escodegen.generate(node, {
+        format: {
+            indent: {
+                style: '  '
+            }
+        },
         sourceMap: name,
         sourceMapWithCode: true,
         sourceContent: code

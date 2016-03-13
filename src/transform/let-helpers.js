@@ -38,11 +38,10 @@ function unboundLetDeclAndInit(transform, expr) {
 function simpleBindingToDeclAndInit(transform, b) {
     var ident = transform(b.pattern.identifier);
     var expr = transform(b.value);
-    var assignExpr = es.AssignmentExpression(null, "=", ident, expr);
-    var assignStmt = es.ExpressionStatement(null, assignExpr);
+    var init = esDeclare(ident.loc, ident, expr);
     return {
         identifiers: [ident],
-        initialization: assignStmt
+        initialization: init
     };
 }
 
@@ -54,22 +53,13 @@ function complexBindingToDeclAndInit(transform, b) {
     var pattern = b.pattern;
     var looksGood =
         ph.satisfiesPattern(transform, root, pattern);
-    var assignTmp = es.ExpressionStatement(
-        null,
-        es.AssignmentExpression(
-            null,
-            "=",
-            tmp,
-            value
-        )
-    );
+    var assignTmp = esDeclare(null, tmp, value);
     var pluck = ph.pluckPattern(transform, root, pattern);
     var pairs = L.zip(pluck.identifiers, pluck.expressions);
     var assignments = pairs.map(function(x) {
         var id = x[0];
         var expr = x[1];
-        var assign = es.AssignmentExpression(id.loc, "=", id, expr);
-        return es.ExpressionStatement(id.loc, assign);
+        return esDeclare(id.loc, id, expr);
     });
     var theCheck =
         es.IfStatement(

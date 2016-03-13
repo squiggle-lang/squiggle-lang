@@ -229,17 +229,6 @@ module.exports = {
 '}'
 ].join("\n")
     },
-    ref: {
-        dependencies: ['undef'],
-        code:
-            'function $ref(x, name) {' +
-            '    if (x === $undef) {' +
-            '        throw new ReferenceError(' +
-            'name + " used before initialization");' +
-            '    }' +
-            '    return x;' +
-            '}'
-    },
     set: {
         dependencies: [],
         code:
@@ -277,10 +266,6 @@ module.exports = {
             '    }' +
             '    return typeof x;' +
             '}'
-    },
-    undef: {
-        dependencies: [],
-        code: 'var $undef = {_: "SQUIGGLE_TEMPORAL_DEADZONE_VALUE"};'
     },
     update: {
         dependencies: [],

@@ -11,21 +11,21 @@ function concat(a, b) {
 }
 
 function Block(transform, node) {
-    var tmpDecl = LH.esDeclare(null, LH.tmp, null);
-    var decls = identsForBlock(transform, node)
-        .map(function(identifier) {
-            return LH.esDeclare(null, identifier, LH.undef);
-        });
+    // var tmpDecl = LH.esDeclare(null, LH.tmp, null);
+    // var decls = identsForBlock(transform, node)
+    //     .map(function(identifier) {
+    //         return LH.esDeclare(null, identifier, LH.undef);
+    //     });
     var needsTmpVar = false;
     var statements = node
         .statements
         .filter(function(node) {
-            return node.type !== "Declaration";
+            return node.fullType !== "ast.Declaration";
         })
         .map(function(node) {
-            if (node.type === "Let") {
+            if (node.fullType === "ast.Let") {
                 // HACK: PatternSimple gets compiled to not use $tmp
-                if (node.binding.pattern.type !== "PatternSimple") {
+                if (node.binding.pattern.fullType !== "ast.PatternSimple") {
                     needsTmpVar = true;
                 }
                 // TODO: Don't call LH.bindingToDeclAndInit *again*
@@ -39,8 +39,8 @@ function Block(transform, node) {
         .reduce(concat, []);
     var expr = transform(node.expression.expression);
     var retStmt = es.ReturnStatement(node.expression.loc, expr);
-    var tmp = needsTmpVar ? [tmpDecl] : [];
-    var everything = flatten([tmp, decls, statements, [retStmt]]);
+    // var tmp = needsTmpVar ? [tmpDecl] : [];
+    var everything = flatten([statements, [retStmt]]);
     var block = es.BlockStatement(null, everything);
     var fn = es.FunctionExpression(null, null, [], block);
     return es.CallExpression(null, fn, []);
