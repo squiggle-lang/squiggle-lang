@@ -1,6 +1,5 @@
 {
-    "preset": "google",
-    "esnext": true,
-    "validateQuoteMarks": null,
-    "validateIndentation": 4
+  "preset": "google",
+  "esnext": true,
+  "validateQuoteMarks": null
 }
