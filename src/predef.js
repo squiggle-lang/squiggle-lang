@@ -17,6 +17,26 @@ module.exports = {
             '}'
         ].join("\n")
     },
+    argN: {
+        dependencies: [],
+        code: [
+'function $argN(n, m) {',
+'  if (m !== n) { ',
+'    throw new Error("expected " + n + " argument(s), got " + m);',
+'  }',
+'}'
+].join("\n")
+    },
+    argNPlus: {
+        dependencies: [],
+        code: [
+'function $argNPlus(n, m) {',
+'  if (m < n) { ',
+'    throw new Error("expected at least " + n + " argument(s), got " + m);',
+'  }',
+'}'
+].join("\n")
+    },
     bool: {
         dependencies: [],
         code: [

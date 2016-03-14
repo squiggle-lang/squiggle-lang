@@ -41,19 +41,35 @@ function Function_(transform, node) {
         [];
     var expr = transform(node.body);
     var ret = es.ReturnStatement(expr.loc, expr);
-    var op = slurpy ? "<" : "!==";
-    var arityCheck = esprima.parse(
-        "if (arguments.length " + op + " " + n + ") { " +
-        "throw new Error(" +
-            "'expected " + n + " argument(s), " +
-            "got ' + arguments.length" +
-            "); " +
-        "}"
-    ).body;
-    // Argument count will never be less than zero, so remove the
-    // conditional entirely.
-    if (n === 0 && slurpy) {
-        arityCheck = [];
+    var argWantCount = es.Literal(null, positional.length)
+    var argsLength =
+        es.MemberExpression(null, false,
+            es.Identifier(null, "arguments"),
+            es.Identifier(null, "length")
+        );
+    var arityCheck = [
+        es.ExpressionStatement(null,
+            es.CallExpression(null,
+                es.Identifier(null, "$argN"),
+                [argWantCount, argsLength]
+            )
+        )
+    ];
+    if (slurpy) {
+        // Argument count will never be less than zero, so remove the
+        // conditional entirely.
+        if (n === 0) {
+            arityCheck = [];
+        } else {
+            arityCheck = [
+                es.ExpressionStatement(null,
+                    es.CallExpression(null,
+                        es.Identifier(null, "$argNPlus"),
+                        [argWantCount, argsLength]
+                    )
+                )
+            ];
+        }
     }
     var body = flatten([
         arityCheck,
