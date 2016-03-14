@@ -8,9 +8,9 @@ var keyword = H.keyword;
 var ione = H.ione;
 
 module.exports = function(ps) {
-    return ione(ast.Declaration,
-        keyword("declare")
-            .then(_)
-            .then(ps.Identifier)
-    );
+  return ione(ast.Declaration,
+    keyword("declare")
+      .then(_)
+      .then(ps.Identifier)
+  );
 };

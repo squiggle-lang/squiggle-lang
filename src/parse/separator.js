@@ -9,5 +9,5 @@ var spaced = H.spaced;
 var Separator = spaced(P.string(","));
 
 module.exports = function(ps) {
-    return Separator;
+  return Separator;
 };

@@ -6,7 +6,7 @@ var Newline = P.regex(/\n/);
 var NotNewlines = P.regex(/[^\n]*/);
 
 module.exports = function(ps) {
-    return P.string("#")
-        .then(NotNewlines)
-        .skip(Newline.or(P.eof));
+  return P.string("#")
+    .then(NotNewlines)
+    .skip(Newline.or(P.eof));
 };

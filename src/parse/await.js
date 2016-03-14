@@ -12,18 +12,18 @@ var word = H.word;
 var iseq = H.iseq;
 
 module.exports = function(ps) {
-    return iseq(ast.Await,
-        P.seq(
-            keyword("await")
-                .skip(_)
-                .then(ps.Identifier)
-                .skip(_),
-            word("=")
-                .then(ps.Expr)
-                .skip(_),
-            keyword("in")
-                .then(_)
-                .then(ione(ast.AwaitExpr, ps.Expr))
-        )
-    );
+  return iseq(ast.Await,
+    P.seq(
+      keyword("await")
+        .skip(_)
+        .then(ps.Identifier)
+        .skip(_),
+      word("=")
+        .then(ps.Expr)
+        .skip(_),
+      keyword("in")
+        .then(_)
+        .then(ione(ast.AwaitExpr, ps.Expr))
+    )
+  );
 };
