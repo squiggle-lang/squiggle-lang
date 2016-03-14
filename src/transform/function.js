@@ -1,7 +1,6 @@
 "use strict";
 
 var flatten = require("lodash/array/flatten");
-var esprima = require("esprima");
 
 var ast = require("../ast");
 var es = require("../es");
@@ -41,7 +40,7 @@ function Function_(transform, node) {
         [];
     var expr = transform(node.body);
     var ret = es.ReturnStatement(expr.loc, expr);
-    var argWantCount = es.Literal(null, positional.length)
+    var argWantCount = es.Literal(null, positional.length);
     var argsLength =
         es.MemberExpression(null, false,
             es.Identifier(null, "arguments"),
