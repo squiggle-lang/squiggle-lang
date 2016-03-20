@@ -4,8 +4,6 @@ var nm = require('./node-maker');
 
 var ast = nm("ast", {
   Array: ["index", "isFrozen", "data"],
-  Await: ["index", "binding", "promise", "expression"],
-  AwaitExpr: ["index", "expression"],
   Binding: ["index", "pattern", "value"],
   BinOp: ["index", "operator", "left", "right"],
   Block: ["index", "statements", "expression"],

@@ -7,7 +7,6 @@ module.exports = function(ps) {
     ps.If,
     ps.DoBlock,
     ps.TopUnaryExpr,
-    ps.Await,
     ps.Match,
     ps.BinExpr
   );

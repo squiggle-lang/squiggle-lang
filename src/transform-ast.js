@@ -6,8 +6,6 @@ var jsonify = JSON.stringify;
 
 var handlers = {
   'ast.Array': require("./transform/array"),
-  'ast.Await': require("./transform/await"),
-  'ast.AwaitExpr': require("./transform/await-expr"),
   'ast.BinOp': require("./transform/bin-op"),
   'ast.Block': require("./transform/block"),
   'ast.Call': require("./transform/call"),

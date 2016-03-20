@@ -39,14 +39,6 @@ function _walk(parents, obj, ast) {
       recur(node.parameters);
       recur(node.body);
     },
-    Await: function(node) {
-      recur(node.binding);
-      recur(node.promise);
-      recur(node.expression);
-    },
-    AwaitExpr: function(node) {
-      recur(node.expression);
-    },
     Declaration: function(node) {
       recur(node.identifier);
     },

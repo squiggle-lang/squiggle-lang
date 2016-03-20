@@ -18,7 +18,6 @@ var keywords = [
   "and", "or",
   "do",
   "global",
-  "await",
   "true", "false",
   "null", "undefined",
   "NaN", "Infinity"

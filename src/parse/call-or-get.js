@@ -33,22 +33,16 @@ module.exports = function(ps) {
   var BraceProp = wrap("{", ps.Expr, "}");
   var IndexProp = wrap("[", ps.Expr, "]");
   var Property = DotProp.or(BraceProp);
-  /// I think so far I'm feeling ok about `foo::bar` as a syntax. I think to
-  /// fit in with pattern matching expressions vs literals, the syntax for
-  /// getting a bound method based on a computed value could be `foo::(bar)`,
-  /// if I end up implementing that.
-  var BoundMethod = word("::").then(ps.IdentifierAsString);
   var ArgList = wrap("(", list0(ps.Separator, ps.Expr), ")");
-  var CallGetOrBind =
+  var CallOrGet =
     P.alt(
       ione(almostSpready(ast.Call), ArgList),
       ione(almostSpready(ast.GetProperty), Property),
-      ione(almostSpready(ast.GetIndex), IndexProp),
-      ione(almostSpready(ast.GetMethod), BoundMethod)
+      ione(almostSpready(ast.GetIndex), IndexProp)
     );
   return iseq(combine,
     P.seq(
       ps.Literal,
-      CallGetOrBind.many()
+      CallOrGet.many()
     ));
 };

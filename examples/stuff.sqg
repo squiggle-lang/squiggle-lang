@@ -15,8 +15,6 @@ fn() true and false or not true or null or undefined or NaN or Infinity
 
 [[], [1, 2], {foo, bar, "baz": "bun"}]
 
-fn() console::log.bind(null, 4)().toString["toString"]()
-
 1 >= 2 and 2 < 3 and 3 < 3 and 4 <= 4 and 5 == 5 and 6 != 6
 
 let x = 4

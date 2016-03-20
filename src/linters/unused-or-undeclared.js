@@ -21,16 +21,6 @@ var enterTable = {
   Block: function(state, node, parent) {
     return Scope(state.scope);
   },
-  AwaitExpr: function(state, node, parent) {
-    var theScope = Scope(state.scope);
-    var start = parent.binding.loc.start;
-    theScope.declare(parent.binding.data, {
-      line: start.line,
-      column: start.column,
-      used: false
-    });
-    return theScope;
-  },
   Function: function(state, node, parent) {
     var theScope = Scope(state.scope);
     var params = node.parameters;
@@ -94,8 +84,7 @@ function exit(state, node, parent) {
     t === 'Block' ||
     t === 'Module' ||
     t === 'Function' ||
-    t === 'MatchClause' ||
-    t === 'AwaitExpr'
+    t === 'MatchClause'
   );
   if (t === 'Module') {
     node.exports.forEach(function(ident) {

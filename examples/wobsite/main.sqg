@@ -1,5 +1,8 @@
 let {Object: {assign}, Number, document} = global
-let SEL = document::querySelector
+
+def SEL(s) do
+  document.querySelector(s)
+end
 
 def toNumber(x) do
   let y = Number(x)
