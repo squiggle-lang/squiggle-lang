@@ -9,6 +9,7 @@ var ps = parsimmonSalad({
   Expr: require("./parse/expr"),
   If: require("./parse/if"),
   Terminator: require("./parse/terminator"),
+  Debugger: require("./parse/debugger"),
   DoBlock: require("./parse/do-block"),
   Block: require("./parse/block"),
   Number: require("./parse/number"),

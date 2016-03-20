@@ -9,6 +9,7 @@ var ast = nm("ast", {
   Block: ["index", "statements", "expression"],
   Call: ["index", "f", "args"],
   CallMethod: ["index", "obj", "prop", "args"],
+  Debugger: ["index"],
   Declaration: ["index", "identifier"],
   ElseIf: ["index", "condition", "branch"],
   Error: ["index", "message"],

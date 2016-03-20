@@ -10,6 +10,7 @@ var handlers = {
   'ast.Block': require("./transform/block"),
   'ast.Call': require("./transform/call"),
   'ast.CallMethod': require("./transform/call-method"),
+  'ast.Debugger': require("./transform/debugger"),
   'ast.Error': require("./transform/error"),
   'ast.ExprStmt': require("./transform/expr-stmt"),
   'ast.False': require("./transform/false"),

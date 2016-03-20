@@ -148,6 +148,7 @@ function _walk(parents, obj, ast) {
     Negate: function(node) {
       recur(node.expr);
     },
+    Debugger: function(node) {},
     Global: function(node) {},
     True: function(node) {},
     False: function(node) {},
