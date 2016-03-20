@@ -13,9 +13,15 @@ function fileWrapper(body) {
     "}"
   ).body;
   var newBody = [useStrict].concat(strictCheck).concat(body);
-  var fn = es.FunctionExpression(null,
-    null, [], es.BlockStatement(null, newBody));
-  var st = es.ExpressionStatement(null, es.CallExpression(null, fn, []));
+  var global_ = es.Identifier(null, "$global");
+  var this_ = esprima.parse(
+    "(function() { return this; }())"
+  ).body[0].expression;
+  console.log(this_);
+  var block = es.BlockStatement(null, newBody);
+  var fn = es.FunctionExpression(null, null, [global_], block);
+  var call = es.CallExpression(null, fn, [this_]);
+  var st = es.ExpressionStatement(null, call);
   return es.Program(null, [st]);
 }
 

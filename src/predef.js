@@ -141,10 +141,6 @@ module.exports = {
       '}'
     ].join("\n")
   },
-  global: {
-    dependencies: [],
-    code: 'var $global = (1, eval)("this");'
-  },
   gt: {
     // TODO: Make it work on strings too
     dependencies: ['number'],
