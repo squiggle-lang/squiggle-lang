@@ -21,6 +21,7 @@ function loadPredef() {
   Object.keys(predef).forEach(function(k) {
     globalEval(predef[k].code);
   });
+  global.$global = global;
   global.help = "You may have meant to type :help";
   global.quit = "You may have meant to type :quit";
   global.h = "You may have meant to type :h";
