@@ -1,7 +1,7 @@
 "use strict";
 
-var ast = require("../ast");
 var es = require("../es");
+var helperNamed = require("../helper-named");
 
 var table = {
   "*": "multiply",
@@ -27,24 +27,27 @@ var boolTable = {
 };
 
 function bool(x) {
-  return ast.Call(null, ast.Identifier(null, "$bool"), [x]);
+  return es.CallExpression(x.loc, helperNamed("aBoolean"), [x]);
 }
 
 function BinOp(transform, node) {
   var d = node.operator.data;
   // `and` and `or` cannot be implemented as functions due to short circuiting
   // `behavior, so they work differently.
+  var left;
+  var right;
   if (d === 'and' || d === 'or') {
     var op = boolTable[d];
-    var left = transform(bool(node.left));
-    var right = transform(bool(node.right));
+    // var left = transform(bool(node.left));
+    // var right = transform(bool(node.right));
+    left = bool(transform(node.left));
+    right = bool(transform(node.right));
     return es.LogicalExpression(node.operator.loc, op, left, right);
   } else {
-    var name = "$" + table[node.operator.data];
-    var f = ast.Identifier(node.operator.index, name);
-    var args = [node.left, node.right];
-    var call = ast.Call(f.index, f, args);
-    return transform(call);
+    var f = helperNamed(table[node.operator.data]);
+    left = transform(node.left);
+    right = transform(node.right);
+    return es.CallExpression(f.loc, f, [left, right]);
   }
 }
 

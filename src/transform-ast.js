@@ -16,7 +16,6 @@ var handlers = {
   'ast.False': require("./transform/false"),
   'ast.Function': require("./transform/function"),
   'ast.GetIndex': require("./transform/get-index"),
-  'ast.GetMethod': require("./transform/get-method"),
   'ast.GetProperty': require("./transform/get-property"),
   'ast.Global': require("./transform/global"),
   'ast.Identifier': require("./transform/identifier"),
@@ -36,7 +35,6 @@ var handlers = {
   'ast.String': require("./transform/string"),
   'ast.Throw': require("./transform/throw"),
   'ast.True': require("./transform/true"),
-  'ast.Try': require("./transform/try"),
   'ast.Undefined': require("./transform/undefined"),
 };
 

@@ -4,6 +4,7 @@ var flatten = require("lodash/array/flatten");
 var esprima = require("esprima");
 
 var es = require("../es");
+var helperNamed = require("../helper-named");
 
 function pluckPattern(transform, root, p) {
   var obj = {identifiers: [], expressions: []};
@@ -53,7 +54,7 @@ function esHas(a, b) {
 }
 
 function esSlice(xs, i) {
-  var slice = es.Identifier(null, "$slice");
+  var slice = helperNamed("slice");
   return es.CallExpression(null, slice, [xs, i]);
 }
 
@@ -81,13 +82,13 @@ var _satisfiesPattern = {
   },
   PatternLiteral: function(transform, root, p) {
     var lit = transform(p.data);
-    var is = es.Identifier(null, "$is");
+    var is = helperNamed("is");
     var call = es.CallExpression(p.loc, is, [root, lit]);
     return [call];
   },
   PatternParenExpr: function(transform, root, p) {
     var expr = transform(p.expr);
-    var eq = es.Identifier(null, "$eq");
+    var eq = helperNamed("eq");
     var call = es.CallExpression(null, eq, [root, expr]);
     return [call];
   },

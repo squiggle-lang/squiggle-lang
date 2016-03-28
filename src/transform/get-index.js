@@ -1,13 +1,13 @@
 "use strict";
 
-var ast = require("../ast");
+var es = require("../es");
+var helperNamed = require("../helper-named");
 
 function GetIndex(transform, node) {
-  var array = node.array;
-  var index = node.arrayIndex;
-  var id = ast.Identifier(node.loc, "$at");
-  var call = ast.Call(null, id, [array, index]);
-  return transform(call);
+  var array = transform(node.array);
+  var index = transform(node.arrayIndex);
+  var id = helperNamed("arrayGet");
+  return es.CallExpression(null, id, [array, index]);
 }
 
 module.exports = GetIndex;

@@ -74,10 +74,8 @@ function complexBindingToDeclAndInit(transform, b) {
   };
 }
 
-var undef = es.Identifier(null, "$undef");
 var tmp = es.Identifier(null, "$tmp");
 
 exports.bindingToDeclAndInit = bindingToDeclAndInit;
 exports.tmp = tmp;
-exports.undef = undef;
 exports.esDeclare = esDeclare;

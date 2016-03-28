@@ -3,7 +3,6 @@
 var readline = require("readline");
 var chalk = require("chalk");
 
-var predef = require("./predef");
 var pkg = require("../package.json");
 var inspect = require("./inspect");
 var compile = require("./compile");
@@ -18,9 +17,6 @@ var SHOW_JS = true;
 var globalEval = false || eval;
 
 function loadPredef() {
-  Object.keys(predef).forEach(function(k) {
-    globalEval(predef[k].code);
-  });
   global.$global = global;
   global.help = "You may have meant to type :help";
   global.quit = "You may have meant to type :quit";
@@ -30,6 +26,8 @@ function loadPredef() {
   global.require = require;
   global.module = {exports: {}};
   global.exports = global.module.exports;
+  global.$$ = require("./rt/__internal");
+  global.rt = require("../rt");
 }
 
 function prettySyntaxError(code, o) {

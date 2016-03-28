@@ -4,6 +4,7 @@ var flatten = require("lodash/array/flatten");
 
 var ast = require("../ast");
 var es = require("../es");
+var helperNamed = require("../helper-named");
 
 function declareAssign(id, expr) {
   var init = es.VariableDeclarator(id.loc, id, expr);
@@ -31,7 +32,7 @@ function Function_(transform, node) {
   var slurpy = node.parameters.slurpy;
   var getSlurpy =
     es.CallExpression(null,
-      es.Identifier(null, "$slice"),
+      helperNamed("slice"),
       [es.Identifier(null, "arguments"), es.Literal(null, n)]
     );
   var shouldBindSlurpy = slurpy && slurpy.identifier.data !== "_";
@@ -49,7 +50,7 @@ function Function_(transform, node) {
   var arityCheck = [
     es.ExpressionStatement(null,
       es.CallExpression(null,
-        es.Identifier(null, "$argN"),
+        helperNamed("argN"),
         [argWantCount, argsLength]
       )
     )
@@ -63,7 +64,7 @@ function Function_(transform, node) {
       arityCheck = [
         es.ExpressionStatement(null,
           es.CallExpression(null,
-            es.Identifier(null, "$argNPlus"),
+            helperNamed("argNPlus"),
             [argWantCount, argsLength]
           )
         )

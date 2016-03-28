@@ -1,6 +1,5 @@
 "use strict";
 
-var helpersFor = require("../helpers-for");
 var fileWrapper = require("../file-wrapper");
 var ast = require("../ast");
 var es = require("../es");
@@ -22,7 +21,6 @@ function Module(transform, node) {
   var retUndef = ast.ExprStmt(null, ast.Undefined(null));
   var block = ast.Block(null, node.statements, retUndef);
   var blockJs = transform(block);
-  var predef = helpersFor(blockJs);
   var theExports = makeExportsFor(transform, node.exports);
 
   // BEGIN HACK: Add the exports into the block
@@ -40,13 +38,10 @@ function Module(transform, node) {
     var blockInnards = blockJs.callee.body.body;
     return es.Program(null, blockInnards);
   } else {
-    // var statements = [es.ExpressionStatement(null, blockJs)];
-
     // TODO: This might be a bad hack, but it makes the output one level
     // shallower for now.
     var statements = blockJs.callee.body.body;
-    var body = predef.concat(statements);
-    return fileWrapper(body);
+    return fileWrapper(statements);
   }
 }
 

@@ -1,13 +1,14 @@
 "use strict";
 
-var ast = require("../ast");
+var es = require("../es");
+var helperNamed = require("../helper-named");
 
 function GetProperty(transform, node) {
   var obj = node.obj;
   var prop = node.prop;
-  var id = ast.Identifier(node.loc, "$get");
-  var call = ast.Call(null, id, [obj, prop]);
-  return transform(call);
+  var f = helperNamed("objectGet");
+  var args = [obj, prop].map(transform);
+  return es.CallExpression(null, f, args);
 }
 
 module.exports = GetProperty;

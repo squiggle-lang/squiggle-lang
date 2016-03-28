@@ -35,7 +35,6 @@ end
 
 fn() throw global.Error("nope")
 fn() error "oops"
-try (error "no way")
 [fs, foo, bar]
 
 console.log(Date())

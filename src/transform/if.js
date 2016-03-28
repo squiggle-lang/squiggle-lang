@@ -1,10 +1,10 @@
 "use strict";
 
-var ast = require("../ast");
 var es = require("../es");
+var helperNamed = require("../helper-named");
 
 function bool(x) {
-  return ast.Call(null, ast.Identifier(null, "$bool"), [x]);
+  return es.CallExpression(x.loc, helperNamed("aBoolean"), [x]);
 }
 
 // It would totally work to just generate code like `P ? X : Y`, but pretty
@@ -28,14 +28,14 @@ function blockRet(transform, expr) {
 }
 
 function ifHelper(transform, node) {
-  var condition = transform(bool(node.condition));
+  var condition = bool(transform(node.condition));
   var ifBranch = blockRet(transform, node.ifBranch);
   var finalElseBranch = blockRet(transform, node.elseBranch);
   var elseBranch =
     node.elseIfs.reduce(function(branch, elseIf) {
       return es.IfStatement(
         elseIf.loc,
-        transform(bool(elseIf.condition)),
+        bool(transform(elseIf.condition)),
         blockRet(transform, elseIf.branch),
         branch
       );
