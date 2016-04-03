@@ -1,23 +1,23 @@
 var __ = require("./__internal");
 
 function first(ary) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   return __.aArray1(ary)[0];
 }
 
 function rest(ary) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   return __.freeze(__.aArray1(ary).slice(1));
 }
 
 function last(ary) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   var n = __.aArray1(ary).length;
   return ary[n - 1];
 }
 
 function slice(ary, start, end) {
-  __.argN(3);
+  __.argN(3, arguments.length);
   __.aArray(ary);
   __.aInteger(start);
   __.aInteger(end);
@@ -29,7 +29,7 @@ function slice(ary, start, end) {
 }
 
 function enumerate(ary) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   __.aArray(ary);
   var xs = [];
   for (var i = 0; i < ary.length; i++) {
@@ -39,7 +39,7 @@ function enumerate(ary) {
 }
 
 function all(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   for (var i = 0; i < ary.length; i++) {
@@ -51,7 +51,7 @@ function all(ary, f) {
 }
 
 function any(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   for (var i = 0; i < ary.length; i++) {
@@ -63,7 +63,7 @@ function any(ary, f) {
 }
 
 function foldLeft(ary, init, f) {
-  __.argN(3);
+  __.argN(3, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   for (var i = 0; i < ary.length; i++) {
@@ -73,7 +73,7 @@ function foldLeft(ary, init, f) {
 }
 
 function foldRight(ary, init, f) {
-  __.argN(3);
+  __.argN(3, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   for (var i = ary.length - 1; i >= 0; i--) {
@@ -83,7 +83,7 @@ function foldRight(ary, init, f) {
 }
 
 function reduce(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray1(ary);
   return foldLeft(ary.slice(1), ary[0], __.aFunc(f));
 }
@@ -99,7 +99,7 @@ function map(ary, f) {
 }
 
 function mapN(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   var xs = [];
@@ -110,7 +110,7 @@ function mapN(ary, f) {
 }
 
 function flatten(ary) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   __.aArray(ary);
   var xs = [];
   for (var i = 0; i < ary.length; i++) {
@@ -120,7 +120,7 @@ function flatten(ary) {
 }
 
 function flatMap(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   var xs = [];
@@ -131,7 +131,7 @@ function flatMap(ary, f) {
 }
 
 function filter(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   var xs = [];
@@ -144,7 +144,7 @@ function filter(ary, f) {
 }
 
 function forEach(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary);
   __.aFunc(f);
   for (var i = 0; i < ary.length; i++) {
@@ -154,7 +154,7 @@ function forEach(ary, f) {
 }
 
 function zip(ary1, ary2) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary1);
   __.aArray(ary2);
   if (ary1.length !== ary2.length) {
@@ -168,18 +168,18 @@ function zip(ary1, ary2) {
 }
 
 function contains(ary, x) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   // TODO: Needs Op.is
   throw new Error("not implemented");
 }
 
 function sortWith(ary, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   return __.aArray(ary).slice().sort(__.aFunc(f));
 }
 
 function fromArrayLike(ary) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   if (ary && __.aInteger(ary.length)) {
     var xs = [];
     for (var i = 0; i < ary.length; i++) {
@@ -195,22 +195,21 @@ function of_() {
 }
 
 function copy(ary) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   return fromArrayLike(__.aArray(ary));
 }
 
-function get(ary, i, f) {
-  __.argN(3);
+function get(ary, i, fallback) {
+  __.argN(3, arguments.length);
   __.aArray(ary);
   __.aInteger(i);
-  __.aFunc(f);
   if (i < 0) {
     i += ary.length;
   }
   if (0 <= i && i < ary.length) {
     return ary[i];
   } else {
-    return f();
+    return fallback;
   }
 }
 

@@ -11,7 +11,7 @@ function argNPlus(n, m) {
 }
 
 function aArray(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (Array.isArray(x)) {
     return x;
   }
@@ -19,7 +19,7 @@ function aArray(x) {
 }
 
 function aArray1(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (Array.isArray(x) && x.length >= 1) {
     return x;
   }
@@ -27,7 +27,7 @@ function aArray1(x) {
 }
 
 function aFunc(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (typeof x === "function") {
     return x;
   }
@@ -35,7 +35,7 @@ function aFunc(x) {
 }
 
 function aString(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (typeof x === "string") {
     return x;
   }
@@ -43,7 +43,7 @@ function aString(x) {
 }
 
 function aObject(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (typeof x === "object" && x) {
     return x;
   }
@@ -51,7 +51,7 @@ function aObject(x) {
 }
 
 function aBoolean(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (typeof x === "boolean") {
     return x;
   }
@@ -59,7 +59,7 @@ function aBoolean(x) {
 }
 
 function aNumber(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (typeof x === "number") {
     return x;
   }
@@ -67,20 +67,20 @@ function aNumber(x) {
 }
 
 function aInteger(x) {
-  argN(1);
-  if (typeof x === "number" && x === x % 1) {
+  argN(1, arguments.length);
+  if (typeof x === "number" && x % 1 === 0) {
     return x;
   }
   throw new Error("not an integer: " + x);
 }
 
 function freeze(x) {
-  argN(1);
+  argN(1, arguments.length);
   return Object.freeze(x);
 }
 
 function add(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return aNumber(a) + aNumber(b);
 }
 
@@ -94,7 +94,7 @@ function array() {
 }
 
 function concat(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   if (Array.isArray(a) && Array.isArray(b)) {
     return a.concat(b);
   }
@@ -102,7 +102,7 @@ function concat(a, b) {
 }
 
 function strcat(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   if (isValueType(a) && isValueType(b)) {
     return "" + a + b;
   }
@@ -110,12 +110,12 @@ function strcat(a, b) {
 }
 
 function divide(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return aNumber(a) / aNumber(b);
 }
 
 function eq(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   if (isValueType(a) && isValueType(b)) {
     return a === b;
   } else {
@@ -127,7 +127,7 @@ function eq(a, b) {
 }
 
 function isValueType(a) {
-  argN(1);
+  argN(1, arguments.length);
   return (
     a === undefined ||
     a === null ||
@@ -138,7 +138,7 @@ function isValueType(a) {
 }
 
 function idx(array, index) {
-  argN(2);
+  argN(2, arguments.length);
   if (!Array.isArray(array)) {
     throw new Error("cannot numerically index non-array: " + array);
   }
@@ -153,14 +153,14 @@ function idx(array, index) {
 }
 
 function arrayGet(array, index) {
-  argN(2);
+  argN(2, arguments.length);
   idx(array, index);
   var n = array.length;
   return array[(index + n) % n];
 }
 
 function objectGet(obj, key) {
-  argN(2);
+  argN(2, arguments.length);
   if (has(obj, key)) {
     return obj[key];
   }
@@ -168,17 +168,17 @@ function objectGet(obj, key) {
 }
 
 function gt(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return aNumber(a) > aNumber(b);
 }
 
 function gte(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return gt(a, b) || eq(a, b);
 }
 
 function has(obj, key) {
-  argN(2);
+  argN(2, arguments.length);
   if (obj === null || obj === undefined) {
     throw new Error(obj + " cannot have keys");
   }
@@ -190,7 +190,7 @@ function has(obj, key) {
 }
 
 function is(x, y) {
-  argN(2);
+  argN(2, arguments.length);
   if (x === y) {
     return x !== 0 || 1 / x === 1 / y;
   } else {
@@ -199,37 +199,37 @@ function is(x, y) {
 }
 
 function lt(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return aNumber(a) < aNumber(b);
 }
 
 function lte(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return lt(a, b) || eq(a, b);
 }
 
 function multiply(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return aNumber(a) * aNumber(b);
 }
 
 function negate(x) {
-  argN(2);
+  argN(2, arguments.length);
   return -aNumber(x);
 }
 
 function neq(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return !eq(a, b);
 }
 
 function not(x) {
-  argN(1);
+  argN(1, arguments.length);
   return !aBoolean(x);
 }
 
 function aNumber(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (typeof x !== "number") {
     throw new Error("not a number: " + x);
   }
@@ -258,22 +258,22 @@ function object() {
 }
 
 function slice(xs, i) {
-  argN(2);
+  argN(2, arguments.length);
   return Object.freeze(Array.prototype.slice.call(xs, i));
 }
 
 function subtract(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   return aNumber(a) - aNumber(b);
 }
 
 function internalName(a) {
-  argN(1);
+  argN(1, arguments.length);
   return Object.prototype.toString.call(a).slice(8, -1);
 }
 
 function type(x) {
-  argN(1);
+  argN(1, arguments.length);
   if (x === null) {
     return "null";
   }
@@ -287,7 +287,7 @@ function type(x) {
 }
 
 function update(a, b) {
-  argN(2);
+  argN(2, arguments.length);
   var c = Object.create(Object.getPrototypeOf(a));
   Object.keys(a).forEach(function(k) {c[k] = a[k]; });
   Object.keys(b).forEach(function(k) {c[k] = b[k]; });

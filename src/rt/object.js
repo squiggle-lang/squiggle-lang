@@ -1,7 +1,7 @@
 var __ = require("./__internal");
 
 function map(obj, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aObject(obj);
   __.aFunc(f);
   var ks = Object.keys(obj);
@@ -14,7 +14,7 @@ function map(obj, f) {
 }
 
 function transform(obj, f) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aObject(obj);
   __.aFunc(f);
   var ks = Object.keys(obj);
@@ -27,7 +27,7 @@ function transform(obj, f) {
 }
 
 function toPairs(obj) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   __.aObject(obj);
   var ks = Object.keys(obj);
   var xs = [];
@@ -39,7 +39,7 @@ function toPairs(obj) {
 }
 
 function fromPairs(ary) {
-  __.argN(2);
+  __.argN(2, arguments.length);
   __.aArray(ary);
   var out = {};
   for (var i = 0; i < ary.length; i++) {
@@ -55,13 +55,12 @@ function fromPairs(ary) {
 }
 
 function copy(obj) {
-  __.argN(1);
+  __.argN(1, arguments.length);
   return fromPairs(toPairs(obj));
 }
 
-function get(obj, key, f) {
-  __.argN(3);
-  // TODO: Implement Op.has
+function get(obj, key, fallback) {
+  __.argN(3, arguments.length);
   throw new Error("not implemented");
 }
 
