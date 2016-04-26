@@ -1,3 +1,5 @@
+# NO LONGER IN DEVELOPEMENT
+
 # squiggle
 
 [![Build Status](https://travis-ci.org/squiggle-lang/squiggle-lang.svg)](https://travis-ci.org/squiggle-lang/squiggle-lang)
